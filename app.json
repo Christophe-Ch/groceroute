@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "react-native-template",
-    "slug": "react-native-template",
+    "name": "groceroute",
+    "slug": "groceroute",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.cchichmanian.react-native-template"
+      "bundleIdentifier": "com.cchichmanian.groceroute"
     },
     "android": {
       "adaptiveIcon": {
