@@ -1,14 +1,8 @@
-import { useAuth } from "@/hooks/auth/use-auth";
 import { Ionicons } from "@expo/vector-icons";
-import { Redirect, Tabs } from "expo-router";
-import { StyleSheet } from "react-native";
+import { Tabs } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const AppLayout = () => {
-  const { token, isLoading } = useAuth();
-
-  if (!token) return <Redirect href="/(auth)/login" />;
-
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
       <Tabs
@@ -19,9 +13,9 @@ const AppLayout = () => {
         <Tabs.Screen
           name="index"
           options={{
-            title: "Home",
+            title: "Lists",
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="home" size={size} color={color} />
+              <Ionicons name={"list"} size={size} color={color} />
             ),
           }}
         />
@@ -41,16 +35,3 @@ const AppLayout = () => {
 };
 
 export default AppLayout;
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    flex: 1,
-  },
-  headerButton: {
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "red",
-    alignSelf: "center",
-  },
-});
