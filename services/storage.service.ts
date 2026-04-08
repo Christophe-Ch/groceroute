@@ -31,4 +31,12 @@ export const storageService = {
 
     await AsyncStorage.setItem(KEYS.list(list.id), JSON.stringify(list));
   },
+
+  async deleteList(id: string): Promise<void> {
+    const rawIndex = await AsyncStorage.getItem(KEYS.index);
+    const index = rawIndex ? JSON.parse(rawIndex) : [];
+    const newIndex = index.filter((storedId: string) => storedId !== id);
+    await AsyncStorage.setItem(KEYS.index, JSON.stringify(newIndex));
+    await AsyncStorage.removeItem(KEYS.list(id));
+  },
 };

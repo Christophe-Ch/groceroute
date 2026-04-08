@@ -1,4 +1,4 @@
-import { useGroceryListStore } from "@/store/groceryListStore";
+import { useGroceryListStore } from "@/store/grocery-list.store";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { useEffect } from "react";
