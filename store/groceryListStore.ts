@@ -1,4 +1,5 @@
 import { GroceryItem, GroceryList } from "@/models/grocery";
+import { storageService } from "@/services/storage.service";
 import { produce } from "immer";
 import { create } from "zustand";
 
@@ -18,13 +19,11 @@ export const useGroceryListStore = create<GroceryListStore>((set) => ({
   hydrated: false,
 
   hydrate: async () => {
-    // Simulate loading from storage
-    const storedData = null; // Replace with actual loading logic
-    if (storedData) {
-      set({ lists: storedData, hydrated: true });
-    } else {
-      set({ hydrated: true });
-    }
+    const lists = await storageService.hydrate();
+    set({
+      lists: Object.fromEntries(lists.map((list) => [list.id, list])),
+      hydrated: true,
+    });
   },
 
   createList: async (name: string) => {
@@ -42,6 +41,8 @@ export const useGroceryListStore = create<GroceryListStore>((set) => ({
         s.lists[list.id] = list;
       }),
     );
+
+    await storageService.persistList(list);
 
     return list;
   },
