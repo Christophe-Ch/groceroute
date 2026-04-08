@@ -1,8 +1,18 @@
+import { useGroceryListStore } from "@/store/groceryListStore";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const AppLayout = () => {
+  const { hydrate, hydrated } = useGroceryListStore();
+
+  useEffect(() => {
+    if (!hydrated) {
+      hydrate();
+    }
+  }, [hydrate, hydrated]);
+
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
       <Tabs

@@ -1,9 +1,9 @@
-import { AuthResponse } from "@/models/auth/auth-response";
+import { AuthResponse } from "@/models/auth";
 import { client } from "./client";
 
 export const login = async (
   email: string,
-  password: string
+  password: string,
 ): Promise<AuthResponse> => {
   const { data } = await client.post<AuthResponse>("/auth/login", {
     email,
@@ -15,7 +15,7 @@ export const login = async (
 
 export const signup = async (
   email: string,
-  password: string
+  password: string,
 ): Promise<void> => {
   await client.post<AuthResponse>("/auth/signup", {
     email,

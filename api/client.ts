@@ -1,4 +1,4 @@
-import { AuthResponse } from "@/models/auth/auth-response";
+import { AuthResponse } from "@/models/auth";
 import { tokenService } from "@/services/token.service";
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import Constants from "expo-constants";
@@ -47,5 +47,5 @@ client.interceptors.response.use(
       await tokenService.clearTokens();
       return Promise.reject(err);
     }
-  }
+  },
 );
