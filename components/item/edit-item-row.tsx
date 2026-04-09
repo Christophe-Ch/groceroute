@@ -15,7 +15,12 @@ type EditItemRowProps = {
   currentItemIds?: Set<string>;
 };
 
-const EditItemRow = ({ listId, item, pastItems, currentItemIds }: EditItemRowProps) => {
+const EditItemRow = ({
+  listId,
+  item,
+  pastItems,
+  currentItemIds,
+}: EditItemRowProps) => {
   const muted = useThemeColor({}, "textMuted");
   const { addItem, addPastItem, updateItem, deleteItem } =
     useGroceryListStore();
@@ -26,19 +31,28 @@ const EditItemRow = ({ listId, item, pastItems, currentItemIds }: EditItemRowPro
 
   const onSubmit = () => {
     setFocused(false);
+    setAutocomplete(null);
     const trimmed = name.trim();
+
     if (item) {
-      if (trimmed) {
-        updateItem(listId, item.id, { name: trimmed });
-      } else {
-        deleteItem(listId, item.id);
-      }
-    } else {
-      if (trimmed) {
-        addItem(listId, trimmed);
-        setName("");
-      }
+      return trimmed
+        ? updateItem(listId, item.id, { name: trimmed })
+        : deleteItem(listId, item.id);
     }
+
+    if (!trimmed) return;
+
+    const exactMatch = pastItems?.find(
+      (p) =>
+        p.name.toLowerCase() === trimmed.toLowerCase() &&
+        !currentItemIds?.has(p.id),
+    );
+    if (exactMatch) {
+      addPastItem(listId, exactMatch);
+    } else {
+      addItem(listId, trimmed);
+    }
+    setName("");
   };
 
   const onChangeText = (text: string) => {
