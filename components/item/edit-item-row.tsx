@@ -6,12 +6,12 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { ThemedIcon } from "../themed-icon";
 import ThemedInput from "../themed-input";
 
-type ItemRowProps = {
+type EditItemRowProps = {
   listId: string;
   item?: GroceryItem;
 };
 
-const ItemRow = ({ listId, item }: ItemRowProps) => {
+const EditItemRow = ({ listId, item }: EditItemRowProps) => {
   const muted = useThemeColor({}, "textMuted");
   const { addItem, updateItem, deleteItem } = useGroceryListStore();
   const [focused, setFocused] = useState(false);
@@ -62,7 +62,7 @@ const ItemRow = ({ listId, item }: ItemRowProps) => {
   );
 };
 
-export default ItemRow;
+export default EditItemRow;
 
 const styles = StyleSheet.create({
   row: {

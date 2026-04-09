@@ -3,7 +3,7 @@ import { useGroceryListStore } from "@/store/grocery-list.store";
 import { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
-import ItemRow from "../item/item-row";
+import EditItemRow from "../item/edit-item-row";
 import ThemedButton from "../themed-button";
 import ThemedInput from "../themed-input";
 import { ThemedText } from "../themed-text";
@@ -43,10 +43,10 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
         keyExtractor={(item) => item.id}
         renderItem={({ item, drag }) => (
           <TouchableOpacity onLongPress={drag}>
-            <ItemRow listId={list.id} item={item} />
+            <EditItemRow listId={list.id} item={item} />
           </TouchableOpacity>
         )}
-        ListFooterComponent={<ItemRow listId={list.id} />}
+        ListFooterComponent={<EditItemRow listId={list.id} />}
         keyboardShouldPersistTaps="handled"
         containerStyle={{ flex: 1 }}
       />

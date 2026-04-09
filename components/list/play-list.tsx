@@ -1,8 +1,9 @@
 import { GroceryList } from "@/models/grocery/grocery-list";
-import { useGroceryListStore } from "@/store/grocery-list.store";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import DraggableFlatList from "react-native-draggable-flatlist";
-import ItemRow from "../item/item-row";
+import { produce } from "immer";
+import { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
+import PlayItemRow from "../item/play-item-row";
 import ThemedButton from "../themed-button";
 import ThemedInput from "../themed-input";
 import { ThemedText } from "../themed-text";
@@ -12,8 +13,17 @@ type PlayListProps = {
   onModeChange: () => void;
 };
 
-const PlayList = ({ list, onModeChange }: PlayListProps) => {
-  const { reorderItems } = useGroceryListStore();
+const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
+  const [list, setList] = useState(baseList);
+  const items = [...list.items].sort((a, b) => +a.checked - +b.checked);
+
+  const onItemCheckedChange = (itemId: string, checked: boolean) => {
+    setList((list) =>
+      produce(list, (draft) => {
+        draft.items.find((i) => i.id === itemId)!.checked = checked;
+      }),
+    );
+  };
 
   return (
     <>
@@ -25,19 +35,21 @@ const PlayList = ({ list, onModeChange }: PlayListProps) => {
       />
 
       <View style={styles.listHeader}>
-        <ThemedText type="muted">{list.items.length} items</ThemedText>
+        <ThemedText type="muted">
+          {items.filter((i) => !i.checked).length} items left
+        </ThemedText>
       </View>
-      <DraggableFlatList
-        data={list.items}
-        onDragEnd={(data) => reorderItems(list.id, data.data)}
+      <FlatList
+        data={items}
         keyExtractor={(item) => item.id}
-        renderItem={({ item, drag }) => (
-          <TouchableOpacity onLongPress={drag}>
-            <ItemRow listId={list.id} item={item} />
-          </TouchableOpacity>
+        renderItem={({ item }) => (
+          <PlayItemRow
+            listId={list.id}
+            item={item}
+            onItemCheckedChange={onItemCheckedChange}
+          />
         )}
         keyboardShouldPersistTaps="handled"
-        containerStyle={{ flex: 1 }}
       />
 
       <View style={styles.actions}>
