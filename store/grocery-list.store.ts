@@ -17,6 +17,10 @@ type GroceryListStore = {
   ) => Promise<void>;
   deleteItem: (listId: string, itemId: string) => Promise<void>;
   reorderItems: (listId: string, newItems: GroceryItem[]) => Promise<void>;
+  updateList: (
+    id: string,
+    updatedFields: Partial<GroceryList>,
+  ) => Promise<void>;
 };
 
 export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
@@ -50,6 +54,18 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
     await storageService.persistList(list);
 
     return list;
+  },
+
+  updateList: async (id: string, updatedFields: Partial<GroceryList>) => {
+    set(
+      produce((s: GroceryListStore) => {
+        if (s.lists[id]) {
+          s.lists[id] = { ...s.lists[id], ...updatedFields };
+        }
+      }),
+    );
+
+    await storageService.persistList(get().lists[id]);
   },
 
   deleteList: async (id: string) => {
