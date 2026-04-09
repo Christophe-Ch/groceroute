@@ -71,7 +71,10 @@ const EditItemRow = ({
         <ThemedInput
           onFocus={() => setFocused(true)}
           onChangeText={onChangeText}
-          onBlur={onSubmit}
+          onBlur={() => {
+            setFocused(false);
+            setAutocomplete(null);
+          }}
           onSubmitEditing={onSubmit}
           submitBehavior={item ? "blurAndSubmit" : "submit"}
           placeholder={item ? undefined : "Add item..."}
