@@ -12,9 +12,10 @@ type EditItemRowProps = {
   listId: string;
   item?: GroceryItem;
   pastItems?: GroceryItem[];
+  currentItemIds?: Set<string>;
 };
 
-const EditItemRow = ({ listId, item, pastItems }: EditItemRowProps) => {
+const EditItemRow = ({ listId, item, pastItems, currentItemIds }: EditItemRowProps) => {
   const muted = useThemeColor({}, "textMuted");
   const { addItem, addPastItem, updateItem, deleteItem } =
     useGroceryListStore();
@@ -43,7 +44,7 @@ const EditItemRow = ({ listId, item, pastItems }: EditItemRowProps) => {
   const onChangeText = (text: string) => {
     setName(text);
     if (!item && text.trim().length >= 2) {
-      setAutocomplete(findItems(text, pastItems!));
+      setAutocomplete(findItems(text, pastItems!, currentItemIds));
     } else {
       setAutocomplete(null);
     }

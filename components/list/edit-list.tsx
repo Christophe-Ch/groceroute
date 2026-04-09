@@ -1,6 +1,6 @@
 import { GroceryList } from "@/models/grocery/grocery-list";
 import { useGroceryListStore } from "@/store/grocery-list.store";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
   StyleSheet,
@@ -23,6 +23,7 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
   const { updateList, reorderItems } = useGroceryListStore();
   const insets = useSafeAreaInsets();
 
+  const currentItemIds = useMemo(() => new Set(list.items.map((i) => i.id)), [list.items]);
   const [listName, setListName] = useState(list.name);
   const onUpdateTitle = () => {
     const trimmed = listName.trim();
@@ -51,7 +52,7 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
         style={{ flex: 1 }}
       >
         <View style={{ zIndex: 1 }}>
-          <EditItemRow listId={list.id} pastItems={list.pastItems} />
+          <EditItemRow listId={list.id} pastItems={list.pastItems} currentItemIds={currentItemIds} />
         </View>
         <DraggableFlatList
           data={list.items}

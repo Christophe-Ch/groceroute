@@ -2,11 +2,12 @@ import { GroceryItem } from "@/models/grocery";
 
 const MAX_RESULTS = 5;
 
-export const findItems = (search: string, items: GroceryItem[]): GroceryItem[] => {
+export const findItems = (search: string, items: GroceryItem[], excludeIds?: Set<string>): GroceryItem[] => {
   const lowerSearch = search.toLowerCase();
 
   return items
     .reduce<{ item: GroceryItem; score: number }[]>((matches, item) => {
+      if (excludeIds?.has(item.id)) return matches;
       const lowerName = item.name.toLowerCase();
       const index = lowerName.indexOf(lowerSearch);
       if (index === -1) return matches;
