@@ -9,6 +9,7 @@ export type ThemedButtonProps = PressableProps & {
   iconName?: ComponentProps<typeof Ionicons>["name"];
   iconPosition?: "left" | "right";
   size?: "normal" | "small";
+  type?: "primary" | "success" | "danger";
 };
 
 const ThemedButton = ({
@@ -17,6 +18,7 @@ const ThemedButton = ({
   disabled,
   iconPosition = "left",
   size = "normal",
+  type = "primary",
   style,
   ...props
 }: ThemedButtonProps) => {
@@ -24,10 +26,28 @@ const ThemedButton = ({
   const textColor = useThemeColor({}, "buttonPrimaryText");
   const disabledBackground = useThemeColor({}, "buttonDisabledBackground");
   const disabledText = useThemeColor({}, "buttonDisabledText");
+  const successBackground = useThemeColor({}, "success");
+  const dangerBackground = useThemeColor({}, "error");
 
   const getBackgroundColor = (pressed: boolean) => {
     if (disabled) return disabledBackground;
-    return pressed ? `${background}CC` : background;
+
+    let color;
+    switch (type) {
+      case "primary":
+        color = background;
+        break;
+      case "success": {
+        color = successBackground;
+        break;
+      }
+      case "danger": {
+        color = dangerBackground;
+        break;
+      }
+    }
+
+    return pressed ? `${color}CC` : color;
   };
 
   const getSizeStyle = () => {

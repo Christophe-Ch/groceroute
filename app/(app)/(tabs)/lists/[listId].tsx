@@ -1,8 +1,10 @@
 import EditList from "@/components/list/edit-list";
+import PlayList from "@/components/list/play-list";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useGroceryListStore } from "@/store/grocery-list.store";
 import { useLocalSearchParams } from "expo-router";
+import { useState } from "react";
 
 type ListScreenParams = {
   listId: string;
@@ -11,6 +13,7 @@ type ListScreenParams = {
 const ListScreen = () => {
   const { listId } = useLocalSearchParams<ListScreenParams>();
   const { lists } = useGroceryListStore();
+  const [mode, setMode] = useState<"edit" | "play">("edit");
 
   const list = lists[listId];
 
@@ -26,7 +29,11 @@ const ListScreen = () => {
 
   return (
     <ThemedView style={{ flex: 1, paddingBlock: 20 }}>
-      <EditList list={list} />
+      {mode === "edit" ? (
+        <EditList list={list} onModeChange={() => setMode("play")} />
+      ) : (
+        <PlayList list={list} onModeChange={() => setMode("edit")} />
+      )}
     </ThemedView>
   );
 };

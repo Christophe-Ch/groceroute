@@ -1,6 +1,5 @@
 import { GroceryList } from "@/models/grocery/grocery-list";
 import { useGroceryListStore } from "@/store/grocery-list.store";
-import { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import ItemRow from "../item/item-row";
@@ -8,29 +7,20 @@ import ThemedButton from "../themed-button";
 import ThemedInput from "../themed-input";
 import { ThemedText } from "../themed-text";
 
-type EditListProps = {
+type PlayListProps = {
   list: GroceryList;
   onModeChange: () => void;
 };
 
-const EditList = ({ list, onModeChange }: EditListProps) => {
-  const { updateList, reorderItems } = useGroceryListStore();
-
-  const [listName, setListName] = useState(list.name);
-  const onUpdateTitle = () => {
-    const trimmed = listName.trim();
-    if (trimmed && trimmed !== list.name) {
-      updateList(list.id, { name: trimmed });
-    }
-  };
+const PlayList = ({ list, onModeChange }: PlayListProps) => {
+  const { reorderItems } = useGroceryListStore();
 
   return (
     <>
       <ThemedInput
         style={styles.title}
-        value={listName}
-        onChangeText={setListName}
-        onBlur={onUpdateTitle}
+        value={list.name}
+        editable={false}
         maxLength={20}
       />
 
@@ -46,22 +36,30 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
             <ItemRow listId={list.id} item={item} />
           </TouchableOpacity>
         )}
-        ListFooterComponent={<ItemRow listId={list.id} />}
         keyboardShouldPersistTaps="handled"
         containerStyle={{ flex: 1 }}
       />
 
-      <ThemedButton
-        iconName="play"
-        text="Let's shop"
-        style={{ marginInline: 20, marginTop: 20, alignSelf: "stretch" }}
-        onPress={onModeChange}
-      />
+      <View style={styles.actions}>
+        <ThemedButton
+          iconName="stop"
+          style={{ height: "100%" }}
+          onPress={onModeChange}
+          type="danger"
+        />
+        <ThemedButton
+          iconName="checkmark-done"
+          text="Finish"
+          style={{ flex: 1 }}
+          onPress={onModeChange}
+          type="success"
+        />
+      </View>
     </>
   );
 };
 
-export default EditList;
+export default PlayList;
 
 const styles = StyleSheet.create({
   title: {
@@ -78,5 +76,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  actions: {
+    flexDirection: "row",
+    paddingInline: 20,
+    paddingTop: 20,
+    gap: 12,
   },
 });
