@@ -16,6 +16,7 @@ type GroceryListStore = {
     updatedItem: Partial<GroceryItem>,
   ) => Promise<void>;
   deleteItem: (listId: string, itemId: string) => Promise<void>;
+  addPastItem: (listId: string, item: GroceryItem) => Promise<void>;
   reorderItems: (listId: string, newItems: GroceryItem[]) => Promise<void>;
   updateList: (
     id: string,
@@ -93,6 +94,16 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
     set(
       produce((s: GroceryListStore) => {
         s.lists[listId].items.push(newItem);
+      }),
+    );
+
+    await storageService.persistList(get().lists[listId]);
+  },
+
+  addPastItem: async (listId: string, item: GroceryItem) => {
+    set(
+      produce((s: GroceryListStore) => {
+        s.lists[listId].items.push({ ...item, checked: false });
       }),
     );
 

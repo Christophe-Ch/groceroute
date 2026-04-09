@@ -44,7 +44,7 @@ export default PlayItemRow;
 
 const styles = StyleSheet.create({
   row: {
-    paddingBlock: 10,
+    paddingBlock: 5,
     paddingInline: 20,
     flexDirection: "row",
     alignItems: "center",

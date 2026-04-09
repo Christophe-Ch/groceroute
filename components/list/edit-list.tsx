@@ -50,6 +50,9 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
         keyboardVerticalOffset={insets.top + 16}
         style={{ flex: 1 }}
       >
+        <View style={{ zIndex: 1 }}>
+          <EditItemRow listId={list.id} pastItems={list.pastItems} />
+        </View>
         <DraggableFlatList
           data={list.items}
           onDragEnd={(data) => reorderItems(list.id, data.data)}
@@ -59,7 +62,6 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
               <EditItemRow listId={list.id} item={item} />
             </TouchableOpacity>
           )}
-          ListFooterComponent={<EditItemRow listId={list.id} />}
           keyboardShouldPersistTaps="handled"
           containerStyle={{ flex: 1 }}
         />
@@ -89,6 +91,7 @@ const styles = StyleSheet.create({
   },
   listHeader: {
     paddingInline: 20,
+    paddingBottom: 10,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",

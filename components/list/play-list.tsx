@@ -142,6 +142,7 @@ const styles = StyleSheet.create({
   },
   listHeader: {
     paddingInline: 20,
+    paddingBottom: 10,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
