@@ -42,6 +42,7 @@ const ItemRow = ({ listId, item }: ItemRowProps) => {
         onChangeText={setName}
         onBlur={onSubmit}
         onSubmitEditing={onSubmit}
+        submitBehavior={item ? "blurAndSubmit" : "submit"}
         placeholder={item ? undefined : "Add item..."}
         style={{
           marginLeft: 10,
