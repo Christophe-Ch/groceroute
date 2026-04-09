@@ -1,4 +1,6 @@
+import { computeDistances } from "@/domain/grocery/distance";
 import { GroceryList } from "@/models/grocery/grocery-list";
+import { useGroceryListStore } from "@/store/grocery-list.store";
 import { produce } from "immer";
 import { useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
@@ -17,12 +19,24 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
   const [list, setList] = useState(baseList);
   const items = [...list.items].sort((a, b) => +a.checked - +b.checked);
 
+  const [checkOrder, setCheckOrder] = useState<Set<string>>(new Set());
+  const { updateList } = useGroceryListStore();
+
   const onItemCheckedChange = (itemId: string, checked: boolean) => {
     setList((list) =>
       produce(list, (draft) => {
         draft.items.find((i) => i.id === itemId)!.checked = checked;
       }),
     );
+
+    setCheckOrder((order) => {
+      if (checked) {
+        order.add(itemId);
+      } else {
+        order.delete(itemId);
+      }
+      return order;
+    });
   };
 
   const onStop = () => {
@@ -52,6 +66,15 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
           text: "Finish",
           style: "destructive",
           onPress: () => {
+            const distances = computeDistances(
+              Array.from(checkOrder),
+              list.distances,
+            );
+            updateList(list.id, {
+              items: [],
+              pastItems: [...list.pastItems, ...list.items],
+              distances,
+            });
             onModeChange();
           },
         },

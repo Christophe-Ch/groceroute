@@ -43,6 +43,8 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
       createdAt: new Date(),
       updatedAt: new Date(),
       deletedAt: null,
+      pastItems: [],
+      distances: [],
     };
 
     set(

@@ -1,4 +1,5 @@
 import { GroceryItem } from "./grocery-item";
+import { ItemDistance } from "./item-distance";
 
 export type GroceryList = {
   id: string;
@@ -7,5 +8,6 @@ export type GroceryList = {
   updatedAt: Date;
   deletedAt: Date | null;
   items: GroceryItem[];
-  pastItems?: GroceryItem[];
+  pastItems: GroceryItem[];
+  distances: ItemDistance[];
 };
