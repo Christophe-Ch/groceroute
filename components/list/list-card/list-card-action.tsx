@@ -1,0 +1,54 @@
+import { ThemedIcon } from "@/components/themed-icon";
+import { useThemeColor } from "@/hooks/ui/use-theme-color";
+import { useGroceryListStore } from "@/store/grocery-list.store";
+import { Alert, Pressable, StyleSheet } from "react-native";
+import Reanimated, {
+  SharedValue,
+  useAnimatedStyle,
+} from "react-native-reanimated";
+
+type DeleteActionProps = {
+  drag: SharedValue<number>;
+  listId: string;
+};
+
+const DeleteAction = ({ drag, listId }: DeleteActionProps) => {
+  const alertColor = useThemeColor({}, "error");
+  const styleAnimation = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: drag.value + 80 }],
+    };
+  });
+
+  const { deleteList } = useGroceryListStore();
+
+  const onDelete = () => {
+    Alert.alert("Delete list", "Are you sure you want to delete this list?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => deleteList(listId),
+      },
+    ]);
+  };
+
+  return (
+    <Reanimated.View style={[styleAnimation, { backgroundColor: alertColor }]}>
+      <Pressable style={styles.container} onPress={onDelete}>
+        <ThemedIcon name={"trash-bin-outline"} />
+      </Pressable>
+    </Reanimated.View>
+  );
+};
+
+export default DeleteAction;
+
+const styles = StyleSheet.create({
+  container: {
+    width: 80,
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

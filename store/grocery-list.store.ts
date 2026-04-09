@@ -53,6 +53,8 @@ export const useGroceryListStore = create<GroceryListStore>((set) => ({
         delete s.lists[id];
       }),
     );
+
+    await storageService.deleteList(id);
   },
 
   addItem: async (listId: string, name: string) => {
