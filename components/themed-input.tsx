@@ -26,7 +26,17 @@ type InputProps = TextInputProps & {
   label?: string;
 };
 
-const ThemedInput = ({ control, name, error, rules, ...props }: InputProps) => {
+const ThemedInput = ({
+  control,
+  name,
+  error,
+  rules,
+  value,
+  onChangeText,
+  onFocus,
+  onBlur,
+  ...props
+}: InputProps) => {
   const [focused, setFocused] = useState(false);
 
   const textColor = useThemeColor({}, "inputText");
@@ -34,7 +44,7 @@ const ThemedInput = ({ control, name, error, rules, ...props }: InputProps) => {
   const placeholderColor = useThemeColor({}, "inputPlaceholder");
   const borderColor = useThemeColor(
     {},
-    error ? "inputBorderError" : focused ? "inputBorderFocused" : "inputBorder"
+    error ? "inputBorderError" : focused ? "inputBorderFocused" : "inputBorder",
   );
 
   const inputStyle = [
@@ -46,16 +56,24 @@ const ThemedInput = ({ control, name, error, rules, ...props }: InputProps) => {
     },
   ];
 
-  const renderInput = (value?: string, onChange?: any, onBlur?: any) => (
+  const renderInput = (
+    value?: string,
+    onChangeText?: any,
+    onBlur?: any,
+    onFocus?: any,
+  ) => (
     <TextInput
       {...props}
       value={value}
-      onChangeText={onChange}
+      onChangeText={onChangeText}
       onBlur={(e) => {
         setFocused(false);
         onBlur?.(e);
       }}
-      onFocus={() => setFocused(true)}
+      onFocus={(e) => {
+        setFocused(true);
+        onFocus?.(e);
+      }}
       placeholderTextColor={placeholderColor}
       style={[inputStyle, props.style]}
     />
@@ -70,7 +88,7 @@ const ThemedInput = ({ control, name, error, rules, ...props }: InputProps) => {
           name={name}
           rules={rules}
           render={({ field: { onChange, onBlur, value } }) =>
-            renderInput(value, onChange, onBlur)
+            renderInput(value, onChange, onBlur, onFocus)
           }
         />
         {error && <Text style={styles.errorMessage}>{error.message}</Text>}
@@ -78,7 +96,7 @@ const ThemedInput = ({ control, name, error, rules, ...props }: InputProps) => {
     );
   }
 
-  return renderInput();
+  return renderInput(value, onChangeText, onBlur, onFocus);
 };
 
 export default ThemedInput;

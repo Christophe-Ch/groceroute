@@ -10,11 +10,16 @@ type GroceryListStore = {
   createList: (name: string) => Promise<GroceryList>;
   deleteList: (id: string) => Promise<void>;
   addItem: (listId: string, name: string) => Promise<void>;
-  updateItem: (listId: string, updatedItem: GroceryItem) => Promise<void>;
+  updateItem: (
+    listId: string,
+    itemId: string,
+    updatedItem: Partial<GroceryItem>,
+  ) => Promise<void>;
   deleteItem: (listId: string, itemId: string) => Promise<void>;
+  reorderItems: (listId: string, newItems: GroceryItem[]) => Promise<void>;
 };
 
-export const useGroceryListStore = create<GroceryListStore>((set) => ({
+export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
   lists: {},
   hydrated: false,
 
@@ -72,18 +77,26 @@ export const useGroceryListStore = create<GroceryListStore>((set) => ({
         s.lists[listId].items.push(newItem);
       }),
     );
+
+    await storageService.persistList(get().lists[listId]);
   },
 
-  updateItem: async (listId: string, updatedItem: GroceryItem) => {
+  updateItem: async (
+    listId: string,
+    itemId: string,
+    updatedItem: Partial<GroceryItem>,
+  ) => {
     set(
       produce((s: GroceryListStore) => {
         const items = s.lists[listId].items;
-        const index = items.findIndex((item) => item.id === updatedItem.id);
+        const index = items.findIndex((item) => item.id === itemId);
         if (index !== -1) {
-          items[index] = updatedItem;
+          items[index] = { ...items[index], ...updatedItem };
         }
       }),
     );
+
+    await storageService.persistList(get().lists[listId]);
   },
 
   deleteItem: async (listId: string, itemId: string) => {
@@ -94,5 +107,17 @@ export const useGroceryListStore = create<GroceryListStore>((set) => ({
         );
       }),
     );
+
+    await storageService.persistList(get().lists[listId]);
+  },
+
+  reorderItems: async (listId: string, newItems: GroceryItem[]) => {
+    set(
+      produce((state) => {
+        state.lists[listId].items = newItems;
+      }),
+    );
+
+    await storageService.persistList(get().lists[listId]);
   },
 }));
