@@ -72,7 +72,13 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
             );
             updateList(list.id, {
               items: [],
-              pastItems: [...list.pastItems, ...list.items],
+              pastItems: [
+                ...list.pastItems,
+                ...list.items.filter(
+                  (item) =>
+                    !list.pastItems.some((past) => past.name === item.name),
+                ),
+              ],
               distances,
             });
             onModeChange();

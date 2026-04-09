@@ -7,7 +7,7 @@ export const computeDistances = (
   const distances: Record<string, ItemDistance> = existingDistances.reduce(
     (distances, distance) => {
       const key = buildCanonicalKey(distance.from, distance.to);
-      distances[key] = distance;
+      distances[key] = { ...distance };
       return distances;
     },
     {} as Record<string, ItemDistance>,

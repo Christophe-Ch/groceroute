@@ -93,7 +93,7 @@ const EditItemRow = ({
           </Pressable>
         )}
       </View>
-      {!item && autocomplete?.length && (
+      {!item && autocomplete && autocomplete.length > 0 && (
         <View
           style={[
             styles.autocomplete,
