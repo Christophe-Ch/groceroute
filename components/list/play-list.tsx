@@ -1,7 +1,7 @@
 import { GroceryList } from "@/models/grocery/grocery-list";
 import { produce } from "immer";
 import { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import PlayItemRow from "../item/play-item-row";
 import ThemedButton from "../themed-button";
@@ -22,6 +22,40 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
       produce(list, (draft) => {
         draft.items.find((i) => i.id === itemId)!.checked = checked;
       }),
+    );
+  };
+
+  const onStop = () => {
+    Alert.alert(
+      "Stop shopping",
+      "Are you sure you want to stop shopping? This will uncheck all items and move the list back to the main screen.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Stop",
+          style: "destructive",
+          onPress: () => {
+            onModeChange();
+          },
+        },
+      ],
+    );
+  };
+
+  const onFinish = () => {
+    Alert.alert(
+      "Finish shopping",
+      "Are you sure you want to finish shopping? This will clear the list and move it back to the main screen.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Finish",
+          style: "destructive",
+          onPress: () => {
+            onModeChange();
+          },
+        },
+      ],
     );
   };
 
@@ -56,14 +90,14 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
         <ThemedButton
           iconName="stop"
           style={{ height: "100%" }}
-          onPress={onModeChange}
+          onPress={onStop}
           type="danger"
         />
         <ThemedButton
           iconName="checkmark-done"
           text="Finish"
           style={{ flex: 1 }}
-          onPress={onModeChange}
+          onPress={onFinish}
           type="success"
         />
       </View>

@@ -7,4 +7,5 @@ export type GroceryList = {
   updatedAt: Date;
   deletedAt: Date | null;
   items: GroceryItem[];
+  pastItems?: GroceryItem[];
 };

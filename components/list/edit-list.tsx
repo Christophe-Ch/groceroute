@@ -1,8 +1,14 @@
 import { GroceryList } from "@/models/grocery/grocery-list";
 import { useGroceryListStore } from "@/store/grocery-list.store";
 import { useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import EditItemRow from "../item/edit-item-row";
 import ThemedButton from "../themed-button";
 import ThemedInput from "../themed-input";
@@ -15,6 +21,7 @@ type EditListProps = {
 
 const EditList = ({ list, onModeChange }: EditListProps) => {
   const { updateList, reorderItems } = useGroceryListStore();
+  const insets = useSafeAreaInsets();
 
   const [listName, setListName] = useState(list.name);
   const onUpdateTitle = () => {
@@ -37,19 +44,26 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
       <View style={styles.listHeader}>
         <ThemedText type="muted">{list.items.length} items</ThemedText>
       </View>
-      <DraggableFlatList
-        data={list.items}
-        onDragEnd={(data) => reorderItems(list.id, data.data)}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item, drag }) => (
-          <TouchableOpacity onLongPress={drag}>
-            <EditItemRow listId={list.id} item={item} />
-          </TouchableOpacity>
-        )}
-        ListFooterComponent={<EditItemRow listId={list.id} />}
-        keyboardShouldPersistTaps="handled"
-        containerStyle={{ flex: 1 }}
-      />
+
+      <KeyboardAvoidingView
+        behavior="padding"
+        keyboardVerticalOffset={insets.top + 16}
+        style={{ flex: 1 }}
+      >
+        <DraggableFlatList
+          data={list.items}
+          onDragEnd={(data) => reorderItems(list.id, data.data)}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item, drag }) => (
+            <TouchableOpacity onLongPress={drag}>
+              <EditItemRow listId={list.id} item={item} />
+            </TouchableOpacity>
+          )}
+          ListFooterComponent={<EditItemRow listId={list.id} />}
+          keyboardShouldPersistTaps="handled"
+          containerStyle={{ flex: 1 }}
+        />
+      </KeyboardAvoidingView>
 
       <ThemedButton
         iconName="play"
