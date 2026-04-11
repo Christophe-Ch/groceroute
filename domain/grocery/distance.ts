@@ -1,3 +1,4 @@
+import { GroceryItem } from "@/models/grocery";
 import { ItemDistance } from "@/models/grocery/item-distance";
 
 export const computeDistances = (
@@ -31,6 +32,49 @@ export const computeDistances = (
   }
 
   return Object.values(distances);
+};
+
+export const orderItems = (
+  items: GroceryItem[],
+  distances: ItemDistance[],
+): GroceryItem[] => {
+  if (items.length === 0 || distances.length === 0) {
+    return items;
+  }
+
+  const itemsMap = Object.fromEntries(items.map((item) => [item.id, item]));
+  const sorted = [items[0]];
+  delete itemsMap[items[0].id];
+
+  while (sorted.length < items.length) {
+    const lastItemId = sorted[sorted.length - 1].id;
+    const matchingDistance = distances.filter(
+      ({ from, to }) =>
+        (from === lastItemId && itemsMap[to]) ||
+        (to === lastItemId && itemsMap[from]),
+    );
+
+    const closestMatchingDistance =
+      matchingDistance.length > 0
+        ? matchingDistance.reduce((closest, distance) =>
+            closest.count > distance.count ? closest : distance,
+          )
+        : null;
+
+    let nextItem: GroceryItem;
+    if (closestMatchingDistance) {
+      nextItem =
+        closestMatchingDistance.from === lastItemId
+          ? itemsMap[closestMatchingDistance.to]
+          : itemsMap[closestMatchingDistance.from];
+    } else {
+      nextItem = Object.values(itemsMap)[0];
+    }
+    sorted.push(nextItem);
+    delete itemsMap[nextItem.id];
+  }
+
+  return sorted;
 };
 
 const buildCanonicalKey = (firstId: string, secondId: string) =>
