@@ -65,6 +65,7 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
           )}
           keyboardShouldPersistTaps="handled"
           containerStyle={{ flex: 1 }}
+          activationDistance={10}
         />
       </KeyboardAvoidingView>
 

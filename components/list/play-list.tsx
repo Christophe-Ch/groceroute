@@ -5,7 +5,7 @@ import { useGroceryListStore } from "@/store/grocery-list.store";
 import { produce } from "immer";
 import { useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
+import { FlatList } from "react-native";
 import PlayItemRow from "../item/play-item-row";
 import ThemedButton from "../themed-button";
 import ThemedInput from "../themed-input";
