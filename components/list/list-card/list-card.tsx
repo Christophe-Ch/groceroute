@@ -13,6 +13,7 @@ type ListCardProps = {
 
 const ListCard = ({ list }: ListCardProps) => {
   const background = useThemeColor({}, "surface");
+  const primary = useThemeColor({}, "primary");
   const router = useRouter();
 
   return (
@@ -30,8 +31,15 @@ const ListCard = ({ list }: ListCardProps) => {
           containerStyle={[styles.swipeable, { backgroundColor: background }]}
         >
           <View style={styles.container}>
-            <ThemedText>{list.name}</ThemedText>
-            <ThemedText type="muted">{list.items.length} items</ThemedText>
+            <View style={[styles.accentBar, { backgroundColor: primary }]} />
+            <View style={styles.content}>
+              <ThemedText>{list.name}</ThemedText>
+              <View style={[styles.badge, { backgroundColor: primary + "26" }]}>
+                <ThemedText style={[styles.badgeText, { color: primary }]}>
+                  {list.items.length} items
+                </ThemedText>
+              </View>
+            </View>
           </View>
         </Swipeable>
       </GestureHandlerRootView>
@@ -43,14 +51,31 @@ export default ListCard;
 
 const styles = StyleSheet.create({
   swipeable: {
-    padding: 20,
     borderRadius: 8,
-    backgroundColor: "red",
+    overflow: "hidden",
     marginBottom: 10,
   },
   container: {
     flexDirection: "row",
+  },
+  accentBar: {
+    width: 4,
+  },
+  content: {
+    flex: 1,
+    flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 22,
+  },
+  badge: {
+    borderRadius: 12,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: "500",
   },
 });
