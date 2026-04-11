@@ -1,20 +1,22 @@
-Run all six audit skills in parallel using subagents, then produce a consolidated summary report.
+Run all seven audit skills in parallel using subagents, then produce a consolidated summary report.
 
 ## Steps
 
-1. Launch all six audits simultaneously using the Agent tool with `subagent_type: "general-purpose"`. Each agent should be given the full contents of the corresponding `.claude/commands/audit-*.md` file as its prompt. Run these six agents in a single message (all in parallel):
+1. Launch all seven audits simultaneously using the Agent tool with `subagent_type: "general-purpose"`. Each agent should be given the full contents of the corresponding `.claude/commands/audit-*.md` file as its prompt. Run these seven agents in a single message (all in parallel):
    - audit-a11y — prompt from `.claude/commands/audit-a11y.md`
    - audit-arch — prompt from `.claude/commands/audit-arch.md`
+   - audit-clean — prompt from `.claude/commands/audit-clean.md`
    - audit-deps — prompt from `.claude/commands/audit-deps.md`
    - audit-perf — prompt from `.claude/commands/audit-perf.md`
    - audit-security — prompt from `.claude/commands/audit-security.md`
    - audit-ts — prompt from `.claude/commands/audit-ts.md`
 
-2. Wait for all six agents to complete.
+2. Wait for all seven agents to complete.
 
-3. Read all six output reports from `.claude/audits/`:
+3. Read all seven output reports from `.claude/audits/`:
    - `.claude/audits/audit-a11y.md`
    - `.claude/audits/audit-arch.md`
+   - `.claude/audits/audit-clean.md`
    - `.claude/audits/audit-deps.md`
    - `.claude/audits/audit-perf.md`
    - `.claude/audits/audit-security.md`
@@ -28,14 +30,15 @@ Run all six audit skills in parallel using subagents, then produce a consolidate
 ## Overall Health Score
 <A–F grade per audit domain, with one sentence rationale each>
 
-| Domain       | Grade | Top Finding |
-|--------------|-------|-------------|
-| Accessibility | ...  | ...         |
-| Architecture  | ...  | ...         |
-| Dependencies  | ...  | ...         |
-| Performance   | ...  | ...         |
-| Security      | ...  | ...         |
-| TypeScript    | ...  | ...         |
+| Domain        | Grade | Top Finding |
+|---------------|-------|-------------|
+| Accessibility | ...   | ...         |
+| Architecture  | ...   | ...         |
+| Cleanliness   | ...   | ...         |
+| Dependencies  | ...   | ...         |
+| Performance   | ...   | ...         |
+| Security      | ...   | ...         |
+| TypeScript    | ...   | ...         |
 
 ## Cross-Cutting Themes
 <2-4 patterns that appear across multiple audits>
