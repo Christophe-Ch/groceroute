@@ -1,6 +1,6 @@
 import { useGroceryListStore } from "@/store/grocery-list.store";
 import { useForm } from "react-hook-form";
-import { KeyboardAvoidingView, StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ThemedButton from "../themed-button";
 import ThemedInput from "../themed-input";
@@ -30,32 +30,25 @@ const CreateList = ({ onCreate }: CreateListProps) => {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <KeyboardAvoidingView
-        style={styles.formContainer}
-        behavior="padding"
-        keyboardVerticalOffset={insets.top + 16}
-      >
-        <View>
-          <ThemedText type="title">Create a list</ThemedText>
-          <ThemedInput
-            placeholder="List name"
-            style={{ marginTop: 20 }}
-            name="listName"
-            control={control}
-            error={errors.listName}
-            rules={{
-              required: { value: true, message: "List name cannot be empty." },
-            }}
-          />
-        </View>
-        <ThemedButton
-          iconName={"add"}
-          text="Create"
-          style={{ alignSelf: "stretch" }}
-          onPress={handleSubmit(onSubmit)}
-        />
-      </KeyboardAvoidingView>
+    <ThemedView style={[styles.container, { paddingBottom: insets.bottom + 16 }]}>
+      <ThemedView style={styles.backgroundBleed} />
+      <ThemedText type="title">Create a list</ThemedText>
+      <ThemedInput
+        placeholder="List name"
+        style={{ marginTop: 16 }}
+        name="listName"
+        control={control}
+        error={errors.listName}
+        rules={{
+          required: { value: true, message: "List name cannot be empty." },
+        }}
+      />
+      <ThemedButton
+        iconName={"add"}
+        text="Create"
+        style={{ alignSelf: "stretch", marginTop: 16 }}
+        onPress={handleSubmit(onSubmit)}
+      />
     </ThemedView>
   );
 };
@@ -64,12 +57,16 @@ export default CreateList;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     paddingHorizontal: 20,
-    paddingVertical: 30,
+    paddingTop: 24,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
-  formContainer: {
-    flex: 1,
-    justifyContent: "space-between",
+  backgroundBleed: {
+    position: "absolute",
+    bottom: -500,
+    left: 0,
+    right: 0,
+    height: 500,
   },
 });
