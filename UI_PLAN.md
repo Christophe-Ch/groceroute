@@ -4,7 +4,7 @@ Analysis based on screenshots taken April 2026. Six targeted improvements — no
 
 ---
 
-## 1. Color Palette — Cold & Identity-less
+## 1. ~~Color Palette — Cold & Identity-less~~ ✓
 
 **Problem:** The dark theme uses cold greys (`#151718`, `#1E2022`) with white as the only "primary" color. The FAB and all primary buttons are stark white — harsh and generic. No brand identity.
 
@@ -14,7 +14,7 @@ Analysis based on screenshots taken April 2026. Six targeted improvements — no
 
 ---
 
-## 2. Typography — No Character
+## 2. ~~Typography — No Character~~ ✓
 
 **Problem:** All text uses the default system font. Titles feel the same weight as body text visually. No personality.
 
@@ -67,7 +67,7 @@ Analysis based on screenshots taken April 2026. Six targeted improvements — no
 
 ---
 
-## 7. Edit Mode Quantity Box — Visually Intrusive
+## 7. ~~Edit Mode Quantity Box — Visually Intrusive~~ ✓
 
 **Problem:** The quantity input renders as a visible bordered rectangle next to every item, even when empty (screenshot 3 shows hollow boxes beside "Bread"). Draws the eye unnecessarily.
 

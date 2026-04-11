@@ -6,7 +6,7 @@
 import { Platform } from "react-native";
 
 const tintColorLight = "#0a7ea4";
-const tintColorDark = "#fff";
+const tintColorDark = "#52B788";
 
 export const Colors = {
   light: {
@@ -59,42 +59,42 @@ export const Colors = {
     // Text
     text: "#ECEDEE",
     textMuted: "#9BA1A6",
-    textInverse: "#000000",
+    textInverse: "#141210",
 
     // Backgrounds / surfaces
-    background: "#151718",
-    surface: "#1E2022",
-    surfaceElevated: "#242628",
+    background: "#141210",
+    surface: "#1C1A18",
+    surfaceElevated: "#242220",
 
     // Brand / primary
-    primary: "#FFFFFF",
-    primaryHover: "#E5E7EB",
-    primaryPressed: "#D1D5DB",
+    primary: "#52B788",
+    primaryHover: "#3DA373",
+    primaryPressed: "#2D8F60",
 
     // Borders / dividers
-    border: "#30363D",
-    borderFocused: "#FFFFFF",
+    border: "#2C2A28",
+    borderFocused: "#52B788",
 
     // Inputs
-    inputBackground: "#1E2022",
+    inputBackground: "#1C1A18",
     inputText: "#ECEDEE",
     inputPlaceholder: "#9BA1A6",
-    inputBorder: "#30363D",
-    inputBorderFocused: "#FFFFFF",
+    inputBorder: "#2C2A28",
+    inputBorderFocused: "#52B788",
     inputBorderError: "#F85149",
 
     // Buttons
-    buttonPrimaryBackground: "#FFFFFF",
-    buttonPrimaryText: "#000000",
-    buttonSecondaryBackground: "#30363D",
+    buttonPrimaryBackground: "#52B788",
+    buttonPrimaryText: "#FFFFFF",
+    buttonSecondaryBackground: "#2C2A28",
     buttonSecondaryText: "#ECEDEE",
-    buttonDisabledBackground: "#2A2E32",
+    buttonDisabledBackground: "#262422",
     buttonDisabledText: "#6E7681",
 
     // Feedback
     error: "#F85149",
     warning: "#D29922",
-    success: "#3FB950",
+    success: "#52B788",
     info: "#58A6FF",
 
     // Icons
