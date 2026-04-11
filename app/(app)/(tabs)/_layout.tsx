@@ -1,11 +1,15 @@
+import { Colors } from "@/constants/theme";
 import { useGroceryListStore } from "@/store/grocery-list.store";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { useEffect } from "react";
+import { useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const AppLayout = () => {
   const { hydrate, hydrated } = useGroceryListStore();
+  const colorScheme = useColorScheme() ?? "dark";
+  const theme = Colors[colorScheme];
 
   useEffect(() => {
     if (!hydrated) {
@@ -18,6 +22,13 @@ const AppLayout = () => {
       <Tabs
         screenOptions={{
           headerShown: false,
+          tabBarActiveTintColor: theme.primary,
+          tabBarInactiveTintColor: theme.icon,
+          tabBarStyle: {
+            backgroundColor: theme.background,
+            borderTopColor: theme.border,
+            borderTopWidth: 1,
+          },
         }}
       >
         <Tabs.Screen
