@@ -19,7 +19,9 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
   const [list, setList] = useState(baseList);
   const items = [...list.items].sort((a, b) => +a.checked - +b.checked);
 
-  const [checkOrder, setCheckOrder] = useState<Set<string>>(new Set());
+  const [checkOrder, setCheckOrder] = useState<Set<string>>(
+    new Set(["_start"]),
+  );
   const { updateList } = useGroceryListStore();
 
   const onItemCheckedChange = (itemId: string, checked: boolean) => {

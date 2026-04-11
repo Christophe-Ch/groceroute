@@ -43,11 +43,10 @@ export const orderItems = (
   }
 
   const itemsMap = Object.fromEntries(items.map((item) => [item.id, item]));
-  const sorted = [items[0]];
-  delete itemsMap[items[0].id];
+  const sorted = [];
+  let lastItemId = "_start";
 
   while (sorted.length < items.length) {
-    const lastItemId = sorted[sorted.length - 1].id;
     const matchingDistance = distances.filter(
       ({ from, to }) =>
         (from === lastItemId && itemsMap[to]) ||
@@ -72,6 +71,7 @@ export const orderItems = (
     }
     sorted.push(nextItem);
     delete itemsMap[nextItem.id];
+    lastItemId = nextItem.id;
   }
 
   return sorted;
