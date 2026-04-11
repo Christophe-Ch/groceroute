@@ -51,7 +51,7 @@ const Index = () => {
       )}
 
       <ThemedButton
-        iconName={"create-outline"}
+        iconName={"add"}
         style={{
           position: "absolute",
           bottom: 20,

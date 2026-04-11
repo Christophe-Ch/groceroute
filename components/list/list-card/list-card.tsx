@@ -31,7 +31,6 @@ const ListCard = ({ list }: ListCardProps) => {
           containerStyle={[styles.swipeable, { backgroundColor: background }]}
         >
           <View style={styles.container}>
-            <View style={[styles.accentBar, { backgroundColor: primary }]} />
             <View style={styles.content}>
               <ThemedText>{list.name}</ThemedText>
               <View style={[styles.badge, { backgroundColor: primary + "26" }]}>
@@ -57,9 +56,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flexDirection: "row",
-  },
-  accentBar: {
-    width: 4,
   },
   content: {
     flex: 1,
