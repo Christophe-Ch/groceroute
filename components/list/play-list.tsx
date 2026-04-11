@@ -1,5 +1,6 @@
 import { computeDistances } from "@/domain/grocery/distance";
 import { GroceryList } from "@/models/grocery/grocery-list";
+import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { useGroceryListStore } from "@/store/grocery-list.store";
 import { produce } from "immer";
 import { useState } from "react";
@@ -18,6 +19,10 @@ type PlayListProps = {
 const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
   const [list, setList] = useState(baseList);
   const items = [...list.items].sort((a, b) => +a.checked - +b.checked);
+  const primary = useThemeColor({}, "primary");
+  const trackColor = useThemeColor({}, "surfaceElevated");
+  const checkedCount = items.filter((i) => i.checked).length;
+  const totalCount = items.length;
 
   const [checkOrder, setCheckOrder] = useState<Set<string>>(
     new Set(["_start"]),
@@ -107,8 +112,14 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
 
       <View style={styles.listHeader}>
         <ThemedText type="muted">
-          {items.filter((i) => !i.checked).length} items left
+          {totalCount - checkedCount} items left
         </ThemedText>
+        {totalCount > 0 && (
+          <View style={[styles.progressTrack, { backgroundColor: trackColor }]}>
+            <View style={{ flex: checkedCount, backgroundColor: primary }} />
+            <View style={{ flex: Math.max(0, totalCount - checkedCount) }} />
+          </View>
+        )}
       </View>
       <FlatList
         data={items}
@@ -157,9 +168,13 @@ const styles = StyleSheet.create({
   listHeader: {
     paddingInline: 20,
     paddingBottom: 10,
+    gap: 8,
+  },
+  progressTrack: {
+    height: 4,
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    borderRadius: 2,
+    overflow: "hidden",
   },
   actions: {
     flexDirection: "row",
