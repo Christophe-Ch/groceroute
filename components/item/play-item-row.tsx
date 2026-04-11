@@ -26,15 +26,19 @@ const PlayItemRow = ({ item, onItemCheckedChange }: PlayItemRowProps) => {
       <ThemedInput
         editable={false}
         style={[
-          {
-            flex: 1,
-            backgroundColor: "transparent",
-            borderWidth: 0,
-            padding: 5,
-          },
+          styles.input,
           checked && { textDecorationLine: "line-through", color: muted },
         ]}
         value={item.name}
+      />
+      <ThemedInput
+        editable={false}
+        style={[
+          styles.quantityInput,
+          { color: muted },
+          checked && { textDecorationLine: "line-through" },
+        ]}
+        value={item.quantity}
       />
     </View>
   );
@@ -49,5 +53,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+  },
+  input: {
+    flex: 1,
+    backgroundColor: "transparent",
+    borderWidth: 0,
+    padding: 5,
+  },
+  quantityInput: {
+    backgroundColor: "transparent",
+    borderWidth: 0,
+    padding: 5,
+    textAlign: "center",
   },
 });

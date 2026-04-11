@@ -25,8 +25,9 @@ const EditItemRow = ({
   const { addItem, addPastItem, updateItem, deleteItem } =
     useGroceryListStore();
   const [focused, setFocused] = useState(false);
-  const [autocomplete, setAutocomplete] = useState<GroceryItem[] | null>(null);
   const [name, setName] = useState(item?.name ?? "");
+  const [quantity, setQuantity] = useState(item?.quantity ?? "");
+  const [autocomplete, setAutocomplete] = useState<GroceryItem[] | null>(null);
   const autocompleteBackground = useThemeColor({}, "surface");
 
   const onSubmit = () => {
@@ -64,6 +65,11 @@ const EditItemRow = ({
     }
   };
 
+  const onSetQuantity = (quantity: string, itemId: string) => {
+    setQuantity(quantity);
+    updateItem(listId, itemId, { quantity });
+  };
+
   return (
     <View>
       <View style={styles.row}>
@@ -78,17 +84,23 @@ const EditItemRow = ({
           onSubmitEditing={onSubmit}
           submitBehavior={item ? "blurAndSubmit" : "submit"}
           placeholder={item ? undefined : "Add item..."}
-          style={{
-            marginLeft: 10,
-            flex: 1,
-            backgroundColor: "transparent",
-            borderWidth: 0,
-            padding: 5,
-          }}
+          style={styles.input}
           value={name}
         />
+        {item && (
+          <ThemedInput
+            onChangeText={(text) => onSetQuantity(text, item.id)}
+            value={quantity}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            style={styles.quantityInput}
+          />
+        )}
         {focused && item && (
-          <Pressable onPressIn={() => deleteItem(listId, item.id)}>
+          <Pressable
+            onPressIn={() => deleteItem(listId, item.id)}
+            style={{ opacity: focused ? 1 : 0, marginLeft: 20 }}
+          >
             <ThemedIcon name={"close"} size={20} color={muted} />
           </Pressable>
         )}
@@ -139,5 +151,16 @@ const styles = StyleSheet.create({
     gap: 5,
     borderBottomEndRadius: 8,
     borderBottomStartRadius: 8,
+  },
+  input: {
+    marginLeft: 10,
+    flex: 1,
+    backgroundColor: "transparent",
+    borderWidth: 0,
+    padding: 5,
+  },
+  quantityInput: {
+    width: 70,
+    textAlign: "right",
   },
 });
