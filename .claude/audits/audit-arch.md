@@ -52,7 +52,7 @@ Should be: `export type ColorKey = keyof typeof Colors.light` and use it in `use
 
 ## State Management Issues
 
-**6. `store/grocery-list.store.ts` — `Date.now()` IDs are collision-prone**
+**6. ✅ `store/grocery-list.store.ts` — `Date.now()` IDs are collision-prone**
 
 `"list-" + Date.now()` and `"item-" + Date.now()` are millisecond-resolution. Two rapid additions in the same millisecond silently overwrite each other. This also won't survive backend sync (server will reject non-UUID IDs).
 
@@ -60,7 +60,7 @@ Should be: `crypto.randomUUID()` (available in Hermes ≥ 0.70 and all modern ru
 
 ---
 
-**7. `store/grocery-list.store.ts` — `updateList` re-reads store after mutation**
+**7. ✅ `store/grocery-list.store.ts` — `updateList` re-reads store after mutation**
 
 ```ts
 set(produce((s) => { s.lists[id] = { ...s.lists[id], ...updatedFields }; }));
@@ -123,7 +123,7 @@ Should be: Split into `AddItemRow` and `EditItemRow`. Shared layout styles go in
 
 ---
 
-**13. `components/list/list-card/list-card.tsx` — nested `GestureHandlerRootView`**
+**13. ✅ `components/list/list-card/list-card.tsx` — nested `GestureHandlerRootView`**
 
 ```tsx
 <GestureHandlerRootView>
@@ -192,7 +192,7 @@ Should be: Delete the unreferenced style entries.
 
 `ThemedIcon` imports from `react-native` directly; every other file uses the wrapper at `hooks/ui/use-color-scheme` (which has a `.web.ts` variant handling SSR hydration). On first web render, `ThemedIcon` will show the wrong colour.
 
-**21. `GroceryItem.quantity` type vs. initialisation mismatch**
+**21. ✅ `GroceryItem.quantity` type vs. initialisation mismatch**
 
 `GroceryItem.quantity` is declared as `string`. `addItem` in the store initialises it as `quantity: 1` (a number literal). TypeScript in strict mode should flag this. At runtime, the number coerces wherever it is rendered as text, but `updateItem` callers passing `{ quantity: "2 kg" }` will produce a mixed `string | number` field in storage. The reset in `PlayList` uses `draft.quantity = ""` (a string). The type needs to be settled.
 
@@ -222,13 +222,13 @@ Ordered by architectural impact, highest first.
 
 1. **Implement the auth route guard** (issues #1, #16) — Create `app/(app)/_layout.tsx` with an `AuthContext`-based redirect. This is the most significant gap.
 
-2. **Fix ID generation** (issue #6) — Replace `Date.now()` with `crypto.randomUUID()`. One-line change per call site.
+2. ✅ **Fix ID generation** (issue #6) — Replace `Date.now()` with `crypto.randomUUID()`. One-line change per call site.
 
 3. **Centralise the hydration guard** (issue #17) — Render nothing in `AppLayout` until `hydrated`. Removes per-screen guard duplication.
 
 4. **Split `EditItemRow`** (issue #12) — Two focused, single-responsibility components instead of one dual-mode component.
 
-5. **Remove `GestureHandlerRootView` from `ListCard`** (issue #13) — Delete three lines. Fixes an API misuse.
+5. ✅ **Remove `GestureHandlerRootView` from `ListCard`** (issue #13) — Delete three lines. Fixes an API misuse.
 
 6. **Fix `ThemedIcon`** (issues #14, #20) — Replace with `useThemeColor({}, "icon")`. Aligns with the rest of the theming system.
 
@@ -240,6 +240,6 @@ Ordered by architectural impact, highest first.
 
 10. **Clarify `pastItems` semantics** (issue #10) — Move to a global history store or downtype to `{ name: string; quantity: string }[]`.
 
-11. **Fix `updateList` post-mutation `get()`** (issue #7) — Minor correctness improvement: compute the merged value before `set`.
+11. ✅ **Fix `updateList` post-mutation `get()`** (issue #7) — Minor correctness improvement: compute the merged value before `set`.
 
 12. **Remove dead code** (issues #2, #3, #19) — Delete `ImagePicker`, both `IconSymbol` files, and dead style entries in auth screens.

@@ -31,10 +31,10 @@ Ordered by cross-domain impact.
 | # | Domain | Location | What to Fix |
 |---|--------|----------|-------------|
 | 1 | Security + Arch | `app/(app)/_layout.tsx` (create it) | Add an auth guard that reads `AuthContext` and redirects unauthenticated users to `/(auth)/login` before any protected content renders |
-| 2 | Security + Arch | `store/grocery-list.store.ts:40,86` | Replace `Date.now()` IDs with `crypto.randomUUID()` — prevents data collision and enables future backend sync |
-| 3 | Arch + Perf | `components/list/list-card/list-card.tsx:23` | Remove `GestureHandlerRootView` from `ListCard` — it is already at the app root; nested copies cause gesture conflicts and mount overhead |
-| 4 | TypeScript | `store/grocery-list.store.ts:88` | Fix `quantity: 1` → `quantity: "1"` — type mismatch between the model (`string`) and initialisation (`number`) |
-| 5 | TypeScript + Arch | `store/grocery-list.store.ts` (6 call sites) | Guard `get().lists[id]` before passing to `persistList` — `undefined` dereference crash when a listId is absent |
+| 2 | ✅ Security + Arch | `store/grocery-list.store.ts:40,86` | Replace `Date.now()` IDs with `crypto.randomUUID()` — prevents data collision and enables future backend sync |
+| 3 | ✅ Arch + Perf | `components/list/list-card/list-card.tsx:23` | Remove `GestureHandlerRootView` from `ListCard` — it is already at the app root; nested copies cause gesture conflicts and mount overhead |
+| 4 | ✅ TypeScript | `store/grocery-list.store.ts:88` | Fix `quantity: 1` → `quantity: ""` — type mismatch between the model (`string`) and initialisation (`number`) |
+| 5 | ✅ TypeScript + Arch | `store/grocery-list.store.ts` (6 call sites) | Guard `get().lists[id]` before passing to `persistList` — `undefined` dereference crash when a listId is absent |
 | 6 | Perf | `app/(app)/(tabs)/lists/index.tsx:14`, `[listId].tsx:16` | Fix Zustand selectors to subscribe to the minimal slice — eliminates store-wide re-renders on every mutation |
 | 7 | Security | `contexts/authContext.tsx` | Replace `token: string \| null` in context with `isAuthenticated: boolean` — removes the raw token from React state/DevTools |
 | 8 | Perf | `services/storage.service.ts:22–32` | Debounce `updateItem` storage writes and separate index registration from data write — eliminates 40–80 ms I/O per keystroke |

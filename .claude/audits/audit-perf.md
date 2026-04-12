@@ -30,7 +30,7 @@ The app is small enough that most issues are latent rather than immediately cata
 
 **9. `ScrollView` instead of `FlatList` for the lists overview** — `app/(app)/(tabs)/lists/index.tsx:44`. All list cards (each with a `Swipeable` and `GestureHandlerRootView`) mount simultaneously. Switch to `FlatList` for windowed rendering.
 
-**10. `GestureHandlerRootView` inside each `ListCard`** — `components/list/list-card/list-card.tsx:23`. The root-level `GestureHandlerRootView` in `app/_layout.tsx:23` is sufficient. The per-card one adds redundant context providers that scale with list count. Fix: remove it from `ListCard`.
+**10. ✅ `GestureHandlerRootView` inside each `ListCard`** — `components/list/list-card/list-card.tsx:23`. The root-level `GestureHandlerRootView` in `app/_layout.tsx:23` is sufficient. The per-card one adds redundant context providers that scale with list count. Fix: remove it from `ListCard`.
 
 **11. No `getItemLayout` on either list** — `components/list/play-list.tsx`, `components/list/edit-list.tsx`. Row heights are fixed; adding `getItemLayout` enables scroll-position optimization and makes `scrollToIndex` reliable.
 
@@ -72,7 +72,7 @@ The app is small enough that most issues are latent rather than immediately cata
 
 ## Recommendations (highest impact first)
 
-1. **Remove `GestureHandlerRootView` from `ListCard`** (`list-card.tsx:23`) — immediate mount-cost reduction per card.
+1. ✅ **Remove `GestureHandlerRootView` from `ListCard`** (`list-card.tsx:23`) — immediate mount-cost reduction per card.
 2. **Fix Zustand selectors** in `ListScreen`, `Index`, `AppLayout` — eliminates cascading re-renders on every mutation.
 3. **Debounce `updateItem` writes + split `persistList`** (`storage.service.ts:22`) — eliminates 40–80 ms of blocking I/O per keystroke.
 4. **`React.memo` on `ListCard`, `EditItemRow`, `PlayItemRow`** — prevents all-rows re-render on parent updates.

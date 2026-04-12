@@ -38,7 +38,7 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
 
   createList: async (name: string) => {
     const list: GroceryList = {
-      id: "list-" + Date.now(),
+      id: crypto.randomUUID(),
       name,
       items: [],
       createdAt: new Date(),
@@ -60,15 +60,17 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
   },
 
   updateList: async (id: string, updatedFields: Partial<GroceryList>) => {
+    const existing = get().lists[id];
+    if (!existing) return;
+
+    const updated = { ...existing, ...updatedFields };
     set(
       produce((s: GroceryListStore) => {
-        if (s.lists[id]) {
-          s.lists[id] = { ...s.lists[id], ...updatedFields };
-        }
+        s.lists[id] = updated;
       }),
     );
 
-    await storageService.persistList(get().lists[id]);
+    await storageService.persistList(updated);
   },
 
   deleteList: async (id: string) => {
@@ -82,10 +84,12 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
   },
 
   addItem: async (listId: string, name: string) => {
+    if (!get().lists[listId]) return;
+
     const newItem: GroceryItem = {
-      id: "item-" + Date.now(),
+      id: crypto.randomUUID(),
       name,
-      quantity: 1,
+      quantity: "",
       checked: false,
       updatedAt: new Date(),
       deletedAt: null,
@@ -101,6 +105,8 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
   },
 
   addPastItem: async (listId: string, item: GroceryItem) => {
+    if (!get().lists[listId]) return;
+
     set(
       produce((s: GroceryListStore) => {
         s.lists[listId].items.push({ ...item, checked: false });
@@ -115,6 +121,8 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
     itemId: string,
     updatedItem: Partial<GroceryItem>,
   ) => {
+    if (!get().lists[listId]) return;
+
     set(
       produce((s: GroceryListStore) => {
         const items = s.lists[listId].items;
@@ -129,6 +137,8 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
   },
 
   deleteItem: async (listId: string, itemId: string) => {
+    if (!get().lists[listId]) return;
+
     set(
       produce((s: GroceryListStore) => {
         s.lists[listId].items = s.lists[listId].items.filter(
@@ -141,6 +151,8 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
   },
 
   reorderItems: async (listId: string, newItems: GroceryItem[]) => {
+    if (!get().lists[listId]) return;
+
     set(
       produce((state) => {
         state.lists[listId].items = newItems;

@@ -53,7 +53,7 @@ Action: Add `// Required: initialises Reanimated on app boot` inline.
 
 ---
 
-### `quantity` type mismatch (dead initialiser)
+### ✅ `quantity` type mismatch (dead initialiser)
 
 **`store/grocery-list.store.ts` — line 89**
 `quantity: 1` — the model (`GroceryItem`) types `quantity` as `string`, but the store initialises it as the number `1`. The string initialiser used elsewhere is `""`. The number `1` is a silent type violation; the correct empty value is `""`.
@@ -250,7 +250,7 @@ Action: Remove the hardcoded value and apply theme colors via the component's ex
 
 ---
 
-### `"item-" + Date.now()` and `"list-" + Date.now()` — ID generation pattern
+### ✅ `"item-" + Date.now()` and `"list-" + Date.now()` — ID generation pattern
 
 **`store/grocery-list.store.ts` — lines 41 and 87**
 ```ts
@@ -462,7 +462,7 @@ This comment is accurate. No action needed. (Noted for completeness of coverage.
 
 Ordered by impact (most files affected or most likely to cause a bug first):
 
-1. **Fix the `quantity: 1` type mismatch** (`store/grocery-list.store.ts` line 89) — the model types `quantity` as `string` but the store sets it to `1`. This will cause subtle rendering bugs (e.g. `"1"` vs `1` comparisons, truthy checks) and is the only finding that directly risks a runtime defect.
+1. ✅ **Fix the `quantity: 1` type mismatch** (`store/grocery-list.store.ts` line 89) — the model types `quantity` as `string` but the store sets it to `1`. This will cause subtle rendering bugs (e.g. `"1"` vs `1` comparisons, truthy checks) and is the only finding that directly risks a runtime defect.
 
 2. **Remove the unused `listId` prop from `PlayItemRowProps`** (`components/item/play-item-row.tsx`) — the prop is declared, propagated at the call site, and then silently dropped. It pollutes the API surface with a non-functional parameter.
 

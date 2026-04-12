@@ -8,12 +8,12 @@ The codebase is reasonably well-typed and `strict: true` is enabled, which preve
 
 ## Critical Issues
 
-### 1. `quantity` assigned as `number` but typed as `string`
+### 1. ✅ `quantity` assigned as `number` but typed as `string`
 **`store/grocery-list.store.ts` line 88 / `models/grocery/grocery-item.ts` line 4**
 
 `GroceryItem.quantity` is declared `string`, but `addItem` sets `quantity: 1` (a numeric literal). TypeScript allows this because the explicit `GroceryList` annotation on the outer object broadens the check — at runtime every newly created item carries a `number` in a field every consumer renders as a `string`. `play-list.tsx` line 43 confirms the intended type by assigning `draft.quantity = ""`. Fix: change the store initialisation to `quantity: "1"`.
 
-### 2. Unguarded `get().lists[id]` passed to `persistList`
+### 2. ✅ Unguarded `get().lists[id]` passed to `persistList`
 **`store/grocery-list.store.ts` lines 71, 100, 110, 128, 140, 150**
 
 After calling `set(produce(...))`, six actions call `get().lists[listId]` and pass the result directly to `storageService.persistList(list: GroceryList)`. Because `lists` is typed as `Record<string, GroceryList>` (not `Partial<Record<...>>`), TypeScript does not flag the access as possibly `undefined`. But if `listId` is absent, `persistList` receives `undefined` and immediately dereferences `list.id` — a crash. All six call sites need a guard: `const list = get().lists[listId]; if (list) await storageService.persistList(list);`
@@ -116,8 +116,8 @@ The `distance: number` field is initialised to `1` in `computeDistances` but nev
 
 ## Recommendations (highest impact first)
 
-1. Fix `quantity: 1` → `quantity: "1"` in `store/grocery-list.store.ts` line 88.
-2. Guard all six `get().lists[id]` calls before passing to `persistList`.
+1. ✅ Fix `quantity: 1` → `quantity: ""` in `store/grocery-list.store.ts` line 88.
+2. ✅ Guard all six `get().lists[id]` calls before passing to `persistList`.
 3. Replace `!` non-null assertion in `play-list.tsx` line 55 with a null-check guard.
 4. Replace `!` non-null assertion on `pastItems` in `edit-item-row.tsx` line 62 with a guard.
 5. Make `ThemedInput` and `ImagePicker` generic over `FieldValues`.

@@ -2,7 +2,6 @@ import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { GroceryList } from "@/models/grocery";
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { ThemedText } from "../../themed-text";
 import ListCardAction from "./list-card-action";
@@ -20,28 +19,26 @@ const ListCard = ({ list }: ListCardProps) => {
     <Pressable
       onPress={() => router.navigate(`/(app)/(tabs)/lists/${list.id}`)}
     >
-      <GestureHandlerRootView>
-        <Swipeable
-          friction={2}
-          rightThreshold={40}
-          overshootRight={false}
-          renderRightActions={(_, drag) => (
-            <ListCardAction drag={drag} listId={list.id} />
-          )}
-          containerStyle={[styles.swipeable, { backgroundColor: background }]}
-        >
-          <View style={styles.container}>
-            <View style={styles.content}>
-              <ThemedText>{list.name}</ThemedText>
-              <View style={[styles.badge, { backgroundColor: primary + "26" }]}>
-                <ThemedText style={[styles.badgeText, { color: primary }]}>
-                  {list.items.length} items
-                </ThemedText>
-              </View>
+      <Swipeable
+        friction={2}
+        rightThreshold={40}
+        overshootRight={false}
+        renderRightActions={(_, drag) => (
+          <ListCardAction drag={drag} listId={list.id} />
+        )}
+        containerStyle={[styles.swipeable, { backgroundColor: background }]}
+      >
+        <View style={styles.container}>
+          <View style={styles.content}>
+            <ThemedText>{list.name}</ThemedText>
+            <View style={[styles.badge, { backgroundColor: primary + "26" }]}>
+              <ThemedText style={[styles.badgeText, { color: primary }]}>
+                {list.items.length} items
+              </ThemedText>
             </View>
           </View>
-        </Swipeable>
-      </GestureHandlerRootView>
+        </View>
+      </Swipeable>
     </Pressable>
   );
 };

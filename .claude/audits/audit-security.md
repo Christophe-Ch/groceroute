@@ -78,7 +78,7 @@ export const client = axios.create({ baseURL });
 
 ---
 
-### 5. Predictable / Collision-Prone ID Generation Using `Date.now()`
+### 5. ✅ Predictable / Collision-Prone ID Generation Using `Date.now()`
 
 **File:** `store/grocery-list.store.ts` (lines 40, 86)
 
@@ -181,7 +181,7 @@ The template ships with `API_BASE_URL=`, which means a developer cloning the rep
 | 2 | Critical | Remove raw token string from Context; expose `isAuthenticated: boolean` only | `contexts/authContext.tsx` |
 | 3 | Moderate | Do not surface `e.response?.data.message` in toast — use a generic message | `app/(auth)/signup.tsx:38` |
 | 4 | Moderate | Validate `API_BASE_URL` at startup; assert `https://` scheme | `api/client.ts:7`, `app.config.ts` |
-| 5 | Moderate | Replace `Date.now()` IDs with `crypto.randomUUID()` | `store/grocery-list.store.ts:40,86` |
+| 5 | ✅ Moderate | Replace `Date.now()` IDs with `crypto.randomUUID()` | `store/grocery-list.store.ts:40,86` |
 | 6 | Moderate | Use a separate axios instance for the token refresh request to prevent 401 loop | `api/client.ts:38` |
 | 7 | Low | Change deep link scheme from `reactnativetemplate` to `groceroute` | `app.json:8` |
 | 8 | Low | Add `maxLength` to item name input and store validation | `edit-item-row.tsx`, `grocery-list.store.ts` |
