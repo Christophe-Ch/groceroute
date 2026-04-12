@@ -19,6 +19,9 @@ type PlayListProps = {
 };
 
 const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
+  // Shopping session state is intentionally ephemeral: checked items are held
+  // in local state and not persisted to the store. Stopping or backgrounding
+  // the app resets progress. GroceryItem.checked is unused during play mode.
   const [list, setList] = useState(baseList);
   const items = useMemo(
     () => [...list.items].sort((a, b) => +a.checked - +b.checked),

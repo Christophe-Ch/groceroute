@@ -1,3 +1,4 @@
+import { GroceryItem } from "@/models/grocery";
 import { GroceryList } from "@/models/grocery/grocery-list";
 import { useGroceryListStore } from "@/store/grocery-list.store";
 import { useCallback, useMemo, useState } from "react";
@@ -9,6 +10,7 @@ import {
 } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import AddItemRow from "../item/add-item-row";
 import EditItemRow from "../item/edit-item-row";
 import ThemedButton from "../themed-button";
 import ThemedInput from "../themed-input";
@@ -23,7 +25,10 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
   const { updateList, reorderItems } = useGroceryListStore();
   const insets = useSafeAreaInsets();
 
-  const currentItemIds = useMemo(() => new Set(list.items.map((i) => i.id)), [list.items]);
+  const currentItemIds = useMemo(
+    () => new Set(list.items.map((i) => i.id)),
+    [list.items],
+  );
   const [listName, setListName] = useState(list.name);
 
   const onUpdateTitle = useCallback(() => {
@@ -34,18 +39,18 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
   }, [listName, list.name, list.id, updateList]);
 
   const onDragEnd = useCallback(
-    (data: { data: typeof list.items }) => reorderItems(list.id, data.data),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    ({ data }: { data: GroceryItem[] }) => reorderItems(list.id, data),
+
     [list.id, reorderItems],
   );
 
   const renderItem = useCallback(
-    ({ item, drag }: { item: (typeof list.items)[0]; drag: () => void }) => (
+    ({ item, drag }: { item: GroceryItem; drag: () => void }) => (
       <TouchableOpacity onLongPress={drag}>
         <EditItemRow listId={list.id} item={item} />
       </TouchableOpacity>
     ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [list.id],
   );
 
@@ -69,7 +74,11 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
         style={{ flex: 1 }}
       >
         <View style={{ zIndex: 1 }}>
-          <EditItemRow listId={list.id} pastItems={list.pastItems} currentItemIds={currentItemIds} />
+          <AddItemRow
+            listId={list.id}
+            pastItems={list.pastItems}
+            currentItemIds={currentItemIds}
+          />
         </View>
         <DraggableFlatList
           data={list.items}

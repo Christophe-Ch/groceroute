@@ -1,134 +1,64 @@
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { GroceryItem } from "@/models/grocery";
 import { useGroceryListStore } from "@/store/grocery-list.store";
-import { findItems } from "@/utils/autocomplete";
 import { memo, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { ThemedIcon } from "../themed-icon";
 import ThemedInput from "../themed-input";
-import { ThemedText } from "../themed-text";
 
 type EditItemRowProps = {
   listId: string;
-  item?: GroceryItem;
-  pastItems?: GroceryItem[];
-  currentItemIds?: Set<string>;
+  item: GroceryItem;
 };
 
-const EditItemRow = ({
-  listId,
-  item,
-  pastItems,
-  currentItemIds,
-}: EditItemRowProps) => {
+const EditItemRow = ({ listId, item }: EditItemRowProps) => {
   const muted = useThemeColor({}, "textMuted");
-  const { addItem, addPastItem, updateItem, deleteItem } =
-    useGroceryListStore();
+  const { updateItem, deleteItem } = useGroceryListStore();
   const [focused, setFocused] = useState(false);
-  const [name, setName] = useState(item?.name ?? "");
-  const [quantity, setQuantity] = useState(item?.quantity ?? "");
-  const [autocomplete, setAutocomplete] = useState<GroceryItem[] | null>(null);
-  const autocompleteBackground = useThemeColor({}, "surface");
+  const [name, setName] = useState(item.name);
+  const [quantity, setQuantity] = useState(item.quantity);
 
   const onSubmit = () => {
     setFocused(false);
-    setAutocomplete(null);
     const trimmed = name.trim();
-
-    if (item) {
-      if (trimmed) {
-        updateItem(listId, item.id, { name: trimmed });
-      } else {
-        deleteItem(listId, item.id);
-      }
-      return;
-    }
-
-    if (!trimmed) return;
-
-    const exactMatch = pastItems?.find(
-      (p) =>
-        p.name.toLowerCase() === trimmed.toLowerCase() &&
-        !currentItemIds?.has(p.id),
-    );
-    if (exactMatch) {
-      addPastItem(listId, exactMatch);
+    if (trimmed) {
+      updateItem(listId, item.id, { name: trimmed });
     } else {
-      addItem(listId, trimmed);
-    }
-    setName("");
-  };
-
-  const onChangeText = (text: string) => {
-    setName(text);
-    if (!item && text.trim().length >= 2) {
-      if (pastItems) setAutocomplete(findItems(text, pastItems, currentItemIds));
-    } else {
-      setAutocomplete(null);
+      deleteItem(listId, item.id);
     }
   };
 
-  const onQuantityChange = (quantity: string, itemId: string) => {
-    setQuantity(quantity);
-    updateItem(listId, itemId, { quantity });
+  const onQuantityChange = (value: string) => {
+    setQuantity(value);
+    updateItem(listId, item.id, { quantity: value });
   };
 
   return (
-    <View>
-      <View style={styles.row}>
-        <ThemedIcon name={item ? "menu" : "add"} size={20} color={muted} />
-        <ThemedInput
-          onFocus={() => setFocused(true)}
-          onChangeText={onChangeText}
-          onBlur={() => {
-            setFocused(false);
-            setAutocomplete(null);
-          }}
-          onSubmitEditing={onSubmit}
-          submitBehavior={item ? "blurAndSubmit" : "submit"}
-          placeholder={item ? undefined : "Add item..."}
-          style={styles.input}
-          value={name}
-        />
-        {item && (
-          <ThemedInput
-            onChangeText={(text) => onQuantityChange(text, item.id)}
-            value={quantity}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            style={styles.quantityInput}
-          />
-        )}
-        {focused && item && (
-          <Pressable
-            onPressIn={() => deleteItem(listId, item.id)}
-            style={{ opacity: focused ? 1 : 0, marginLeft: 20 }}
-          >
-            <ThemedIcon name={"close"} size={20} color={muted} />
-          </Pressable>
-        )}
-      </View>
-      {!item && autocomplete && autocomplete.length > 0 && (
-        <View
-          style={[
-            styles.autocomplete,
-            { backgroundColor: autocompleteBackground },
-          ]}
+    <View style={styles.row}>
+      <ThemedIcon name="menu" size={20} color={muted} />
+      <ThemedInput
+        onFocus={() => setFocused(true)}
+        onChangeText={setName}
+        onBlur={() => setFocused(false)}
+        onSubmitEditing={onSubmit}
+        submitBehavior="blurAndSubmit"
+        style={styles.input}
+        value={name}
+      />
+      <ThemedInput
+        onChangeText={onQuantityChange}
+        value={quantity}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        style={styles.quantityInput}
+      />
+      {focused && (
+        <Pressable
+          onPressIn={() => deleteItem(listId, item.id)}
+          style={styles.deleteButton}
         >
-          {autocomplete.map((suggestion) => (
-            <Pressable
-              key={suggestion.id}
-              style={{ paddingBlock: 3 }}
-              onPress={() => {
-                addPastItem(listId, suggestion);
-                setName("");
-                setAutocomplete(null);
-              }}
-            >
-              <ThemedText>{suggestion.name}</ThemedText>
-            </Pressable>
-          ))}
-        </View>
+          <ThemedIcon name="close" size={20} color={muted} />
+        </Pressable>
       )}
     </View>
   );
@@ -144,17 +74,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     zIndex: 1,
   },
-  autocomplete: {
-    position: "absolute",
-    top: "100%",
-    left: 35,
-    right: 20,
-    paddingBlock: 10,
-    paddingInline: 20,
-    gap: 5,
-    borderBottomEndRadius: 8,
-    borderBottomStartRadius: 8,
-  },
   input: {
     marginLeft: 10,
     flex: 1,
@@ -165,5 +84,8 @@ const styles = StyleSheet.create({
   quantityInput: {
     width: 70,
     textAlign: "right",
+  },
+  deleteButton: {
+    marginLeft: 20,
   },
 });

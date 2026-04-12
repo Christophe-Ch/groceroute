@@ -1,25 +1,15 @@
-import { ComponentProps } from "react";
-import { useColorScheme } from "react-native";
+import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { Ionicons } from "@expo/vector-icons";
+import { ComponentProps } from "react";
 
 type ThemedIconProps = {
   name: ComponentProps<typeof Ionicons>["name"];
   size?: number;
   color?: string;
-  lightColor?: string;
-  darkColor?: string;
 };
 
-export const ThemedIcon = ({
-  name,
-  size = 24,
-  color,
-  lightColor = "#000000",
-  darkColor = "#ffffff",
-}: ThemedIconProps) => {
-  const theme = useColorScheme();
+export const ThemedIcon = ({ name, size = 24, color }: ThemedIconProps) => {
+  const iconColor = useThemeColor({}, "icon");
 
-  const iconColor = color || (theme === "dark" ? darkColor : lightColor);
-
-  return <Ionicons name={name} size={size} color={iconColor} />;
+  return <Ionicons name={name} size={size} color={color ?? iconColor} />;
 };
