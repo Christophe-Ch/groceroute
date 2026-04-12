@@ -2,6 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Repository Structure
+
+This is a monorepo. Packages live in subdirectories:
+
+- **`mobile/`** — Expo/React Native app (iOS, Android, Web)
+- **`backend/`** — API server (planned)
+
 ## Project Overview
 
 **Groceroute** is a cross-platform mobile application for managing grocery lists, built with Expo and React Native. It runs on iOS, Android, and Web platforms.
@@ -22,7 +29,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Common Commands
 
+Run all commands from `mobile/`:
+
 ```bash
+cd mobile
 npm start          # Start the Expo dev server (shows menu for iOS/Android/Web)
 npm run ios        # Run on iOS simulator
 npm run android    # Run on Android emulator
@@ -32,6 +42,8 @@ npm run reset-project  # Reset to a fresh project state
 ```
 
 ## Project Structure
+
+All paths below are relative to `mobile/`.
 
 ### Routing & Navigation
 - **`app/`**: File-based routing using Expo Router
@@ -81,7 +93,7 @@ npm run reset-project  # Reset to a fresh project state
 ### Store Hydration
 The app hydrates the Zustand store on app launch via the AppLayout component:
 ```typescript
-// app/(app)/(tabs)/_layout.tsx
+// mobile/app/(app)/(tabs)/_layout.tsx
 const { hydrate, hydrated } = useGroceryListStore();
 useEffect(() => {
   if (!hydrated) hydrate();

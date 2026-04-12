@@ -1,50 +1,93 @@
-# Welcome to your Expo app 👋
+# Groceroute
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A cross-platform grocery list app that makes shopping smarter. Build lists, let the app figure out the most efficient order to pick items up, and check them off as you go — together with others or on your own.
 
-## Get started
+Runs on **iOS** and **Android** from a single codebase.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## Features
 
-2. Start the app
+### Lists
+Create as many grocery lists as you need — weekly shop, party prep, meal prep, anything. Lists are saved locally on your device and persist across app restarts.
 
-   ```bash
-   npx expo start
-   ```
+### Adding items
+Add items with names and quantities. As you type, the app suggests items you've added before, so repeat staples are a single tap. Remove items individually or delete an entire list when you're done.
 
-In the output, you'll find options to open the app in a
+### Drag & drop reordering
+In edit mode, hold and drag any item to rearrange the list exactly the way you want it.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Play mode
+Tap **Play** to start a shopping session. The app automatically reorders your items using a distance-based algorithm — items you tend to pick up in sequence stay grouped together, minimizing backtracking through the store.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+During play mode:
+- Tap an item to check it off
+- A progress bar shows how much of the list is done
+- Checked items visually separate from remaining ones
 
-## Get a fresh project
+### Check-order learning
+The app tracks the order in which you check items off during each session. Over time, it builds a graph of which items you pick up near each other and uses that to sort your list more accurately on future runs.
 
-When you're ready, run:
+### Offline-first
+Everything works without a network connection. All data is stored on-device via AsyncStorage and loads instantly on app start.
+
+---
+
+## What's coming
+
+| Feature | Status |
+|---------|--------|
+| Backend sync & multi-device | Planned — Phase 1 |
+| Shared lists with collaborators | Planned — Phase 2 |
+| Live real-time sync during shared play session | Planned — Phase 2 |
+| Split list among shoppers (each gets a subset) | Planned — Phase 2 |
+| Recipe store with "add to list" | Planned — Phase 3 |
+| Weekly meal planner → auto-generate shopping list | Planned — Phase 3 |
+| Item categorization & aisle grouping | Planned — Phase 3 |
+| Estimated total cost tracking | Planned — Phase 3 |
+| Barcode scanner to pre-fill item names | Planned — Phase 4 |
+| Geofence reminders near stores | Planned — Phase 4 |
+| Home screen widget (iOS & Android) | Planned — Phase 4 |
+
+See [`BACKLOG.md`](./BACKLOG.md) for the full roadmap with details.
+
+---
+
+## Repository
+
+This is a monorepo:
+
+| Directory | Description | Status |
+|-----------|-------------|--------|
+| [`mobile/`](./mobile) | Expo/React Native app — iOS, Android | Active |
+| `backend/` | REST API server | Planned |
+
+---
+
+## Getting started
 
 ```bash
-npm run reset-project
+cd mobile
+npm install
+npm start        # Expo dev menu — choose iOS or Android
+npm run ios      # iOS simulator
+npm run android  # Android emulator
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Requires [Node.js](https://nodejs.org) and the [Expo CLI](https://docs.expo.dev/get-started/installation/).
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## Tech stack
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+| Layer | Library |
+|-------|---------|
+| Framework | Expo ~54 + React Native |
+| Language | TypeScript (strict) |
+| Routing | Expo Router (file-based) |
+| State | Zustand + Immer |
+| Storage | AsyncStorage |
+| Animations | React Native Reanimated + Gesture Handler |
+| Drag & drop | react-native-draggable-flatlist |
+| Notifications | Sonner Native |
+| HTTP client | Axios (with token refresh interceptor) |
