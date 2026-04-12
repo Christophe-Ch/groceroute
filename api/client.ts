@@ -20,6 +20,8 @@ client.interceptors.request.use(async (config) => {
 client.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
+    if (!error.config) return Promise.reject(error);
+
     const originalRequest = error.config as InternalAxiosRequestConfig;
 
     if (error.response?.status !== 401 || originalRequest._retry) {

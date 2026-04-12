@@ -36,9 +36,12 @@ const EditItemRow = ({
     const trimmed = name.trim();
 
     if (item) {
-      return trimmed
-        ? updateItem(listId, item.id, { name: trimmed })
-        : deleteItem(listId, item.id);
+      if (trimmed) {
+        updateItem(listId, item.id, { name: trimmed });
+      } else {
+        deleteItem(listId, item.id);
+      }
+      return;
     }
 
     if (!trimmed) return;
@@ -59,7 +62,7 @@ const EditItemRow = ({
   const onChangeText = (text: string) => {
     setName(text);
     if (!item && text.trim().length >= 2) {
-      setAutocomplete(findItems(text, pastItems!, currentItemIds));
+      if (pastItems) setAutocomplete(findItems(text, pastItems, currentItemIds));
     } else {
       setAutocomplete(null);
     }

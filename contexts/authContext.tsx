@@ -6,7 +6,7 @@ interface AuthContextType {
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -19,11 +19,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    tokenService.subscribeToken(setToken);
+    const unsubscribe = tokenService.subscribeToken(setToken);
     tokenService.getAccessToken().then((token) => {
       setToken(token);
       setLoading(false);
     });
+    return unsubscribe;
   }, []);
 
   const loginMutation = useLogin();

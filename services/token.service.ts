@@ -30,8 +30,11 @@ class TokenService {
     this.tokenListener?.(null);
   }
 
-  subscribeToken(listener: TokenListener) {
+  subscribeToken(listener: TokenListener): () => void {
     this.tokenListener = listener;
+    return () => {
+      if (this.tokenListener === listener) this.tokenListener = undefined;
+    };
   }
 }
 

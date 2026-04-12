@@ -52,17 +52,19 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
   const onItemCheckedChange = (itemId: string, checked: boolean) => {
     setList((list) =>
       produce(list, (draft) => {
-        draft.items.find((i) => i.id === itemId)!.checked = checked;
+        const target = draft.items.find((i) => i.id === itemId);
+        if (target) target.checked = checked;
       }),
     );
 
     setCheckOrder((order) => {
+      const next = new Set(order);
       if (checked) {
-        order.add(itemId);
+        next.add(itemId);
       } else {
-        order.delete(itemId);
+        next.delete(itemId);
       }
-      return order;
+      return next;
     });
   };
 
