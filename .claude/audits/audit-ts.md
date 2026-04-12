@@ -18,7 +18,7 @@ The codebase is reasonably well-typed and `strict: true` is enabled, which preve
 
 After calling `set(produce(...))`, six actions call `get().lists[listId]` and pass the result directly to `storageService.persistList(list: GroceryList)`. Because `lists` is typed as `Record<string, GroceryList>` (not `Partial<Record<...>>`), TypeScript does not flag the access as possibly `undefined`. But if `listId` is absent, `persistList` receives `undefined` and immediately dereferences `list.id` — a crash. All six call sites need a guard: `const list = get().lists[listId]; if (list) await storageService.persistList(list);`
 
-### 3. Non-null assertion on `Array.find` result
+### ✅ 3. Non-null assertion on `Array.find` result
 **`components/list/play-list.tsx` line 55**
 
 ```ts
@@ -27,7 +27,7 @@ draft.items.find((i) => i.id === itemId)!.checked = checked;
 
 `find` returns `T | undefined`. The `!` silently discards the undefined case. If `itemId` is stale (item deleted between renders), this throws at runtime. Replace with a null-check guard.
 
-### 4. Non-null assertion on optional `pastItems` prop
+### ✅ 4. Non-null assertion on optional `pastItems` prop
 **`components/item/edit-item-row.tsx` line 62**
 
 ```ts
@@ -45,12 +45,12 @@ setAutocomplete(findItems(text, pastItems!, currentItemIds));
 
 Both components accept `control?: Control<any, any, any>`. The `Control` generic is intended to carry `TFieldValues`, which ties `name` string literals to their value types. Using `any` here means the compiler cannot detect mismatched field names. Make the components generic: `type InputProps<T extends FieldValues = FieldValues> = TextInputProps & { control?: Control<T>; name?: Path<T>; ... }`.
 
-### 6. `logout` return type mismatch between interface and implementation
+### ✅ 6. `logout` return type mismatch between interface and implementation
 **`contexts/authContext.tsx` lines 9 and 43**
 
 `AuthContextType.logout` is declared `() => void` but implemented as `async () => { await tokenService.clearTokens(); }` which returns `Promise<void>`. The interface should be `logout: () => Promise<void>`.
 
-### 7. Unsafe cast on `error.config` in the Axios interceptor
+### ✅ 7. Unsafe cast on `error.config` in the Axios interceptor
 **`api/client.ts` line 23**
 
 ```ts
@@ -59,7 +59,7 @@ const originalRequest = error.config as InternalAxiosRequestConfig;
 
 `error.config` is `InternalAxiosRequestConfig | undefined`. The cast removes the `undefined`. On network timeout errors Axios may omit `config`, causing a crash when accessing `originalRequest._retry`. Add a guard before the cast.
 
-### 8. Ternary used for side-effect calls (violates project convention)
+### ✅ 8. Ternary used for side-effect calls (violates project convention)
 **`components/item/edit-item-row.tsx` lines 39–41**
 
 ```ts
@@ -80,7 +80,7 @@ Per the project memory, ternary must not be used for side-effect calls. Use `if/
 
 `JSON.parse` returns `any`; `.filter(Boolean)` narrows to `any[]`, which TypeScript accepts as `GroceryList[]` without complaint. Critically, `JSON.stringify(new Date())` produces an ISO string — so `createdAt`, `updatedAt`, `deletedAt` come back from storage as `string`, not `Date`, violating the model. Either deserialise dates explicitly or change the model to `string` for those fields.
 
-### 11. Untyped `produce()` draft in `reorderItems`
+### ✅ 11. Untyped `produce()` draft in `reorderItems`
 **`store/grocery-list.store.ts` line 145**
 
 All other `produce` calls annotate the draft as `(s: GroceryListStore)`. `reorderItems` omits the annotation, relying on Immer's contextual inference from `create<GroceryListStore>`. Add the annotation for consistency.
@@ -102,7 +102,7 @@ The `distance: number` field is initialised to `1` in `computeDistances` but nev
 ### 14. Mixed `interface` vs `type` usage in models
 `AuthResponse` in `models/auth/auth-response.ts` uses `interface`; all grocery models use `type`. Standardise on `type` for data shapes.
 
-### 15. Dead `StyleSheet` entries in login and signup screens
+### ✅ 15. Dead `StyleSheet` entries in login and signup screens
 **`app/(auth)/login.tsx` lines 97–107 / `app/(auth)/signup.tsx` lines 119–135**
 
 `styles.title` and `styles.subtitle` are defined but never referenced in JSX — leftover from an earlier implementation.

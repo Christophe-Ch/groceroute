@@ -99,7 +99,7 @@ Should be: Either (a) move past items to a global history store, or (b) type `pa
 
 ## Component Design Issues
 
-**11. `components/list/play-list.tsx` — local state shadow diverges from the store**
+**✅ 11. `components/list/play-list.tsx` — local state shadow diverges from the store**
 
 ```ts
 const [list, setList] = useState(baseList);
@@ -111,7 +111,7 @@ Should be: Decide on one approach. If checked state is ephemeral (recommended), 
 
 ---
 
-**12. `components/item/edit-item-row.tsx` — dual-mode component with entangled branches**
+**✅ 12. `components/item/edit-item-row.tsx` — dual-mode component with entangled branches**
 
 `EditItemRow` serves two distinct roles depending on whether `item` is provided:
 - **Add mode** (no `item`): freeform input, autocomplete, resets after submit.
@@ -136,7 +136,7 @@ Should be: Remove `GestureHandlerRootView` from `list-card.tsx`. `Swipeable` wor
 
 ---
 
-**14. `components/themed-icon.tsx` — bypasses the theming system**
+**✅ 14. `components/themed-icon.tsx` — bypasses the theming system**
 
 `ThemedIcon` uses `useColorScheme` directly from `react-native` (not the web-aware wrapper) and hardcodes fallback colours as raw hex (`"#000000"`, `"#ffffff"`). Every other `themed-*` component uses `useThemeColor`. The actual design-system icon colours are `Colors.light.icon = "#687076"` and `Colors.dark.icon = "#9BA1A6"` — both different from the hardcoded fallbacks.
 
@@ -162,7 +162,7 @@ Should be: Create `app/(app)/_layout.tsx` that reads `AuthContext` and redirects
 
 ---
 
-**17. `AppLayout` renders the full tab tree before hydration completes**
+**✅ 17. `AppLayout` renders the full tab tree before hydration completes**
 
 `app/(app)/(tabs)/_layout.tsx` triggers hydration but renders `<Tabs>` immediately, requiring every child screen to independently check `hydrated`. The current `lists/index.tsx` has this guard; any future screen must remember to add it.
 
@@ -178,7 +178,7 @@ Should be: Redirect to `/(app)` and let the tabs layout select the default tab, 
 
 ---
 
-**19. Dead `StyleSheet` entries in auth screens**
+**✅ 19. Dead `StyleSheet` entries in auth screens**
 
 `app/(auth)/login.tsx` and `app/(auth)/signup.tsx` both define `styles.title` and `styles.subtitle` that are never applied. These are template leftovers.
 
@@ -188,7 +188,7 @@ Should be: Delete the unreferenced style entries.
 
 ## Patterns & Consistency Issues
 
-**20. Two different `useColorScheme` sources**
+**✅ 20. Two different `useColorScheme` sources**
 
 `ThemedIcon` imports from `react-native` directly; every other file uses the wrapper at `hooks/ui/use-color-scheme` (which has a `.web.ts` variant handling SSR hydration). On first web render, `ThemedIcon` will show the wrong colour.
 
@@ -200,13 +200,13 @@ Should be: Delete the unreferenced style entries.
 
 Auth mutations (`login`, `signup`) are wrapped in try/catch with `toast.error()`. Grocery store mutations have no error handling. When the backend is connected to the grocery flow, failures will be invisible.
 
-**23. `tokenService` supports only one subscriber**
+**✅ 23. `tokenService` supports only one subscriber**
 
 `subscribeToken` silently replaces any existing listener. A second caller (e.g., a middleware or analytics hook) would silently break `AuthContext`'s token tracking.
 
 Should be: Use an array of listeners, or remove `subscribeToken` and rely entirely on `AuthContext` for reactive token state (it already does `getAccessToken()` on mount).
 
-**24. `PlayList` sorts items on every render without memoisation**
+**✅ 24. `PlayList` sorts items on every render without memoisation**
 
 ```ts
 const items = [...list.items].sort((a, b) => +a.checked - +b.checked);

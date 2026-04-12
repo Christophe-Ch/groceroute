@@ -26,7 +26,7 @@ Action: Delete both entries.
 
 ### Unused prop on component interface
 
-**`components/item/play-item-row.tsx` — line 9**
+**✅ `components/item/play-item-row.tsx` — line 9**
 `PlayItemRowProps` declares `listId: string`, but the component destructuring at line 14 does not destructure `listId`, and it is never used inside the component body.
 ```ts
 type PlayItemRowProps = {
@@ -129,7 +129,7 @@ Action: Define once at the top of the file and use in both `mutationFn` signatur
 
 ## Naming Issues
 
-### `ctx` — overly generic local variable
+### ✅ `ctx` — overly generic local variable
 
 **`hooks/auth/use-auth.ts` — line 4**
 ```ts
@@ -140,7 +140,7 @@ Action: Rename to `authContext`.
 
 ---
 
-### `s` — single-letter parameter in Immer producers
+### ✅ `s` — single-letter parameter in Immer producers
 
 **`store/grocery-list.store.ts` — lines 52, 64, 76**
 ```ts
@@ -156,7 +156,7 @@ Action: Standardise all Immer draft parameters to `draft` (most idiomatic for Im
 
 ---
 
-### `idea` — semantically misleading name in autocomplete loop
+### ✅ `idea` — semantically misleading name in autocomplete loop
 
 **`components/item/edit-item-row.tsx` — line 115**
 ```ts
@@ -167,7 +167,7 @@ Action: Rename to `suggestion` or simply `item`.
 
 ---
 
-### `onSetQuantity` — verb form inconsistency
+### ✅ `onSetQuantity` — verb form inconsistency
 
 **`components/item/edit-item-row.tsx` — line 68**
 All other local handlers are named `onXxx` where `Xxx` is the event or noun (e.g. `onSubmit`, `onChangeText`). `onSetQuantity` mixes event-handler convention with an imperative verb. Rename to `onQuantityChange` for consistency with React's convention and `onChangeText`.
@@ -190,7 +190,7 @@ See the Magic Values section below.
 
 ## Magic Values
 
-### `400` — hardcoded panel slide distance
+### ✅ `400` — hardcoded panel slide distance
 
 **`components/list/create-list-sheet.tsx` — lines 20 and 79**
 ```ts
@@ -205,7 +205,7 @@ Action: Define `const PANEL_SLIDE_DISTANCE = 400;` at the top of the file.
 
 ---
 
-### `80` — delete action width used in two places
+### ✅ `80` — delete action width used in two places
 
 **`components/list/list-card/list-card-action.tsx` — lines 18 and 49**
 ```ts
@@ -218,7 +218,7 @@ Action: Define `const DELETE_ACTION_WIDTH = 80;` at the top of the file.
 
 ---
 
-### `"rgba(0,0,0,0.4)"` — hardcoded color outside theme
+### ✅ `"rgba(0,0,0,0.4)"` — hardcoded color outside theme (named constant added)
 
 **`components/list/create-list-sheet.tsx` — line 122**
 ```ts
@@ -265,7 +265,7 @@ const ITEM_ID_PREFIX = "item-";
 
 ---
 
-### `500` — magic bleed height in `create-list.tsx`
+### ✅ `500` — magic bleed height in `create-list.tsx`
 
 **`components/list/create-list.tsx` — lines 67–68**
 ```ts
@@ -277,7 +277,7 @@ Action: Define `const BACKGROUND_BLEED_HEIGHT = 500;` with a comment explaining 
 
 ---
 
-### `"26"` — opacity suffix in `list-card.tsx`
+### ✅ `"26"` — opacity suffix in `list-card.tsx`
 
 **`components/list/list-card/list-card.tsx` — line 36**
 ```ts
@@ -288,7 +288,7 @@ Action: Add a brief inline comment: `// "26" = ~15% opacity hex suffix` and cons
 
 ---
 
-### `keyboardVerticalOffset={insets.top + 16}` — repeated magic offset
+### `keyboardVerticalOffset={insets.top + 16}` — repeated magic offset (open)
 
 **`app/(auth)/login.tsx` — line 68**, **`app/(auth)/signup.tsx` — line 96**, **`components/list/edit-list.tsx` — line 51**
 All three use `insets.top + 16` as the `KeyboardAvoidingView` vertical offset. The `16` is a magic spacing value.
@@ -308,7 +308,7 @@ No single function or component significantly exceeds the 40-line / 150-line thr
 
 ## Consistency Issues
 
-### Mixed named vs. default exports for components
+### Mixed named vs. default exports for components (open)
 
 Some components use named exports, others use default exports — without a clear rule:
 
@@ -320,7 +320,7 @@ Action: Standardise on default exports for all component files (the majority pat
 
 ---
 
-### `React` import: present in some files, absent in others
+### ✅ `React` import: present in some files, absent in others
 
 Files that import `React` explicitly:
 - `components/themed-button.tsx` (line 3)
@@ -364,7 +364,7 @@ Action: Add `eslint-plugin-import` with `import/order` rule to enforce: `builtin
 
 ---
 
-### Two separate `FlatList` imports in `play-list.tsx`
+### ✅ Two separate `FlatList` imports in `play-list.tsx`
 
 **`components/list/play-list.tsx` — lines 7–8**
 ```ts
@@ -376,7 +376,7 @@ Action: Merge into `import { Alert, FlatList, StyleSheet, View } from "react-nat
 
 ---
 
-### `Pressable onPress={() => {}}` — no-op handler
+### ✅ `Pressable onPress={() => {}}` — no-op handler
 
 **`components/list/create-list-sheet.tsx` — line 105**
 ```ts
@@ -403,7 +403,7 @@ The guard `if (!hydrated)` inside the effect is consistent with the project's st
 
 ## Comment Quality
 
-### Missing comment explaining bare Reanimated import
+### ✅ Missing comment explaining bare Reanimated import
 
 **`app/_layout.tsx` — line 8**
 ```ts
@@ -414,7 +414,7 @@ Action: `// Required: registers Reanimated's native module on app start (must be
 
 ---
 
-### Missing comment on `backgroundBleed` in `create-list.tsx`
+### ✅ Missing comment on `backgroundBleed` in `create-list.tsx`
 
 **`components/list/create-list.tsx` — lines 65–71**
 The `backgroundBleed` view with `bottom: -500` / `height: 500` is a deliberate hack to prevent the background color from showing through as the sheet is dragged or the keyboard hides. Without a comment, this looks like a bug.
@@ -422,14 +422,14 @@ Action: Add: `// Extends the panel background below the visible area to cover th
 
 ---
 
-### Missing comment on `"26"` opacity hex suffix
+### ✅ Missing comment on `"26"` opacity hex suffix
 
 **`components/list/list-card/list-card.tsx` — line 36**
 (See also Magic Values above.) The `primary + "26"` expression needs a brief inline comment for any reader unfamiliar with hex alpha suffixes.
 
 ---
 
-### No comment on `_start` sentinel value
+### ✅ No comment on `_start` sentinel value
 
 **`components/list/play-list.tsx` — line 28** and **`domain/grocery/distance.ts` — line 47**
 ```ts

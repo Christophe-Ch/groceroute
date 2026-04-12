@@ -153,7 +153,7 @@ No `eas.json` exists and `expo-updates` is not configured. OTA updates are not a
 
 ---
 
-### 11. Single Token Listener Slot — Fragile Observable
+### ✅ 11. Single Token Listener Slot — Fragile Observable
 
 **File:** `services/token.service.ts` (lines 33–35)
 

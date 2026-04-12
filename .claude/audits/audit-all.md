@@ -35,10 +35,10 @@ Ordered by cross-domain impact.
 | 3 | ✅ Arch + Perf | `components/list/list-card/list-card.tsx:23` | Remove `GestureHandlerRootView` from `ListCard` — it is already at the app root; nested copies cause gesture conflicts and mount overhead |
 | 4 | ✅ TypeScript | `store/grocery-list.store.ts:88` | Fix `quantity: 1` → `quantity: ""` — type mismatch between the model (`string`) and initialisation (`number`) |
 | 5 | ✅ TypeScript + Arch | `store/grocery-list.store.ts` (6 call sites) | Guard `get().lists[id]` before passing to `persistList` — `undefined` dereference crash when a listId is absent |
-| 6 | Perf | `app/(app)/(tabs)/lists/index.tsx:14`, `[listId].tsx:16` | Fix Zustand selectors to subscribe to the minimal slice — eliminates store-wide re-renders on every mutation |
+| ✅ 6 | Perf | `app/(app)/(tabs)/lists/index.tsx:14`, `[listId].tsx:16` | Fix Zustand selectors to subscribe to the minimal slice — eliminates store-wide re-renders on every mutation |
 | 7 | Security | `contexts/authContext.tsx` | Replace `token: string \| null` in context with `isAuthenticated: boolean` — removes the raw token from React state/DevTools |
 | 8 | Perf | `services/storage.service.ts:22–32` | Debounce `updateItem` storage writes and separate index registration from data write — eliminates 40–80 ms I/O per keystroke |
-| 9 | TypeScript | `components/list/play-list.tsx:55`, `edit-item-row.tsx:62` | Replace `!` non-null assertions with guards — both are runtime crash risks on valid user interactions |
+| ✅ 9 | TypeScript | `components/list/play-list.tsx:55`, `edit-item-row.tsx:62` | Replace `!` non-null assertions with guards — both are runtime crash risks on valid user interactions |
 | 10 | Deps | `package.json` | Run `npx expo install react-native` to realign to `0.79.x`; add `expo-image-picker`; remove 5 unused packages (`expo-checkbox`, `expo-image`, `expo-web-browser`, `expo-haptics`, `react-native-worklets`) |
 
 ---
