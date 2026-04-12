@@ -8,6 +8,9 @@ import { SharedValue } from "react-native-reanimated";
 import { ThemedText } from "../../themed-text";
 import ListCardAction from "./list-card-action";
 
+// "26" = ~15% opacity hex suffix appended to 6-digit hex colors
+const BADGE_OPACITY_HEX = "26";
+
 type ListCardProps = {
   list: GroceryList;
 };
@@ -41,7 +44,7 @@ const ListCard = ({ list }: ListCardProps) => {
         <View style={styles.container}>
           <View style={styles.content}>
             <ThemedText>{list.name}</ThemedText>
-            <View style={[styles.badge, { backgroundColor: primary + "26" }]}>
+            <View style={[styles.badge, { backgroundColor: primary + BADGE_OPACITY_HEX }]}>
               <ThemedText style={[styles.badgeText, { color: primary }]}>
                 {list.items.length} items
               </ThemedText>

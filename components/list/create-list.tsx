@@ -55,6 +55,9 @@ const CreateList = ({ onCreate }: CreateListProps) => {
 
 export default CreateList;
 
+// Extends the panel background below the visible area to cover the overscroll reveal
+const BACKGROUND_BLEED_HEIGHT = 500;
+
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
@@ -64,9 +67,9 @@ const styles = StyleSheet.create({
   },
   backgroundBleed: {
     position: "absolute",
-    bottom: -500,
+    bottom: -BACKGROUND_BLEED_HEIGHT,
     left: 0,
     right: 0,
-    height: 500,
+    height: BACKGROUND_BLEED_HEIGHT,
   },
 });

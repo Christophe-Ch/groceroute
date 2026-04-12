@@ -5,6 +5,7 @@ import {
 } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Slot } from "expo-router";
+// Required: registers Reanimated's native module on app start (must be in the root layout)
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/ui/use-color-scheme";

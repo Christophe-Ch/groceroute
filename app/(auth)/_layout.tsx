@@ -1,6 +1,5 @@
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { Stack } from "expo-router";
-import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const AuthLayout = () => {

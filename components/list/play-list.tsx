@@ -4,12 +4,14 @@ import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { useGroceryListStore } from "@/store/grocery-list.store";
 import { produce } from "immer";
 import { useCallback, useMemo, useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
-import { FlatList } from "react-native";
+import { Alert, FlatList, StyleSheet, View } from "react-native";
 import PlayItemRow from "../item/play-item-row";
 import ThemedButton from "../themed-button";
 import ThemedInput from "../themed-input";
 import { ThemedText } from "../themed-text";
+
+// Represents the virtual "start" node for the shopping route graph
+const SHOPPING_START_SENTINEL = "_start";
 
 type PlayListProps = {
   list: GroceryList;
@@ -28,7 +30,7 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
   const totalCount = items.length;
 
   const [checkOrder, setCheckOrder] = useState<Set<string>>(
-    new Set(["_start"]),
+    new Set([SHOPPING_START_SENTINEL]),
   );
   const { updateList } = useGroceryListStore();
 

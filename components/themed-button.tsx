@@ -1,6 +1,6 @@
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { Ionicons } from "@expo/vector-icons";
-import React, { ComponentProps } from "react";
+import { ComponentProps } from "react";
 import { Pressable, PressableProps, StyleSheet } from "react-native";
 import { ThemedText } from "./themed-text";
 

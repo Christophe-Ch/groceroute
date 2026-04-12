@@ -44,6 +44,7 @@ export const orderItems = (
 
   const itemsMap = Object.fromEntries(items.map((item) => [item.id, item]));
   const sorted = [];
+  // "_start" is the virtual entry node for the shopping route graph
   let lastItemId = "_start";
 
   while (sorted.length < items.length) {

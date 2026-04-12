@@ -15,9 +15,11 @@ type Props = {
   onClose: () => void;
 };
 
+const PANEL_SLIDE_DISTANCE = 400;
+
 const CreateListSheet = ({ visible, onClose }: Props) => {
   const backdropAnim = useRef(new Animated.Value(0)).current;
-  const panelAnim = useRef(new Animated.Value(400)).current;
+  const panelAnim = useRef(new Animated.Value(PANEL_SLIDE_DISTANCE)).current;
   const keyboardOffset = useRef(new Animated.Value(0)).current;
   const combinedTranslate = useRef(Animated.add(panelAnim, keyboardOffset)).current;
 
@@ -49,7 +51,7 @@ const CreateListSheet = ({ visible, onClose }: Props) => {
 
   const open = () => {
     backdropAnim.setValue(0);
-    panelAnim.setValue(400);
+    panelAnim.setValue(PANEL_SLIDE_DISTANCE);
     keyboardOffset.setValue(0);
     Animated.parallel([
       Animated.timing(backdropAnim, {
@@ -76,7 +78,7 @@ const CreateListSheet = ({ visible, onClose }: Props) => {
           useNativeDriver: true,
         }),
         Animated.timing(panelAnim, {
-          toValue: 400,
+          toValue: PANEL_SLIDE_DISTANCE,
           duration: 220,
           useNativeDriver: true,
         }),
@@ -102,6 +104,7 @@ const CreateListSheet = ({ visible, onClose }: Props) => {
         <Animated.View style={[styles.backdrop, { opacity: backdropAnim }]} />
         <Pressable style={StyleSheet.absoluteFill} onPress={close} />
         <Animated.View style={{ transform: [{ translateY: combinedTranslate }] }}>
+          {/* Absorbs taps so pressing inside the panel doesn't trigger the backdrop close */}
           <Pressable onPress={() => {}}>
             <CreateList onCreate={close} />
           </Pressable>

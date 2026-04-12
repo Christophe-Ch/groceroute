@@ -94,14 +94,4 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 16,
   },
-  title: {
-    fontSize: 46,
-    textAlign: "center",
-    fontWeight: "bold",
-  },
-  subtitle: {
-    fontSize: 20,
-    color: "#777",
-    textAlign: "center",
-  },
 });

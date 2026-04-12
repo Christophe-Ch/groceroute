@@ -1,9 +1,9 @@
-import React from "react";
+import { ComponentProps } from "react";
 import { useColorScheme } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 type ThemedIconProps = {
-  name: React.ComponentProps<typeof Ionicons>["name"];
+  name: ComponentProps<typeof Ionicons>["name"];
   size?: number;
   color?: string;
   lightColor?: string;

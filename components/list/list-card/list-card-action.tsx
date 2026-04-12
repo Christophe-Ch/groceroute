@@ -12,11 +12,13 @@ type DeleteActionProps = {
   listId: string;
 };
 
+const DELETE_ACTION_WIDTH = 80;
+
 const DeleteAction = ({ drag, listId }: DeleteActionProps) => {
   const alertColor = useThemeColor({}, "error");
   const styleAnimation = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: drag.value + 80 }],
+      transform: [{ translateX: drag.value + DELETE_ACTION_WIDTH }],
     };
   });
 
@@ -46,7 +48,7 @@ export default DeleteAction;
 
 const styles = StyleSheet.create({
   container: {
-    width: 80,
+    width: DELETE_ACTION_WIDTH,
     height: "100%",
     justifyContent: "center",
     alignItems: "center",

@@ -49,8 +49,8 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
     };
 
     set(
-      produce((s: GroceryListStore) => {
-        s.lists[list.id] = list;
+      produce((draft: GroceryListStore) => {
+        draft.lists[list.id] = list;
       }),
     );
 
@@ -65,8 +65,8 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
 
     const updated = { ...existing, ...updatedFields };
     set(
-      produce((s: GroceryListStore) => {
-        s.lists[id] = updated;
+      produce((draft: GroceryListStore) => {
+        draft.lists[id] = updated;
       }),
     );
 
@@ -75,8 +75,8 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
 
   deleteList: async (id: string) => {
     set(
-      produce((s: GroceryListStore) => {
-        delete s.lists[id];
+      produce((draft: GroceryListStore) => {
+        delete draft.lists[id];
       }),
     );
 
@@ -96,8 +96,8 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
     };
 
     set(
-      produce((s: GroceryListStore) => {
-        s.lists[listId].items.push(newItem);
+      produce((draft: GroceryListStore) => {
+        draft.lists[listId].items.push(newItem);
       }),
     );
 
@@ -108,8 +108,8 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
     if (!get().lists[listId]) return;
 
     set(
-      produce((s: GroceryListStore) => {
-        s.lists[listId].items.push({ ...item, checked: false });
+      produce((draft: GroceryListStore) => {
+        draft.lists[listId].items.push({ ...item, checked: false });
       }),
     );
 
@@ -124,8 +124,8 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
     if (!get().lists[listId]) return;
 
     set(
-      produce((s: GroceryListStore) => {
-        const items = s.lists[listId].items;
+      produce((draft: GroceryListStore) => {
+        const items = draft.lists[listId].items;
         const index = items.findIndex((item) => item.id === itemId);
         if (index !== -1) {
           items[index] = { ...items[index], ...updatedItem };
@@ -140,8 +140,8 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
     if (!get().lists[listId]) return;
 
     set(
-      produce((s: GroceryListStore) => {
-        s.lists[listId].items = s.lists[listId].items.filter(
+      produce((draft: GroceryListStore) => {
+        draft.lists[listId].items = draft.lists[listId].items.filter(
           (item) => item.id !== itemId,
         );
       }),
@@ -154,8 +154,8 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
     if (!get().lists[listId]) return;
 
     set(
-      produce((state) => {
-        state.lists[listId].items = newItems;
+      produce((draft: GroceryListStore) => {
+        draft.lists[listId].items = newItems;
       }),
     );
 

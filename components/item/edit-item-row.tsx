@@ -68,7 +68,7 @@ const EditItemRow = ({
     }
   };
 
-  const onSetQuantity = (quantity: string, itemId: string) => {
+  const onQuantityChange = (quantity: string, itemId: string) => {
     setQuantity(quantity);
     updateItem(listId, itemId, { quantity });
   };
@@ -92,7 +92,7 @@ const EditItemRow = ({
         />
         {item && (
           <ThemedInput
-            onChangeText={(text) => onSetQuantity(text, item.id)}
+            onChangeText={(text) => onQuantityChange(text, item.id)}
             value={quantity}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
@@ -115,17 +115,17 @@ const EditItemRow = ({
             { backgroundColor: autocompleteBackground },
           ]}
         >
-          {autocomplete.map((idea) => (
+          {autocomplete.map((suggestion) => (
             <Pressable
-              key={idea.id}
+              key={suggestion.id}
               style={{ paddingBlock: 3 }}
               onPress={() => {
-                addPastItem(listId, idea);
+                addPastItem(listId, suggestion);
                 setName("");
                 setAutocomplete(null);
               }}
             >
-              <ThemedText>{idea.name}</ThemedText>
+              <ThemedText>{suggestion.name}</ThemedText>
             </Pressable>
           ))}
         </View>

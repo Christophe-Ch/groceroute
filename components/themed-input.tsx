@@ -1,5 +1,5 @@
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Control,
   Controller,
