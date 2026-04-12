@@ -1,5 +1,6 @@
 import { GroceryItem, GroceryList } from "@/models/grocery";
 import { storageService } from "@/services/storage.service";
+import { generateId } from "@/utils/generate-id";
 import { produce } from "immer";
 import { toast } from "sonner-native";
 import { create } from "zustand";
@@ -39,7 +40,7 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
 
   createList: async (name: string) => {
     const list: GroceryList = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       name,
       items: [],
       createdAt: new Date(),
@@ -101,7 +102,7 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
     if (!get().lists[listId]) return;
 
     const newItem: GroceryItem = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       name,
       quantity: "",
       checked: false,
