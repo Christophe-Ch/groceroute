@@ -1,6 +1,6 @@
 import { GroceryList } from "@/models/grocery/grocery-list";
 import { useGroceryListStore } from "@/store/grocery-list.store";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
   StyleSheet,
@@ -25,12 +25,29 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
 
   const currentItemIds = useMemo(() => new Set(list.items.map((i) => i.id)), [list.items]);
   const [listName, setListName] = useState(list.name);
-  const onUpdateTitle = () => {
+
+  const onUpdateTitle = useCallback(() => {
     const trimmed = listName.trim();
     if (trimmed && trimmed !== list.name) {
       updateList(list.id, { name: trimmed });
     }
-  };
+  }, [listName, list.name, list.id, updateList]);
+
+  const onDragEnd = useCallback(
+    (data: { data: typeof list.items }) => reorderItems(list.id, data.data),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [list.id, reorderItems],
+  );
+
+  const renderItem = useCallback(
+    ({ item, drag }: { item: (typeof list.items)[0]; drag: () => void }) => (
+      <TouchableOpacity onLongPress={drag}>
+        <EditItemRow listId={list.id} item={item} />
+      </TouchableOpacity>
+    ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [list.id],
+  );
 
   return (
     <>
@@ -56,13 +73,9 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
         </View>
         <DraggableFlatList
           data={list.items}
-          onDragEnd={(data) => reorderItems(list.id, data.data)}
+          onDragEnd={onDragEnd}
           keyExtractor={(item) => item.id}
-          renderItem={({ item, drag }) => (
-            <TouchableOpacity onLongPress={drag}>
-              <EditItemRow listId={list.id} item={item} />
-            </TouchableOpacity>
-          )}
+          renderItem={renderItem}
           keyboardShouldPersistTaps="handled"
           containerStyle={{ flex: 1 }}
           activationDistance={10}

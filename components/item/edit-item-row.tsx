@@ -2,7 +2,7 @@ import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { GroceryItem } from "@/models/grocery";
 import { useGroceryListStore } from "@/store/grocery-list.store";
 import { findItems } from "@/utils/autocomplete";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { ThemedIcon } from "../themed-icon";
 import ThemedInput from "../themed-input";
@@ -134,7 +134,7 @@ const EditItemRow = ({
   );
 };
 
-export default EditItemRow;
+export default memo(EditItemRow);
 
 const styles = StyleSheet.create({
   row: {

@@ -3,7 +3,7 @@ import { GroceryList } from "@/models/grocery/grocery-list";
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { useGroceryListStore } from "@/store/grocery-list.store";
 import { produce } from "immer";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import { FlatList } from "react-native";
 import PlayItemRow from "../item/play-item-row";
@@ -18,10 +18,13 @@ type PlayListProps = {
 
 const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
   const [list, setList] = useState(baseList);
-  const items = [...list.items].sort((a, b) => +a.checked - +b.checked);
+  const items = useMemo(
+    () => [...list.items].sort((a, b) => +a.checked - +b.checked),
+    [list.items],
+  );
   const primary = useThemeColor({}, "primary");
   const trackColor = useThemeColor({}, "surfaceElevated");
-  const checkedCount = items.filter((i) => i.checked).length;
+  const checkedCount = useMemo(() => items.filter((i) => i.checked).length, [items]);
   const totalCount = items.length;
 
   const [checkOrder, setCheckOrder] = useState<Set<string>>(
@@ -49,7 +52,7 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
     });
   };
 
-  const onItemCheckedChange = (itemId: string, checked: boolean) => {
+  const onItemCheckedChange = useCallback((itemId: string, checked: boolean) => {
     setList((list) =>
       produce(list, (draft) => {
         const target = draft.items.find((i) => i.id === itemId);
@@ -66,7 +69,7 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
       }
       return next;
     });
-  };
+  }, []);
 
   const onStop = () => {
     Alert.alert(
@@ -127,11 +130,7 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
         data={items}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <PlayItemRow
-            listId={list.id}
-            item={item}
-            onItemCheckedChange={onItemCheckedChange}
-          />
+          <PlayItemRow item={item} onItemCheckedChange={onItemCheckedChange} />
         )}
         keyboardShouldPersistTaps="handled"
       />

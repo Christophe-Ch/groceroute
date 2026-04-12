@@ -1,8 +1,10 @@
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { GroceryList } from "@/models/grocery";
 import { useRouter } from "expo-router";
+import { memo, useCallback } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import { SharedValue } from "react-native-reanimated";
 import { ThemedText } from "../../themed-text";
 import ListCardAction from "./list-card-action";
 
@@ -15,17 +17,25 @@ const ListCard = ({ list }: ListCardProps) => {
   const primary = useThemeColor({}, "primary");
   const router = useRouter();
 
+  const onPress = useCallback(
+    () => router.navigate(`/(app)/(tabs)/lists/${list.id}`),
+    [router, list.id],
+  );
+
+  const renderRightActions = useCallback(
+    (_: SharedValue<number>, drag: SharedValue<number>) => (
+      <ListCardAction drag={drag} listId={list.id} />
+    ),
+    [list.id],
+  );
+
   return (
-    <Pressable
-      onPress={() => router.navigate(`/(app)/(tabs)/lists/${list.id}`)}
-    >
+    <Pressable onPress={onPress}>
       <Swipeable
         friction={2}
         rightThreshold={40}
         overshootRight={false}
-        renderRightActions={(_, drag) => (
-          <ListCardAction drag={drag} listId={list.id} />
-        )}
+        renderRightActions={renderRightActions}
         containerStyle={[styles.swipeable, { backgroundColor: background }]}
       >
         <View style={styles.container}>
@@ -43,7 +53,7 @@ const ListCard = ({ list }: ListCardProps) => {
   );
 };
 
-export default ListCard;
+export default memo(ListCard);
 
 const styles = StyleSheet.create({
   swipeable: {

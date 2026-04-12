@@ -1,12 +1,11 @@
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { GroceryItem } from "@/models/grocery";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Pressable, StyleSheet } from "react-native";
 import { ThemedText } from "../themed-text";
 
 type PlayItemRowProps = {
-  listId: string;
   item: GroceryItem;
   onItemCheckedChange: (itemId: string, checked: boolean) => void;
 };
@@ -52,7 +51,7 @@ const PlayItemRow = ({ item, onItemCheckedChange }: PlayItemRowProps) => {
   );
 };
 
-export default PlayItemRow;
+export default memo(PlayItemRow);
 
 const styles = StyleSheet.create({
   row: {

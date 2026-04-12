@@ -9,21 +9,14 @@ import { useGroceryListStore } from "@/store/grocery-list.store";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { useShallow } from "zustand/react/shallow";
 
 const Index = () => {
-  const { lists, hydrated } = useGroceryListStore();
+  const lists = useGroceryListStore(useShallow((s) => Object.values(s.lists)));
   const [showSheet, setShowSheet] = useState(false);
   const iconColor = useThemeColor({}, "icon");
 
-  if (!hydrated) {
-    return (
-      <ThemedView style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ThemedText>Loading...</ThemedText>
-      </ThemedView>
-    );
-  }
-
-  const isEmpty = Object.values(lists).length === 0;
+  const isEmpty = lists.length === 0;
 
   return (
     <ThemedView style={{ flex: 1, paddingBlock: 20 }}>
@@ -42,7 +35,7 @@ const Index = () => {
         </View>
       ) : (
         <ScrollView style={{ flex: 1, paddingHorizontal: 20 }}>
-          {Object.values(lists).map((list) => (
+          {lists.map((list) => (
             <ListCard key={list.id} list={list} />
           ))}
         </ScrollView>

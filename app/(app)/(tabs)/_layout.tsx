@@ -7,7 +7,8 @@ import { useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const AppLayout = () => {
-  const { hydrate, hydrated } = useGroceryListStore();
+  const hydrated = useGroceryListStore((s) => s.hydrated);
+  const hydrate = useGroceryListStore((s) => s.hydrate);
   const colorScheme = useColorScheme() ?? "dark";
   const theme = Colors[colorScheme];
 
@@ -16,6 +17,8 @@ const AppLayout = () => {
       hydrate();
     }
   }, [hydrate, hydrated]);
+
+  if (!hydrated) return null;
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
