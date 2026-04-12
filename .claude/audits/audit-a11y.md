@@ -10,7 +10,7 @@ The app has **significant accessibility gaps** that would make core functionalit
 
 ## Critical Issues
 
-### 1. ThemedButton has no accessibility role or label on icon-only buttons
+### 1. ✅ ThemedButton has no accessibility role or label on icon-only buttons
 **File:** `components/themed-button.tsx:62–92`
 
 Every button in the app uses `ThemedButton`. The underlying `Pressable` has no `accessibilityRole="button"`, no `accessibilityLabel`, and no `accessibilityState` for disabled. Icon-only buttons (the FAB `+`, the `stop` button in shopping mode, the delete action) are completely opaque to screen readers — VoiceOver will announce them as an unlabeled element.
@@ -37,7 +37,7 @@ For icon-only instances, callers must pass `accessibilityLabel`:
 
 ---
 
-### 2. PlayItemRow has no checkbox semantics — entire shopping mode is broken for screen readers
+### 2. ✅ PlayItemRow has no checkbox semantics — entire shopping mode is broken for screen readers
 **File:** `components/item/play-item-row.tsx:26–53`
 
 The shopping list row is the primary interaction in play mode. It is a `Pressable` that toggles a checked state, renders a checkmark icon, and applies a strikethrough style. None of this is communicated to screen readers. VoiceOver will read only the item name with no role, no state, and no hint that the element is interactive or checkable.
@@ -56,7 +56,7 @@ The shopping list row is the primary interaction in play mode. It is a `Pressabl
 
 ---
 
-### 3. ListCard missing role and label — entire lists screen is opaque to screen readers
+### 3. ✅ ListCard missing role and label — entire lists screen is opaque to screen readers
 **File:** `components/list/list-card/list-card.tsx:20–46`
 
 The `Pressable` wrapping each list card has no `accessibilityRole`, no `accessibilityLabel`, and no `accessibilityHint`. VoiceOver will announce an unlabeled button with child text that may or may not be read. The swipe-to-delete gesture (Swipeable) has no accessible alternative.
@@ -73,7 +73,7 @@ The `Pressable` wrapping each list card has no `accessibilityRole`, no `accessib
 
 ---
 
-### 4. Delete action button has no label
+### 4. ✅ Delete action button has no label
 **File:** `components/list/list-card/list-card-action.tsx:38–42`
 
 The trash-can `Pressable` revealed by swipe has no `accessibilityRole`, no `accessibilityLabel`. A screen reader user who somehow triggered the swipe would encounter an anonymous element.
@@ -91,7 +91,7 @@ The trash-can `Pressable` revealed by swipe has no `accessibilityRole`, no `acce
 
 ---
 
-### 5. TextInput fields missing accessibilityLabel — all forms are broken for screen readers
+### 5. ✅ TextInput fields missing accessibilityLabel — all forms are broken for screen readers
 **File:** `components/themed-input.tsx:65–79`, used in login, signup, create list, edit list
 
 `TextInput` uses only `placeholder` for labeling. Placeholder text is not read by VoiceOver once the user has typed something, and on many configurations VoiceOver reads placeholder text inconsistently. Forms in login, signup, create list, and edit list have no proper labels.
@@ -121,7 +121,7 @@ For the controlled form inputs, callers should pass it:
 
 ## Moderate Issues
 
-### 6. Error messages not programmatically associated with inputs
+### 6. ✅ Error messages not programmatically associated with inputs
 **File:** `components/themed-input.tsx:94`
 
 Validation errors (e.g. "Email is required.") are rendered as a separate `Text` element below the input with `color: "red"`. There is no association between the error and its input field — screen readers will read the error as disconnected text, not as feedback on the field. Additionally, `color: "red"` on a white background fails WCAG AA for normal text.
@@ -154,7 +154,7 @@ Validation errors (e.g. "Email is required.") are rendered as a separate `Text` 
 
 ---
 
-### 8. Modal (CreateListSheet) does not trap focus or announce itself
+### 8. ✅ Modal (CreateListSheet) does not trap focus or announce itself
 **File:** `components/list/create-list-sheet.tsx:93–111`
 
 The `Modal` component itself provides some focus trapping on iOS by default, but:
@@ -181,7 +181,7 @@ The `Modal` component itself provides some focus trapping on iOS by default, but
 
 ---
 
-### 9. Swipeable gesture for delete has no accessible alternative
+### 9. ✅ Swipeable gesture for delete has no accessible alternative
 **File:** `components/list/list-card/list-card.tsx:24–43`
 
 The `Swipeable` component requires a horizontal swipe gesture to reveal the delete button. This gesture is not performable by switch access users and is difficult for users with motor impairments. VoiceOver custom actions can provide an accessible alternative.
@@ -198,7 +198,7 @@ The `Swipeable` component requires a horizontal swipe gesture to reveal the dele
 
 ---
 
-### 10. Progress bar in PlayList conveys no information to screen readers
+### 10. ✅ Progress bar in PlayList conveys no information to screen readers
 **File:** `components/list/play-list.tsx:117–122`
 
 The shopping progress bar is a visual-only element. VoiceOver cannot determine completion percentage.
@@ -219,7 +219,7 @@ The shopping progress bar is a visual-only element. VoiceOver cannot determine c
 
 ---
 
-### 11. Section headings not marked as headers
+### 11. ✅ Section headings not marked as headers
 **Files:**
 - `app/(app)/(tabs)/lists/index.tsx:30` — "My lists" title
 - `components/list/create-list.tsx:35` — "Create a list" title
@@ -235,7 +235,7 @@ Screen reader users use heading navigation to jump between sections. None of the
 
 ---
 
-### 12. EditItemRow delete button uses onPressIn — triggers before screen reader can confirm
+### 12. ✅ EditItemRow delete button uses onPressIn — triggers before screen reader can confirm
 **File:** `components/item/edit-item-row.tsx:100–106`
 
 The delete Pressable for items uses `onPressIn` instead of `onPress`. For VoiceOver/TalkBack users, `onPressIn` fires on the first tap (focus), and `onPress` fires on double-tap. Using `onPressIn` means deletion fires immediately on first tap — data loss without confirmation.
@@ -244,7 +244,7 @@ The delete Pressable for items uses `onPressIn` instead of `onPress`. For VoiceO
 
 ---
 
-### 13. Autocomplete suggestions not announced as interactive
+### 13. ✅ Autocomplete suggestions not announced as interactive
 **File:** `components/item/edit-item-row.tsx:116–128`
 
 Autocomplete suggestions that appear below the input field are `Pressable` elements with no `accessibilityRole`, no `accessibilityHint`, and the list appears without any live region announcement. VoiceOver users won't know suggestions appeared.
@@ -257,7 +257,7 @@ Autocomplete suggestions that appear below the input field are `Pressable` eleme
 
 ## Minor Issues
 
-### 14. Decorative icons not hidden from screen readers
+### 14. ✅ Decorative icons not hidden from screen readers
 **File:** `components/themed-icon.tsx`, `components/item/play-item-row.tsx:27–31`
 
 Ionicons in item rows (checkmark, ellipse, menu drag handle) are exposed to screen readers as separate elements. When `accessibilityRole` is set on the parent Pressable, these icon elements create redundant noise.
@@ -266,7 +266,7 @@ Ionicons in item rows (checkmark, ellipse, menu drag handle) are exposed to scre
 
 ---
 
-### 15. Empty state icon should be hidden from screen reader
+### 15. ✅ Empty state icon should be hidden from screen reader
 **File:** `app/(app)/(tabs)/lists/index.tsx:35`
 
 The cart icon in the empty state is decorative. VoiceOver will announce it as an unlabeled image element.
@@ -294,7 +294,7 @@ Expo Router's `<Link>` wraps a `Text` element. These are announced as plain text
 
 ---
 
-### 17. PlayList title uses TextInput for display-only text
+### 17. ✅ PlayList title uses TextInput for display-only text
 **File:** `components/list/play-list.tsx:106–111`
 
 The list name in play mode is displayed via `ThemedInput` with `editable={false}`. Screen readers may still identify this as an editable text field, confusing the user.
@@ -305,18 +305,18 @@ The list name in play mode is displayed via `ThemedInput` with `editable={false}
 
 ## Touch Target Issues
 
-### FAB button (lists/index.tsx:51)
+### ✅ FAB button (lists/index.tsx:51)
 - `sizeNormalIcon` style: `paddingVertical: 16, paddingHorizontal: 16` → total tappable area ~48×48pt. Marginally acceptable, but at `borderRadius: 50` the circular area clips inward. Add `hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}` for safety.
 
-### Small icon button in EditItemRow (edit-item-row.tsx:100–106)
+### ✅ Small icon button in EditItemRow (edit-item-row.tsx:100–106)
 - The delete `Pressable` has only `marginLeft: 20` and no padding. The `ThemedIcon` is 20×20pt — well below the 44pt minimum.
 - **Fix:** Add `padding: 12` to the delete Pressable style.
 
-### Autocomplete suggestions (edit-item-row.tsx:116–128)
+### ✅ Autocomplete suggestions (add-item-row.tsx)
 - Each suggestion has `paddingBlock: 3` — total ~24pt height for `fontSize: 16` text. Below the 44pt minimum.
 - **Fix:** Increase to `paddingVertical: 12`.
 
-### Play item row (play-item-row.tsx:57–60)
+### ✅ Play item row (play-item-row.tsx:57–60)
 - `paddingVertical: 10` yields ~36pt height for a single-line item. Below the 44pt minimum.
 - **Fix:** Increase to `paddingVertical: 14` (yields ~44pt for `fontSize: 16`).
 
@@ -331,7 +331,7 @@ The list name in play mode is displayed via `ThemedInput` with `editable={false}
 ### Light mode — disabled button text fails WCAG AA
 - `buttonDisabledText: "#9BA1A6"` on `buttonDisabledBackground: "#E5E7EB"` → contrast ratio ≈ **1.8:1** (fails AA at 4.5:1 requirement). While disabled elements have a WCAG exception, the text is still meaningful information.
 
-### Light mode — error message hardcoded red fails WCAG AA
+### ✅ Light mode — error message hardcoded red fails WCAG AA
 - `components/themed-input.tsx:113`: `color: "red"` (CSS keyword red = `#FF0000`) on `#FFFFFF` background → contrast ratio **3.99:1**. Fails WCAG AA (4.5:1) for normal-sized text (below 18pt).
 - **Fix:** Use `inputBorderError: "#D1242F"` from the theme (contrast ≈ 5.9:1 on white — passes AA).
 

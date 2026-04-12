@@ -70,7 +70,7 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
 
       <KeyboardAvoidingView
         behavior="padding"
-        keyboardVerticalOffset={insets.top + 16}
+        keyboardVerticalOffset={insets.top + KEYBOARD_OFFSET_PADDING}
         style={{ flex: 1 }}
       >
         <View style={{ zIndex: 1 }}>
@@ -102,6 +102,8 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
 };
 
 export default EditList;
+
+const KEYBOARD_OFFSET_PADDING = 16;
 
 const styles = StyleSheet.create({
   title: {

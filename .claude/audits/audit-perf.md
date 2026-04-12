@@ -28,7 +28,7 @@ The app is small enough that most issues are latent rather than immediately cata
 
 **✅ 8. `FlatList` in `PlayList` has inline `renderItem` and unstable `onItemCheckedChange`** — `components/list/play-list.tsx:124–135`. Both are new references on every check-off. `items` is `[...list.items].sort(...)` — a new array every render. No tuning props. Fix: `useMemo` for items, `useCallback` for both callbacks.
 
-**9. `ScrollView` instead of `FlatList` for the lists overview** — `app/(app)/(tabs)/lists/index.tsx:44`. All list cards (each with a `Swipeable` and `GestureHandlerRootView`) mount simultaneously. Switch to `FlatList` for windowed rendering.
+**✅ 9. `ScrollView` instead of `FlatList` for the lists overview** — `app/(app)/(tabs)/lists/index.tsx:44`. All list cards (each with a `Swipeable` and `GestureHandlerRootView`) mount simultaneously. Switch to `FlatList` for windowed rendering.
 
 **10. ✅ `GestureHandlerRootView` inside each `ListCard`** — `components/list/list-card/list-card.tsx:23`. The root-level `GestureHandlerRootView` in `app/_layout.tsx:23` is sufficient. The per-card one adds redundant context providers that scale with list count. Fix: remove it from `ListCard`.
 
@@ -42,13 +42,13 @@ The app is small enough that most issues are latent rather than immediately cata
 
 **✅ 13. `renderRightActions` in `Swipeable` is an inline arrow** — `components/list/list-card/list-card.tsx:28–30`. `ReanimatedSwipeable` uses the prop reference to decide whether to remount the action panel. An inline arrow means it remounts on every parent re-render, potentially resetting a mid-swipe interaction. Fix: `useCallback` inside a memoized `ListCard`.
 
-**14. Inline `onPress`/`onClose` lambdas passed to `Modal`-backed sheet** — `app/(app)/(tabs)/lists/index.tsx:52–57`. `onClose` flows into `Animated.parallel(...).start(onClose)`. If `Index` re-renders mid-animation, `onClose` is a stale closure in the already-started animation. Fix: `useCallback` for both.
+**✅ 14. Inline `onPress`/`onClose` lambdas passed to `Modal`-backed sheet** — `app/(app)/(tabs)/lists/index.tsx:52–57`. `onClose` flows into `Animated.parallel(...).start(onClose)`. If `Index` re-renders mid-animation, `onClose` is a stale closure in the already-started animation. Fix: `useCallback` for both.
 
 ---
 
 ## State & Effect Issues
 
-**15. `persistList` does a serial read+write on every keystroke** — `services/storage.service.ts:22–32`. Called from `updateItem` which fires on every character typed in item name/quantity fields (`edit-item-row.tsx:70`). Two chained AsyncStorage calls = 20–80 ms of I/O per keystroke on mid-range Android. Fix: split into `registerList(id)` (index update, called once on create) and `saveList(list)` (data write only); debounce calls from text fields with ~400 ms delay.
+**✅ 15. `persistList` does a serial read+write on every keystroke** — `services/storage.service.ts:22–32`. Called from `updateItem` which fires on every character typed in item name/quantity fields (`edit-item-row.tsx:70`). Two chained AsyncStorage calls = 20–80 ms of I/O per keystroke on mid-range Android. Fix: split into `registerList(id)` (index update, called once on create) and `saveList(list)` (data write only); debounce calls from text fields with ~400 ms delay.
 
 **✅ 16. `checkOrder` Set mutated in-place — React may bail on re-render** — `components/list/play-list.tsx:59–64`. `return order` returns the same Set reference; `Object.is` comparison means React may skip the re-render. Correctness bug. Fix: `return new Set(order)`.
 

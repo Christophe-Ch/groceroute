@@ -24,7 +24,11 @@ export function ThemedText({
 }: ThemedTextProps) {
   const color = useThemeColor(
     { light: lightColor, dark: darkColor },
-    type === "subtitle" || type === "muted" ? "textMuted" : "text"
+    type === "subtitle" || type === "muted"
+      ? "textMuted"
+      : type === "link"
+        ? "primary"
+        : "text"
   );
 
   return (
@@ -66,6 +70,5 @@ const styles = StyleSheet.create({
   link: {
     lineHeight: 30,
     fontSize: 16,
-    color: "#0a7ea4",
   },
 });

@@ -102,8 +102,16 @@ const CreateListSheet = ({ visible, onClose }: Props) => {
     >
       <View style={styles.container}>
         <Animated.View style={[styles.backdrop, { opacity: backdropAnim }]} />
-        <Pressable style={StyleSheet.absoluteFill} onPress={close} />
-        <Animated.View style={{ transform: [{ translateY: combinedTranslate }] }}>
+        <Pressable
+          style={StyleSheet.absoluteFill}
+          onPress={close}
+          accessibilityRole="button"
+          accessibilityLabel="Close"
+        />
+        <Animated.View
+          style={{ transform: [{ translateY: combinedTranslate }] }}
+          accessibilityViewIsModal={true}
+        >
           {/* Absorbs taps so pressing inside the panel doesn't trigger the backdrop close */}
           <Pressable onPress={() => {}}>
             <CreateList onCreate={close} />

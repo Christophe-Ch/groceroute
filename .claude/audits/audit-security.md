@@ -115,7 +115,7 @@ const refreshResponse = await axios.post<AuthResponse>(
 
 ## Low / Informational
 
-### 7. Deep Link Scheme Is the Template Default
+### ✅ 7. Deep Link Scheme Is the Template Default
 
 **File:** `app.json` (line 8): `"scheme": "reactnativetemplate"`
 
@@ -125,7 +125,7 @@ The scheme is unchanged from the Expo project template. While URI scheme hijacki
 
 ---
 
-### 8. No Input Length Validation for Item Names
+### ✅ 8. No Input Length Validation for Item Names
 
 **File:** `components/item/edit-item-row.tsx`, `store/grocery-list.store.ts` (lines 84–101)
 

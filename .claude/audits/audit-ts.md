@@ -85,7 +85,7 @@ Per the project memory, ternary must not be used for side-effect calls. Use `if/
 
 All other `produce` calls annotate the draft as `(s: GroceryListStore)`. `reorderItems` omits the annotation, relying on Immer's contextual inference from `create<GroceryListStore>`. Add the annotation for consistency.
 
-### 12. `ItemDistance` not exported from the barrel
+### ✅ 12. `ItemDistance` not exported from the barrel
 **`models/grocery/index.ts`**
 
 `ItemDistance` is used in `GroceryList` and `domain/grocery/distance.ts` but is not re-exported from `models/grocery/index.ts`, forcing consumers to import from the deep path. Add `export { ItemDistance } from "./item-distance";`.
@@ -94,12 +94,12 @@ All other `produce` calls annotate the draft as `(s: GroceryListStore)`. `reorde
 
 ## Minor / Style Issues
 
-### 13. Dead `distance` field on `ItemDistance`
+### ✅ 13. Dead `distance` field on `ItemDistance`
 **`models/grocery/item-distance.ts` line 3**
 
 The `distance: number` field is initialised to `1` in `computeDistances` but never updated and never read by `orderItems` (which sorts by `count`). Remove it or document its purpose.
 
-### 14. Mixed `interface` vs `type` usage in models
+### ✅ 14. Mixed `interface` vs `type` usage in models
 `AuthResponse` in `models/auth/auth-response.ts` uses `interface`; all grocery models use `type`. Standardise on `type` for data shapes.
 
 ### ✅ 15. Dead `StyleSheet` entries in login and signup screens

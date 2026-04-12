@@ -102,6 +102,8 @@ export const Colors = {
   },
 };
 
+export type ColorKey = keyof typeof Colors.light;
+
 export const Fonts = Platform.select({
   ios: {
     /** iOS `UIFontDescriptorSystemDesignDefault` */

@@ -19,16 +19,17 @@ export const storageService = {
       .filter(Boolean);
   },
 
-  async persistList(list: GroceryList): Promise<void> {
+  /** Register a new list ID in the index. Call once at list creation. */
+  async registerList(id: string): Promise<void> {
     const rawIndex = await AsyncStorage.getItem(KEYS.index);
     const index = rawIndex ? JSON.parse(rawIndex) : [];
-    if (!index.includes(list.id)) {
-      await AsyncStorage.setItem(
-        KEYS.index,
-        JSON.stringify([...index, list.id]),
-      );
+    if (!index.includes(id)) {
+      await AsyncStorage.setItem(KEYS.index, JSON.stringify([...index, id]));
     }
+  },
 
+  /** Persist list data only — does not touch the index. */
+  async saveList(list: GroceryList): Promise<void> {
     await AsyncStorage.setItem(KEYS.list(list.id), JSON.stringify(list));
   },
 

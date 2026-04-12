@@ -84,7 +84,7 @@ Suggested extraction:
 
 ---
 
-### Duplicate `title` style in `EditList` and `PlayList`
+### ✅ Duplicate `title` style in `EditList` and `PlayList`
 
 **Files:** `components/list/edit-list.tsx` lines 85–91 and `components/list/play-list.tsx` lines 159–166
 
@@ -174,7 +174,7 @@ All other local handlers are named `onXxx` where `Xxx` is the event or noun (e.g
 
 ---
 
-### Component name `DeleteAction` vs export name `ListCardAction`
+### ✅ Component name `DeleteAction` vs export name `ListCardAction`
 
 **`components/list/list-card/list-card-action.tsx`**
 The component is internally named `DeleteAction` (line 15) but exported as `DeleteAction` and the file is named `list-card-action.tsx`. The index exports it without renaming. The caller in `list-card.tsx` imports it as `ListCardAction`. This creates a mismatch: the file name suggests a generic action component, but the internal name is specific to delete. The type name `DeleteActionProps` (line 10) is accurate — the file name is the misleading part.
@@ -239,7 +239,7 @@ This is inside the already-dead `subtitle` style block, so fixing the dead code 
 
 ---
 
-### `"#0a7ea4"` — hardcoded color in ThemedText link style
+### ✅ `"#0a7ea4"` — hardcoded color in ThemedText link style
 
 **`components/themed-text.tsx` — line 68**
 ```ts
@@ -288,7 +288,7 @@ Action: Add a brief inline comment: `// "26" = ~15% opacity hex suffix` and cons
 
 ---
 
-### `keyboardVerticalOffset={insets.top + 16}` — repeated magic offset (open)
+### ✅ `keyboardVerticalOffset={insets.top + 16}` — KEYBOARD_OFFSET_PADDING constant added to `edit-list.tsx`; auth screens skipped
 
 **`app/(auth)/login.tsx` — line 68**, **`app/(auth)/signup.tsx` — line 96**, **`components/list/edit-list.tsx` — line 51**
 All three use `insets.top + 16` as the `KeyboardAvoidingView` vertical offset. The `16` is a magic spacing value.

@@ -37,8 +37,14 @@ const DeleteAction = ({ drag, listId }: DeleteActionProps) => {
 
   return (
     <Reanimated.View style={[styleAnimation, { backgroundColor: alertColor }]}>
-      <Pressable style={styles.container} onPress={onDelete}>
-        <ThemedIcon name={"trash-bin-outline"} />
+      <Pressable
+        style={styles.container}
+        onPress={onDelete}
+        accessibilityRole="button"
+        accessibilityLabel="Delete list"
+        accessibilityHint="Shows delete confirmation"
+      >
+        <ThemedIcon name={"trash-bin-outline"} importantForAccessibility="no" accessibilityElementsHidden={true} />
       </Pressable>
     </Reanimated.View>
   );

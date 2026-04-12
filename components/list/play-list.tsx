@@ -7,7 +7,6 @@ import { useCallback, useMemo, useState } from "react";
 import { Alert, FlatList, StyleSheet, View } from "react-native";
 import PlayItemRow from "../item/play-item-row";
 import ThemedButton from "../themed-button";
-import ThemedInput from "../themed-input";
 import { ThemedText } from "../themed-text";
 
 // Represents the virtual "start" node for the shopping route graph
@@ -113,19 +112,29 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
 
   return (
     <>
-      <ThemedInput
-        style={styles.title}
-        value={list.name}
-        editable={false}
-        maxLength={20}
-      />
+      <ThemedText
+        type="title"
+        style={{ margin: 20 }}
+        accessibilityRole="header"
+      >
+        {list.name}
+      </ThemedText>
 
       <View style={styles.listHeader}>
         <ThemedText type="muted">
           {totalCount - checkedCount} items left
         </ThemedText>
         {totalCount > 0 && (
-          <View style={[styles.progressTrack, { backgroundColor: trackColor }]}>
+          <View
+            style={[styles.progressTrack, { backgroundColor: trackColor }]}
+            accessibilityRole="progressbar"
+            accessibilityValue={{
+              min: 0,
+              max: totalCount,
+              now: checkedCount,
+              text: `${checkedCount} of ${totalCount} items checked`,
+            }}
+          >
             <View style={{ flex: checkedCount, backgroundColor: primary }} />
             <View style={{ flex: Math.max(0, totalCount - checkedCount) }} />
           </View>
@@ -146,6 +155,7 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
           style={{ height: "100%" }}
           onPress={onStop}
           type="danger"
+          accessibilityLabel="Stop shopping"
         />
         <ThemedButton
           iconName="checkmark-done"
@@ -162,15 +172,6 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
 export default PlayList;
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    lineHeight: 32,
-    backgroundColor: "transparent",
-    borderWidth: 0,
-    padding: 0,
-    margin: 20,
-  },
   listHeader: {
     paddingInline: 20,
     paddingBottom: 10,

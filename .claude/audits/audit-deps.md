@@ -25,7 +25,7 @@ The dependency tree is generally healthy for an early-stage Expo SDK 54 project.
 
 ## Significantly Outdated Packages
 
-**`typescript ~5.9.2`** — TypeScript 5.9.x does not exist as a stable release (as of the audit date, latest stable is 5.8.x). This semver range will either fail to resolve or pull a pre-release/nightly build. Change to `~5.8.0`.
+**✅ `typescript ~5.9.2`** — Changed to `~5.8.0`.
 
 No other packages are significantly behind a stable major release.
 
@@ -37,18 +37,18 @@ Verified by grepping all `.ts`/`.tsx` source files outside `node_modules`:
 
 | Package | Declared | Finding |
 |---|---|---|
-| `expo-checkbox` | `~5.0.8` | No imports anywhere — remove |
-| `expo-image` | `~3.0.11` | No imports anywhere (the image picker file uses `expo-image-picker`, a different package) — remove |
-| `expo-web-browser` | `~15.0.10` | No imports anywhere — remove |
-| `expo-haptics` | `~15.0.8` | No imports anywhere — remove |
-| `expo-system-ui` | `~6.0.9` | No direct imports. May be used as an app config plugin — verify in `app.config.ts`. If no plugin is registered, remove. |
-| `react-native-worklets` | `0.5.1` | Only needed as a transitive peer dep of Reanimated 4 — remove direct declaration |
+| ✅ `expo-checkbox` | Removed |
+| ✅ `expo-image` | Removed |
+| ✅ `expo-web-browser` | Removed |
+| ✅ `expo-haptics` | Removed |
+| ✅ `expo-system-ui` | Removed — confirmed not used as a config plugin |
+| ✅ `react-native-worklets` | Removed |
 
 **Missing declared dependency:**
 
 | Package | Status |
 |---|---|
-| `expo-image-picker` | Imported in `components/image-picker.tsx` (`import * as ExpoImagePicker from "expo-image-picker"`) but **not in `package.json`**. Works accidentally as a transitive dep, but must be declared. Run `npx expo install expo-image-picker`. |
+| ✅ `expo-image-picker` | Resolved — `components/image-picker.tsx` was unused and deleted entirely. |
 
 ---
 
@@ -112,15 +112,15 @@ No heavy libraries like moment.js or lodash are present.
 
 Ordered by priority:
 
-1. **Add the missing dependency** — `npx expo install expo-image-picker`. It is actively imported but not declared.
+1. ✅ **Missing dependency resolved** — `components/image-picker.tsx` deleted (unused).
 
 2. **Resolve the react-native version mismatch** — `0.81.5` vs Expo SDK 54's `0.79.x` is the highest-risk issue. Run `npx expo install react-native` to pin to the Expo-blessed version, or upgrade to Expo SDK 55+.
 
 3. **Fix the TypeScript version** — Change `"typescript": "~5.9.2"` to `"typescript": "~5.8.0"` (latest stable).
 
-4. **Remove unused packages** — `npm uninstall expo-checkbox expo-image expo-web-browser expo-haptics react-native-worklets` (also `expo-system-ui` if no config plugin uses it).
+4. ✅ **Remove unused packages** — Removed: expo-checkbox, expo-image, expo-web-browser, expo-haptics, react-native-worklets, expo-system-ui.
 
-5. **Move `expo-dev-client` to devDependencies** — It should not ship in production builds.
+5. ✅ **Move `expo-dev-client` to devDependencies** — Moved.
 
 6. **Run `npx expo install --fix`** — After the above changes, let Expo reconcile all `expo-*` and `react-native-*` packages to their SDK-54-blessed versions.
 

@@ -23,7 +23,6 @@ export const computeDistances = (
       distances[key] = {
         from: firstId,
         to: secondId,
-        distance: 1,
         count: 1,
       };
     } else {

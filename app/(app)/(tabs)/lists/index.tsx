@@ -5,49 +5,78 @@ import ThemedButton from "@/components/themed-button";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
+import { GroceryList } from "@/models/grocery";
 import { useGroceryListStore } from "@/store/grocery-list.store";
-import { useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { useCallback, useState } from "react";
+import { FlatList, ListRenderItem, StyleSheet, View } from "react-native";
 import { useShallow } from "zustand/react/shallow";
 
 const Index = () => {
-  const lists = useGroceryListStore(useShallow((s) => Object.values(s.lists)));
+  const lists = useGroceryListStore(
+    useShallow((s) =>
+      Object.values(s.lists).sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      ),
+    ),
+  );
   const [showSheet, setShowSheet] = useState(false);
   const iconColor = useThemeColor({}, "icon");
 
-  const isEmpty = lists.length === 0;
+  const onOpenSheet = useCallback(() => setShowSheet(true), []);
+  const onCloseSheet = useCallback(() => setShowSheet(false), []);
+
+  const renderItem: ListRenderItem<GroceryList> = useCallback(
+    ({ item }) => <ListCard list={item} />,
+    [],
+  );
+
+  const keyExtractor = useCallback((item: GroceryList) => item.id, []);
+
+  const ListEmpty = useCallback(
+    () => (
+      <View style={styles.emptyState}>
+        <ThemedIcon
+          name="cart-outline"
+          size={64}
+          color={iconColor}
+          importantForAccessibility="no-hide-descendants"
+          accessibilityElementsHidden={true}
+        />
+        <ThemedText type="title" style={styles.emptyTitle}>
+          No lists yet
+        </ThemedText>
+        <ThemedText type="muted" style={styles.emptySubtext}>
+          Tap + to create your first grocery list
+        </ThemedText>
+      </View>
+    ),
+    [iconColor],
+  );
 
   return (
     <ThemedView style={{ flex: 1, paddingBlock: 20 }}>
-      <ThemedText type="title" style={{ padding: 20 }}>
+      <ThemedText type="title" style={{ padding: 20 }} accessibilityRole="header">
         My lists
       </ThemedText>
-      {isEmpty ? (
-        <View style={styles.emptyState}>
-          <ThemedIcon name="cart-outline" size={64} color={iconColor} />
-          <ThemedText type="title" style={styles.emptyTitle}>
-            No lists yet
-          </ThemedText>
-          <ThemedText type="muted" style={styles.emptySubtext}>
-            Tap + to create your first grocery list
-          </ThemedText>
-        </View>
-      ) : (
-        <ScrollView style={{ flex: 1, paddingHorizontal: 20 }}>
-          {lists.map((list) => (
-            <ListCard key={list.id} list={list} />
-          ))}
-        </ScrollView>
-      )}
+      <FlatList
+        data={lists}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        ListEmptyComponent={ListEmpty}
+        contentContainerStyle={lists.length > 0 ? { paddingHorizontal: 20 } : { flex: 1 }}
+        keyboardShouldPersistTaps="handled"
+      />
 
       <ThemedButton
         iconName={"add"}
         style={{ position: "absolute", bottom: 20, right: 20, borderRadius: 50 }}
-        onPress={() => setShowSheet(true)}
+        onPress={onOpenSheet}
+        accessibilityLabel="Create new list"
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       />
 
-      <CreateListSheet visible={showSheet} onClose={() => setShowSheet(false)} />
+      <CreateListSheet visible={showSheet} onClose={onCloseSheet} />
     </ThemedView>
   );
 };

@@ -1,7 +1,7 @@
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { GroceryItem } from "@/models/grocery";
 import { useGroceryListStore } from "@/store/grocery-list.store";
-import { memo, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { ThemedIcon } from "../themed-icon";
 import ThemedInput from "../themed-input";
@@ -17,6 +17,7 @@ const EditItemRow = ({ listId, item }: EditItemRowProps) => {
   const [focused, setFocused] = useState(false);
   const [name, setName] = useState(item.name);
   const [quantity, setQuantity] = useState(item.quantity);
+  const quantityDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const onSubmit = () => {
     setFocused(false);
@@ -30,12 +31,15 @@ const EditItemRow = ({ listId, item }: EditItemRowProps) => {
 
   const onQuantityChange = (value: string) => {
     setQuantity(value);
-    updateItem(listId, item.id, { quantity: value });
+    if (quantityDebounceRef.current) clearTimeout(quantityDebounceRef.current);
+    quantityDebounceRef.current = setTimeout(() => {
+      updateItem(listId, item.id, { quantity: value });
+    }, 400);
   };
 
   return (
     <View style={styles.row}>
-      <ThemedIcon name="menu" size={20} color={muted} />
+      <ThemedIcon name="menu" size={20} color={muted} importantForAccessibility="no" accessibilityElementsHidden={true} />
       <ThemedInput
         onFocus={() => setFocused(true)}
         onChangeText={setName}
@@ -44,6 +48,7 @@ const EditItemRow = ({ listId, item }: EditItemRowProps) => {
         submitBehavior="blurAndSubmit"
         style={styles.input}
         value={name}
+        maxLength={100}
       />
       <ThemedInput
         onChangeText={onQuantityChange}
@@ -54,10 +59,12 @@ const EditItemRow = ({ listId, item }: EditItemRowProps) => {
       />
       {focused && (
         <Pressable
-          onPressIn={() => deleteItem(listId, item.id)}
+          onPress={() => deleteItem(listId, item.id)}
           style={styles.deleteButton}
+          accessibilityRole="button"
+          accessibilityLabel="Delete item"
         >
-          <ThemedIcon name="close" size={20} color={muted} />
+          <ThemedIcon name="close" size={20} color={muted} importantForAccessibility="no" accessibilityElementsHidden={true} />
         </Pressable>
       )}
     </View>
@@ -87,5 +94,6 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     marginLeft: 20,
+    padding: 12,
   },
 });

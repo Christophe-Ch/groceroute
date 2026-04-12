@@ -1,6 +1,7 @@
 import { GroceryItem, GroceryList } from "@/models/grocery";
 import { storageService } from "@/services/storage.service";
 import { produce } from "immer";
+import { toast } from "sonner-native";
 import { create } from "zustand";
 
 type GroceryListStore = {
@@ -54,7 +55,12 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
       }),
     );
 
-    await storageService.persistList(list);
+    try {
+      await storageService.registerList(list.id);
+      await storageService.saveList(list);
+    } catch {
+      toast.error("Failed to save list");
+    }
 
     return list;
   },
@@ -70,7 +76,11 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
       }),
     );
 
-    await storageService.persistList(updated);
+    try {
+      await storageService.saveList(updated);
+    } catch {
+      toast.error("Failed to save changes");
+    }
   },
 
   deleteList: async (id: string) => {
@@ -80,7 +90,11 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
       }),
     );
 
-    await storageService.deleteList(id);
+    try {
+      await storageService.deleteList(id);
+    } catch {
+      toast.error("Failed to delete list");
+    }
   },
 
   addItem: async (listId: string, name: string) => {
@@ -101,7 +115,11 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
       }),
     );
 
-    await storageService.persistList(get().lists[listId]);
+    try {
+      await storageService.saveList(get().lists[listId]);
+    } catch {
+      toast.error("Failed to save changes");
+    }
   },
 
   addPastItem: async (listId: string, item: GroceryItem) => {
@@ -113,7 +131,11 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
       }),
     );
 
-    await storageService.persistList(get().lists[listId]);
+    try {
+      await storageService.saveList(get().lists[listId]);
+    } catch {
+      toast.error("Failed to save changes");
+    }
   },
 
   updateItem: async (
@@ -133,7 +155,11 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
       }),
     );
 
-    await storageService.persistList(get().lists[listId]);
+    try {
+      await storageService.saveList(get().lists[listId]);
+    } catch {
+      toast.error("Failed to save changes");
+    }
   },
 
   deleteItem: async (listId: string, itemId: string) => {
@@ -147,7 +173,11 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
       }),
     );
 
-    await storageService.persistList(get().lists[listId]);
+    try {
+      await storageService.saveList(get().lists[listId]);
+    } catch {
+      toast.error("Failed to save changes");
+    }
   },
 
   reorderItems: async (listId: string, newItems: GroceryItem[]) => {
@@ -159,6 +189,10 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
       }),
     );
 
-    await storageService.persistList(get().lists[listId]);
+    try {
+      await storageService.saveList(get().lists[listId]);
+    } catch {
+      toast.error("Failed to save changes");
+    }
   },
 }));

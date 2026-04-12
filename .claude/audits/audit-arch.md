@@ -18,7 +18,7 @@ Should be: The `(app)` layout (currently missing — there is no `app/(app)/_lay
 
 ---
 
-**2. `components/image-picker.tsx` — unused component, missing dependency**
+**✅ 2. `components/image-picker.tsx` — unused component, missing dependency**
 
 `ImagePicker` is not referenced anywhere. It imports `expo-image-picker`, which is not listed in `package.json`. If used, it would crash at runtime.
 
@@ -26,7 +26,7 @@ Should be: Remove until needed. Add `expo-image-picker` as a dependency when rei
 
 ---
 
-**3. `components/ui/icon-symbol.tsx` / `icon-symbol.ios.tsx` — dead scaffolding**
+**✅ 3. `components/ui/icon-symbol.tsx` / `icon-symbol.ios.tsx` — dead scaffolding**
 
 Neither file is imported anywhere. They were left from the Expo template.
 
@@ -34,7 +34,7 @@ Should be: Delete both files.
 
 ---
 
-**4. `components/list/list-card/index.tsx` — trivial barrel export adds indirection**
+**✅ 4. `components/list/list-card/index.tsx` — trivial barrel export adds indirection**
 
 The `index.tsx` is a single line: `export { default } from "./list-card"`. At two files, this is premature structure. The pattern — separate file + barrel + named component file — is the worst combination.
 
@@ -42,7 +42,7 @@ Should be: Either rename `list-card.tsx` to `index.tsx`, or accept the barrel an
 
 ---
 
-**5. `constants/theme.ts` — no exported `ColorKey` type**
+**✅ 5. `constants/theme.ts` — no exported `ColorKey` type**
 
 `useThemeColor` repeats `keyof typeof Colors.light & keyof typeof Colors.dark` inline. There is no reusable `ColorKey` alias.
 
@@ -73,7 +73,7 @@ Should be: Compute the merged value before calling `set`, then persist that loca
 
 ---
 
-**8. `store/grocery-list.store.ts` — no error handling on any async action**
+**✅ 8. `store/grocery-list.store.ts` — no error handling on any async action**
 
 Every `storageService` call is fire-and-forget. If AsyncStorage fails, in-memory state and persisted state diverge silently. The user sees an update that vanishes on next launch.
 
@@ -81,7 +81,7 @@ Should be: Wrap each `storageService` call in try/catch and surface failures via
 
 ---
 
-**9. `lists/index.tsx` — list display order is non-deterministic**
+**✅ 9. `lists/index.tsx` — list display order is non-deterministic**
 
 `Object.values(lists).map(...)` renders lists in insertion order of a `Record<string, GroceryList>`. After hydration from AsyncStorage the order follows the `lists:index` array, which could differ from creation order.
 
@@ -196,7 +196,7 @@ Should be: Delete the unreferenced style entries.
 
 `GroceryItem.quantity` is declared as `string`. `addItem` in the store initialises it as `quantity: 1` (a number literal). TypeScript in strict mode should flag this. At runtime, the number coerces wherever it is rendered as text, but `updateItem` callers passing `{ quantity: "2 kg" }` will produce a mixed `string | number` field in storage. The reset in `PlayList` uses `draft.quantity = ""` (a string). The type needs to be settled.
 
-**22. Error handling is inconsistent across the two data flows**
+**✅ 22. Error handling is inconsistent across the two data flows**
 
 Auth mutations (`login`, `signup`) are wrapped in try/catch with `toast.error()`. Grocery store mutations have no error handling. When the backend is connected to the grocery flow, failures will be invisible.
 

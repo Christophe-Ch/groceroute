@@ -32,7 +32,7 @@ const CreateList = ({ onCreate }: CreateListProps) => {
   return (
     <ThemedView style={[styles.container, { paddingBottom: insets.bottom + 16 }]}>
       <ThemedView style={styles.backgroundBleed} />
-      <ThemedText type="title">Create a list</ThemedText>
+      <ThemedText type="title" accessibilityRole="header">Create a list</ThemedText>
       <ThemedInput
         placeholder="List name"
         style={{ marginTop: 16 }}

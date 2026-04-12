@@ -40,6 +40,7 @@ const ThemedInput = ({
   const [focused, setFocused] = useState(false);
 
   const textColor = useThemeColor({}, "inputText");
+  const errorColor = useThemeColor({}, "inputBorderError");
   const backgroundColor = useThemeColor({}, "inputBackground");
   const placeholderColor = useThemeColor({}, "inputPlaceholder");
   const borderColor = useThemeColor(
@@ -64,6 +65,7 @@ const ThemedInput = ({
   ) => (
     <TextInput
       {...props}
+      accessibilityLabel={props.accessibilityLabel ?? props.placeholder}
       value={value}
       onChangeText={onChangeText}
       onBlur={(e) => {
@@ -91,7 +93,15 @@ const ThemedInput = ({
             renderInput(value, onChange, onBlur, onFocus)
           }
         />
-        {error && <Text style={styles.errorMessage}>{error.message}</Text>}
+        {error && (
+          <Text
+            style={[styles.errorMessage, { color: errorColor }]}
+            accessibilityLiveRegion="polite"
+            role="alert"
+          >
+            {error.message}
+          </Text>
+        )}
       </View>
     );
   }
@@ -109,6 +119,5 @@ const styles = StyleSheet.create({
   },
   errorMessage: {
     marginBlockStart: 0,
-    color: "red",
   },
 });

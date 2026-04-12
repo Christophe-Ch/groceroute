@@ -61,6 +61,8 @@ const ThemedButton = ({
   return (
     <Pressable
       {...props}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !!disabled }}
       style={(state) => [
         styles.button,
         {

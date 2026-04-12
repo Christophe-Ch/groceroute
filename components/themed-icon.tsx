@@ -6,10 +6,26 @@ type ThemedIconProps = {
   name: ComponentProps<typeof Ionicons>["name"];
   size?: number;
   color?: string;
+  importantForAccessibility?: ComponentProps<typeof Ionicons>["importantForAccessibility"];
+  accessibilityElementsHidden?: boolean;
 };
 
-export const ThemedIcon = ({ name, size = 24, color }: ThemedIconProps) => {
+export const ThemedIcon = ({
+  name,
+  size = 24,
+  color,
+  importantForAccessibility,
+  accessibilityElementsHidden,
+}: ThemedIconProps) => {
   const iconColor = useThemeColor({}, "icon");
 
-  return <Ionicons name={name} size={size} color={color ?? iconColor} />;
+  return (
+    <Ionicons
+      name={name}
+      size={size}
+      color={color ?? iconColor}
+      importantForAccessibility={importantForAccessibility}
+      accessibilityElementsHidden={accessibilityElementsHidden}
+    />
+  );
 };

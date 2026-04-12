@@ -65,11 +65,14 @@ const AddItemRow = ({ listId, pastItems, currentItemIds }: AddItemRowProps) => {
       {autocomplete && autocomplete.length > 0 && (
         <View
           style={[styles.autocomplete, { backgroundColor: autocompleteBackground }]}
+          accessibilityLiveRegion="polite"
         >
           {autocomplete.map((suggestion) => (
             <Pressable
               key={suggestion.id}
-              style={{ paddingBlock: 3 }}
+              style={styles.suggestion}
+              accessibilityRole="button"
+              accessibilityLabel={`Add ${suggestion.name}`}
               onPress={() => {
                 addPastItem(listId, suggestion);
                 setName("");
@@ -105,6 +108,9 @@ const styles = StyleSheet.create({
     gap: 5,
     borderBottomEndRadius: 8,
     borderBottomStartRadius: 8,
+  },
+  suggestion: {
+    paddingVertical: 12,
   },
   input: {
     marginLeft: 10,

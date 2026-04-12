@@ -22,11 +22,20 @@ const PlayItemRow = ({ item, onItemCheckedChange }: PlayItemRowProps) => {
   };
 
   return (
-    <Pressable style={styles.row} onPress={toggle}>
+    <Pressable
+      style={styles.row}
+      onPress={toggle}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked }}
+      accessibilityLabel={item.quantity ? `${item.name}, ${item.quantity}` : item.name}
+      accessibilityHint="Double tap to toggle"
+    >
       <Ionicons
         name={checked ? "checkmark-circle" : "ellipse-outline"}
         size={24}
         color={checked ? primary : muted}
+        importantForAccessibility="no"
+        accessibilityElementsHidden={true}
       />
       <ThemedText
         style={[
@@ -55,7 +64,7 @@ export default memo(PlayItemRow);
 
 const styles = StyleSheet.create({
   row: {
-    paddingVertical: 10,
+    paddingVertical: 14,
     paddingHorizontal: 20,
     flexDirection: "row",
     alignItems: "center",
