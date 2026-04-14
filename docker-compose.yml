@@ -1,0 +1,38 @@
+services:
+  api:
+    build: ./api
+    ports:
+      - 3000:3000
+    volumes:
+      - ./api:/app
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    volumes:
+      - type: tmpfs
+        target: /dev/shm
+        tmpfs:
+          size: 134217728
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 8080:8080
