@@ -8,6 +8,7 @@ import { StyleSheet, View } from "react-native";
 const decodeEmail = (jwt: string): string | null => {
   try {
     const payload = JSON.parse(atob(jwt.split(".")[1]));
+    // The API sets sub to the user's email (see auth.service.ts)
     return (payload as { sub?: string }).sub ?? null;
   } catch {
     return null;
