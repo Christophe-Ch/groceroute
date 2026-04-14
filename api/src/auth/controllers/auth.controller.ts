@@ -32,7 +32,7 @@ export class AuthController {
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
   async signUp(@Body() signUpDto: SignUpDto) {
-    await this.authService.signUp(signUpDto);
+    return await this.authService.signUp(signUpDto);
   }
 
   @Post('refresh')

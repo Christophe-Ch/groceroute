@@ -3,6 +3,7 @@ import ThemedInput from "@/components/themed-input";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useAuth } from "@/hooks/auth/use-auth";
+import { isAxiosError } from "axios";
 import { Link, router } from "expo-router";
 import { useForm } from "react-hook-form";
 import { KeyboardAvoidingView, StyleSheet, View } from "react-native";
@@ -28,17 +29,23 @@ const Login = () => {
   const onSubmit = async ({ email, password }: LoginForm) => {
     try {
       await login(email, password);
-      router.navigate("/(app)");
+      router.dismiss();
       toast.success("Welcome back!");
-    } catch {
-      toast.error("Please check your credentials.");
+    } catch (e) {
+      if (isAxiosError(e)) {
+        toast.error("Please check your credentials.");
+      } else {
+        toast.error("An error has occurred, please try again later.");
+      }
     }
   };
   return (
     <ThemedView style={styles.container}>
       <View style={{ gap: 16 }}>
         <View>
-          <ThemedText type="title">App title</ThemedText>
+          <ThemedText type="title" style={{ paddingTop: 20 }}>
+            Welcome back 👋
+          </ThemedText>
           <ThemedText type="subtitle">Login to get started</ThemedText>
         </View>
 

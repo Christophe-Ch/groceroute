@@ -4,7 +4,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Slot } from "expo-router";
+import { Stack } from "expo-router";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/ui/use-color-scheme";
@@ -26,7 +26,12 @@ export default function RootLayout() {
           <ThemeProvider
             value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
           >
-            <Slot screenOptions={{ animation: "none" }} />
+            <Stack screenOptions={{ headerShown: false, animation: "none", contentStyle: { backgroundColor } }}>
+              <Stack.Screen
+                name="(auth)"
+                options={{ presentation: "modal" }}
+              />
+            </Stack>
             <Toaster />
           </ThemeProvider>
         </AuthProvider>

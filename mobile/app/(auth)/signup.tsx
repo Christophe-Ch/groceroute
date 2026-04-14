@@ -31,8 +31,8 @@ const Signup = () => {
   const onSubmit = async ({ email, password }: SignupForm) => {
     try {
       await signup(email, password);
-      router.navigate("/(auth)/login");
-      toast.success("Your account has been created! You can now log in.");
+      router.dismiss();
+      toast.success("Welcome! Your account has been created.");
     } catch (e) {
       if (isAxiosError(e)) {
         toast.error(e.response?.data.message);
@@ -45,7 +45,9 @@ const Signup = () => {
     <ThemedView style={styles.container}>
       <View style={{ gap: 16 }}>
         <View>
-          <ThemedText type="title">App title</ThemedText>
+          <ThemedText type="title" style={{ paddingTop: 20 }}>
+            Welcome 🙌
+          </ThemedText>
           <ThemedText type="subtitle">Create an account to continue</ThemedText>
         </View>
 

@@ -38,8 +38,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signupMutation = useSignup();
-  const signup = async (email: string, password: string) =>
-    await signupMutation.mutateAsync({ email, password });
+  const signup = async (email: string, password: string) => {
+    const { token, refreshToken } = await signupMutation.mutateAsync({
+      email,
+      password,
+    });
+
+    await tokenService.setTokens(token, refreshToken);
+  };
 
   const logout = async () => {
     await tokenService.clearTokens();
