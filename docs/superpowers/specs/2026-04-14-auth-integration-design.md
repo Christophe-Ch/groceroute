@@ -43,16 +43,14 @@ A new tab is added to the bottom tab bar at `mobile/app/(app)/(tabs)/account/ind
 
 - A prompt section with copy such as "Sign in to sync your lists across devices"
 - Two buttons: **Sign in** and **Create account** — each opens the respective `(auth)` screen as a modal
-- An **App Settings** section below (accessible without an account)
 
 ### Logged-in state
 
 - **Account section:** user's email (read-only), **Sign out** button (destructive style)
-- **App Settings section:** same as logged-out
 
 ### App Settings content (initial)
 
-- **Theme:** three-way toggle — Light / Dark / System
+None for this iteration — the section is removed from scope.
 
 ---
 
@@ -81,3 +79,4 @@ When triggered from the Account tab context, a dismiss/close button is shown so 
 - Display name or profile editing
 - Password reset / forgot password
 - Push notification settings
+- Theme toggle / app settings
