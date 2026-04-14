@@ -89,6 +89,15 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@db/(.*)$": "<rootDir>/db/$1",
+      "^@users/(.*)$": "<rootDir>/users/$1",
+      "^@auth/(.*)$": "<rootDir>/auth/$1",
+      "^@utils/(.*)$": "<rootDir>/utils/$1"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(uuid)/)"
+    ]
   }
 }

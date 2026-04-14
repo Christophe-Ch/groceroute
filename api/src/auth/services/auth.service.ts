@@ -39,7 +39,7 @@ export class AuthService {
     };
   }
 
-  public async signUp(signUpDto: SignUpDto): Promise<void> {
+  public async signUp(signUpDto: SignUpDto): Promise<LoginResponse> {
     const user = await this.usersService.findByEmail(signUpDto.email);
     if (user) {
       throw new BadRequestException(
@@ -47,10 +47,12 @@ export class AuthService {
       );
     }
 
-    await this.usersService.create(
+    const created = await this.usersService.create(
       signUpDto.email,
       bcrypt.hashSync(signUpDto.password, 10),
     );
+
+    return this.login(created);
   }
 
   public async refresh(
