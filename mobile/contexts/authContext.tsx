@@ -1,12 +1,11 @@
 import { useLogin, useSignup } from "@/hooks/auth/use-auth-mutations";
-import { AuthResponse } from "@/models/auth";
 import { tokenService } from "@/services/token.service";
 import { createContext, ReactNode, useEffect, useState } from "react";
 
 interface AuthContextType {
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string) => Promise<AuthResponse>;
+  signup: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
 }
@@ -39,15 +38,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signupMutation = useSignup();
-  const signup = async (email: string, password: string) => {
-    const { token, refreshToken } = await signupMutation.mutateAsync({
-      email,
-      password,
-    });
-
-    await tokenService.setTokens(token, refreshToken);
-    return { token, refreshToken };
-  };
+  const signup = async (email: string, password: string) =>
+    await signupMutation.mutateAsync({ email, password });
 
   const logout = async () => {
     await tokenService.clearTokens();
