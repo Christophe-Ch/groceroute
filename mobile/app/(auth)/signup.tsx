@@ -45,7 +45,9 @@ const Signup = () => {
     <ThemedView style={styles.container}>
       <View style={{ gap: 16 }}>
         <View>
-          <ThemedText type="title">App title</ThemedText>
+          <ThemedText type="title" style={{ paddingTop: 20 }}>
+            Welcome 🙌
+          </ThemedText>
           <ThemedText type="subtitle">Create an account to continue</ThemedText>
         </View>
 

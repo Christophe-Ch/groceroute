@@ -22,23 +22,23 @@ const AccountScreen = () => {
     const email = decodeEmail(token);
     return (
       <ThemedView style={styles.container}>
-        <ThemedText type="title">Account</ThemedText>
+        <ThemedText type="title" style={{ paddingBlock: 20 }}>
+          Account
+        </ThemedText>
         <View style={styles.section}>
           <ThemedText type="muted">Signed in as</ThemedText>
           <ThemedText type="defaultSemiBold">{email}</ThemedText>
         </View>
-        <ThemedButton
-          text="Sign out"
-          onPress={logout}
-          style={styles.button}
-        />
+        <ThemedButton text="Sign out" onPress={logout} style={styles.button} />
       </ThemedView>
     );
   }
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title">Account</ThemedText>
+      <ThemedText type="title" style={{ paddingTop: 20 }}>
+        Account
+      </ThemedText>
       <View style={styles.authPrompt}>
         <ThemedText type="subtitle">
           Sign in to sync your lists across devices

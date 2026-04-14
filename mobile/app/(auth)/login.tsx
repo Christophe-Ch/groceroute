@@ -43,7 +43,9 @@ const Login = () => {
     <ThemedView style={styles.container}>
       <View style={{ gap: 16 }}>
         <View>
-          <ThemedText type="title">App title</ThemedText>
+          <ThemedText type="title" style={{ paddingTop: 20 }}>
+            Welcome back 👋
+          </ThemedText>
           <ThemedText type="subtitle">Login to get started</ThemedText>
         </View>
 
