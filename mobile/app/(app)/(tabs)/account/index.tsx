@@ -30,8 +30,6 @@ const AccountScreen = () => {
         <ThemedButton
           text="Sign out"
           onPress={logout}
-          iconName="log-out-outline"
-          iconPosition="right"
           style={styles.button}
         />
       </ThemedView>
@@ -48,15 +46,11 @@ const AccountScreen = () => {
         <ThemedButton
           text="Sign in"
           onPress={() => router.push("/(auth)/login")}
-          iconName="log-in-outline"
-          iconPosition="right"
           style={styles.button}
         />
         <ThemedButton
           text="Create account"
           onPress={() => router.push("/(auth)/signup")}
-          iconName="rocket-outline"
-          iconPosition="right"
           style={styles.button}
         />
       </View>
