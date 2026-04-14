@@ -31,8 +31,8 @@ const Signup = () => {
   const onSubmit = async ({ email, password }: SignupForm) => {
     try {
       await signup(email, password);
-      router.navigate("/(auth)/login");
-      toast.success("Your account has been created! You can now log in.");
+      router.dismiss();
+      toast.success("Welcome! Your account has been created.");
     } catch (e) {
       if (isAxiosError(e)) {
         toast.error(e.response?.data.message);

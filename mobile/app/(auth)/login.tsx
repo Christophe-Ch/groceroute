@@ -28,7 +28,7 @@ const Login = () => {
   const onSubmit = async ({ email, password }: LoginForm) => {
     try {
       await login(email, password);
-      router.navigate("/(app)");
+      router.dismiss();
       toast.success("Welcome back!");
     } catch {
       toast.error("Please check your credentials.");
