@@ -1,10 +1,11 @@
+import { AuthModule } from '@auth/auth.module';
+import entities from '@db/entities';
+import { SnakeCaseNamingStrategy } from '@db/utils/snake-case-naming-strategy';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import entities from '@db/entities';
-import { SnakeCaseNamingStrategy } from '@db/utils/snake-case-naming-strategy';
 import { UsersModule } from '@users/users.module';
-import { AuthModule } from '@auth/auth.module';
+import { ListsModule } from './lists/lists.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AuthModule } from '@auth/auth.module';
     }),
     UsersModule,
     AuthModule,
+    ListsModule,
   ],
 })
 export class AppModule {}
