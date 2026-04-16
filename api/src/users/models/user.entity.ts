@@ -3,9 +3,9 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   @Exclude()
-  id: number;
+  id: string;
 
   @Column({ unique: true })
   email: string;
