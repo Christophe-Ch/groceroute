@@ -5,6 +5,7 @@ import { Operation } from 'src/core/models/operation.entity';
 import { Repository } from 'typeorm';
 import { List } from '../models/list.entity';
 import { CreateListOperation } from '../operations/create-list.operation';
+import { SetListModeOperation } from '../operations/set-list-mode.operation';
 
 @Injectable()
 export class ListProjector {
@@ -16,6 +17,9 @@ export class ListProjector {
     switch (operation.type) {
       case OperationType.CREATE_LIST:
         await this.create(operation as Operation<CreateListOperation>);
+        break;
+      case OperationType.SET_LIST_MODE:
+        await this.setMode(operation as Operation<SetListModeOperation>);
         break;
     }
   }
@@ -35,5 +39,19 @@ export class ListProjector {
       name: name,
       ownerId: actorId,
     });
+  }
+
+  private async setMode(
+    operation: Operation<SetListModeOperation>,
+  ): Promise<void> {
+    const {
+      actorId,
+      payload: { id: listId, mode },
+    } = operation;
+
+    await this.listsRepository.update(
+      { id: listId, ownerId: actorId },
+      { mode },
+    );
   }
 }

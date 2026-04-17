@@ -34,4 +34,7 @@ export class List {
 
   @Column()
   ownerId: string;
+
+  @Column({ type: 'enum', enum: ['edit', 'play'], default: 'edit' })
+  mode: 'edit' | 'play';
 }

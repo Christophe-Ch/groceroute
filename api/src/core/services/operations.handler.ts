@@ -10,6 +10,7 @@ export class OperationsHandler {
   public async handle(operation: Operation): Promise<void> {
     switch (operation.type) {
       case OperationType.CREATE_LIST:
+      case OperationType.SET_LIST_MODE:
         await this.listProjector.handle(operation);
         break;
     }
