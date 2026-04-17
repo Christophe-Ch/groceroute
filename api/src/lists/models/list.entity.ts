@@ -31,4 +31,7 @@ export class List {
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @Exclude()
   owner: User;
+
+  @Column()
+  ownerId: string;
 }

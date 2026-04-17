@@ -5,7 +5,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from '@users/users.module';
+import { CoreModule } from './core/core.module';
 import { ListsModule } from './lists/lists.module';
+import { SyncModule } from './sync/sync.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { ListsModule } from './lists/lists.module';
     UsersModule,
     AuthModule,
     ListsModule,
+    CoreModule,
+    SyncModule,
   ],
 })
 export class AppModule {}
