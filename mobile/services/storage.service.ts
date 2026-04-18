@@ -1,9 +1,11 @@
 import { GroceryList } from "@/models/grocery";
+import { Operation } from "@/store/operations/types/operation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const KEYS = {
   index: "lists:index",
   list: (id: string) => `lists:${id}`,
+  operations: "operations",
 };
 
 export const storageService = {
@@ -39,5 +41,11 @@ export const storageService = {
     const newIndex = index.filter((storedId: string) => storedId !== id);
     await AsyncStorage.setItem(KEYS.index, JSON.stringify(newIndex));
     await AsyncStorage.removeItem(KEYS.list(id));
+  },
+
+  async storeOperation(operation: Operation): Promise<void> {
+    const rawOperations = await AsyncStorage.getItem(KEYS.operations);
+    const operations = rawOperations ? JSON.parse(rawOperations) : [];
+    await AsyncStorage.setItem(KEYS.operations, JSON.stringify([...operations, operation]));
   },
 };

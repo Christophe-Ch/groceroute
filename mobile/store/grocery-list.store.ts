@@ -4,12 +4,15 @@ import { generateId } from "@/utils/generate-id";
 import { produce } from "immer";
 import { toast } from "sonner-native";
 import { create } from "zustand";
+import { createListHandler } from "./operations/handlers/create-list.handler";
+import { CreateListOperation } from "./operations/types/create-list.operation";
+import { Operation, OperationType } from "./operations/types/operation";
 
 type GroceryListStore = {
   lists: Record<string, GroceryList>;
   hydrated: boolean;
   hydrate: () => Promise<void>;
-  createList: (name: string) => Promise<GroceryList>;
+  createList: (name: string) => Promise<void>;
   deleteList: (id: string) => Promise<void>;
   addItem: (listId: string, name: string) => Promise<void>;
   updateItem: (
@@ -24,9 +27,14 @@ type GroceryListStore = {
     id: string,
     updatedFields: Partial<GroceryList>,
   ) => Promise<void>;
+
+  dispatchOperation: (operation: Operation) => Promise<void>;
+  applyOperation: (operation: Operation) => void;
+  queueOperation: (operation: Operation) => Promise<void>;
 };
 
 export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
+  operations: [],
   lists: {},
   hydrated: false,
 
@@ -39,31 +47,15 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
   },
 
   createList: async (name: string) => {
-    const list: GroceryList = {
+    const op: CreateListOperation = {
       id: generateId(),
-      name,
-      items: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: null,
-      pastItems: [],
-      distances: [],
+      type: OperationType.CREATE_LIST,
+      actorId: "local", // This should ideally be the user's ID
+      payload: { name },
+      sequence: Date.now(), // Using timestamp as a simple sequence generator
     };
 
-    set(
-      produce((draft: GroceryListStore) => {
-        draft.lists[list.id] = list;
-      }),
-    );
-
-    try {
-      await storageService.registerList(list.id);
-      await storageService.saveList(list);
-    } catch {
-      toast.error("Failed to save list");
-    }
-
-    return list;
+    get().dispatchOperation(op);
   },
 
   updateList: async (id: string, updatedFields: Partial<GroceryList>) => {
@@ -194,6 +186,34 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
       await storageService.saveList(get().lists[listId]);
     } catch {
       toast.error("Failed to save changes");
+    }
+  },
+
+  dispatchOperation: async (operation: Operation) => {
+    get().applyOperation(operation);
+    await get().queueOperation(operation);
+  },
+
+  applyOperation: (operation: Operation) => {
+    set(
+      produce((draft: GroceryListStore) => {
+        switch (operation.type) {
+          case OperationType.CREATE_LIST:
+            createListHandler(draft, operation as CreateListOperation);
+            break;
+          // Future cases for other operation types will go here
+          default:
+            console.warn(`No handler for operation type: ${operation.type}`);
+        }
+      }),
+    )
+  },
+
+  queueOperation: async (operation: Operation) => {
+    try {
+      await storageService.storeOperation(operation);
+    } catch {
+      toast.error("Something went wrong while processing operation");
     }
   },
 }));
