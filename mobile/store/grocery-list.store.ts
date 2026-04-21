@@ -20,7 +20,7 @@ import { CreateListOperation } from "./operations/types/create-list.operation";
 import { DeleteItemOperation } from "./operations/types/delete-item.operation";
 import { DeleteListOperation } from "./operations/types/delete-list.operation";
 import { FinishShoppingOperation } from "./operations/types/finish-shopping.operation";
-import { Operation, OperationType } from "./operations/types/operation";
+import { Operation, OperationInput, OperationType } from "./operations/types/operation";
 import { RenameListOperation } from "./operations/types/rename-list.operation";
 import { ReorderItemsOperation } from "./operations/types/reorder-items.operation";
 import { SetListModeOperation } from "./operations/types/set-list-mode.operation";
@@ -45,13 +45,12 @@ type GroceryListStore = {
   renameList: (listId: string, name: string) => Promise<void>;
   finishShopping: (listId: string, checkOrder: string[]) => Promise<void>;
 
-  dispatchOperation: (operation: Operation) => Promise<void>;
+  dispatchOperation: (input: OperationInput) => Promise<void>;
   applyOperation: (operation: Operation) => void;
   queueOperation: (operation: Operation) => Promise<void>;
 };
 
 export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
-  operations: [],
   lists: {},
   hydrated: false,
 
@@ -64,144 +63,59 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
   },
 
   createList: async (name: string) => {
-    const op: CreateListOperation = {
-      id: generateId(),
-      type: OperationType.CREATE_LIST,
-      actorId: "local", // This should ideally be the user's ID
-      payload: { name },
-      sequence: Date.now(), // Using timestamp as a simple sequence generator
-    };
-
-    get().dispatchOperation(op);
+    get().dispatchOperation({ type: OperationType.CREATE_LIST, payload: { name } });
   },
 
   setListMode: async (id: string, mode: "edit" | "play") => {
-    const op: SetListModeOperation = {
-      id: generateId(),
-      type: OperationType.SET_LIST_MODE,
-      actorId: "local",
-      payload: { id, mode },
-      sequence: Date.now(),
-    };
-
-    get().dispatchOperation(op);
+    get().dispatchOperation({ type: OperationType.SET_LIST_MODE, payload: { id, mode } });
   },
 
   deleteList: async (id: string) => {
-    const op: DeleteListOperation = {
-      id: generateId(),
-      type: OperationType.DELETE_LIST,
-      actorId: "local",
-      payload: { id },
-      sequence: Date.now(),
-    };
-
-    get().dispatchOperation(op);
+    get().dispatchOperation({ type: OperationType.DELETE_LIST, payload: { id } });
   },
 
   addItem: async (listId: string, name: string) => {
     if (!get().lists[listId]) return;
-
-    const op: AddItemOperation = {
-      id: generateId(),
-      type: OperationType.ADD_ITEM,
-      actorId: "local",
-      payload: { listId, name },
-      sequence: Date.now(),
-    };
-
-    get().dispatchOperation(op);
+    get().dispatchOperation({ type: OperationType.ADD_ITEM, payload: { listId, name } });
   },
 
   addPastItem: async (listId: string, item: GroceryItem) => {
     if (!get().lists[listId]) return;
-
-    const op: AddPastItemOperation = {
-      id: generateId(),
-      type: OperationType.ADD_PAST_ITEM,
-      actorId: "local",
-      payload: { listId, item },
-      sequence: Date.now(),
-    };
-
-    get().dispatchOperation(op);
+    get().dispatchOperation({ type: OperationType.ADD_PAST_ITEM, payload: { listId, item } });
   },
 
-  updateItem: async (
-    listId: string,
-    itemId: string,
-    updatedItem: Partial<GroceryItem>,
-  ) => {
+  updateItem: async (listId: string, itemId: string, updatedItem: Partial<GroceryItem>) => {
     if (!get().lists[listId]) return;
-
-    const op: UpdateItemOperation = {
-      id: generateId(),
-      type: OperationType.UPDATE_ITEM,
-      actorId: "local",
-      payload: { listId, itemId, updatedItem },
-      sequence: Date.now(),
-    };
-
-    get().dispatchOperation(op);
+    get().dispatchOperation({ type: OperationType.UPDATE_ITEM, payload: { listId, itemId, updatedItem } });
   },
 
   deleteItem: async (listId: string, itemId: string) => {
     if (!get().lists[listId]) return;
-
-    const op: DeleteItemOperation = {
-      id: generateId(),
-      type: OperationType.DELETE_ITEM,
-      actorId: "local",
-      payload: { listId, itemId },
-      sequence: Date.now(),
-    };
-
-    get().dispatchOperation(op);
+    get().dispatchOperation({ type: OperationType.DELETE_ITEM, payload: { listId, itemId } });
   },
 
   reorderItems: async (listId: string, newItems: GroceryItem[]) => {
     if (!get().lists[listId]) return;
-
-    const op: ReorderItemsOperation = {
-      id: generateId(),
-      type: OperationType.REORDER_ITEMS,
-      actorId: "local",
-      payload: { listId, newItems },
-      sequence: Date.now(),
-    };
-
-    get().dispatchOperation(op);
+    get().dispatchOperation({ type: OperationType.REORDER_ITEMS, payload: { listId, newItems } });
   },
 
   renameList: async (listId: string, name: string) => {
     if (!get().lists[listId]) return;
-
-    const op: RenameListOperation = {
-      id: generateId(),
-      type: OperationType.RENAME_LIST,
-      actorId: "local",
-      payload: { listId, name },
-      sequence: Date.now(),
-    };
-
-    get().dispatchOperation(op);
+    get().dispatchOperation({ type: OperationType.RENAME_LIST, payload: { listId, name } });
   },
 
   finishShopping: async (listId: string, checkOrder: string[]) => {
     if (!get().lists[listId]) return;
-
-    const op: FinishShoppingOperation = {
-      id: generateId(),
-      type: OperationType.FINISH_SHOPPING,
-      actorId: "local",
-      payload: { listId, checkOrder },
-      sequence: Date.now(),
-    };
-
-    get().dispatchOperation(op);
+    get().dispatchOperation({ type: OperationType.FINISH_SHOPPING, payload: { listId, checkOrder } });
   },
 
-  dispatchOperation: async (operation: Operation) => {
+  dispatchOperation: async (input: OperationInput) => {
+    const operation: Operation = {
+      id: generateId(),
+      actorId: "local",
+      sequence: Date.now(),
+      ...input,
+    };
     get().applyOperation(operation);
     await get().queueOperation(operation);
   },

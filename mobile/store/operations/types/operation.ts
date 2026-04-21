@@ -18,3 +18,5 @@ export type Operation<T = Record<string, any>> = {
   payload: T;
   sequence: number;
 };
+
+export type OperationInput = Pick<Operation, "type" | "payload">;
