@@ -7,6 +7,8 @@ export enum OperationType {
   UPDATE_ITEM = "UPDATE_ITEM",
   DELETE_ITEM = "DELETE_ITEM",
   REORDER_ITEMS = "REORDER_ITEMS",
+  RENAME_LIST = "RENAME_LIST",
+  FINISH_SHOPPING = "FINISH_SHOPPING",
 }
 
 export type Operation<T = Record<string, any>> = {

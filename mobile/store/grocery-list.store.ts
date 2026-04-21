@@ -9,6 +9,8 @@ import { addPastItemHandler } from "./operations/handlers/add-past-item.handler"
 import { createListHandler } from "./operations/handlers/create-list.handler";
 import { deleteItemHandler } from "./operations/handlers/delete-item.handler";
 import { deleteListHandler } from "./operations/handlers/delete-list.handler";
+import { finishShoppingHandler } from "./operations/handlers/finish-shopping.handler";
+import { renameListHandler } from "./operations/handlers/rename-list.handler";
 import { reorderItemsHandler } from "./operations/handlers/reorder-items.handler";
 import { setListModeHandler } from "./operations/handlers/set-list-mode.handler";
 import { updateItemHandler } from "./operations/handlers/update-item.handler";
@@ -17,7 +19,9 @@ import { AddPastItemOperation } from "./operations/types/add-past-item.operation
 import { CreateListOperation } from "./operations/types/create-list.operation";
 import { DeleteItemOperation } from "./operations/types/delete-item.operation";
 import { DeleteListOperation } from "./operations/types/delete-list.operation";
+import { FinishShoppingOperation } from "./operations/types/finish-shopping.operation";
 import { Operation, OperationType } from "./operations/types/operation";
+import { RenameListOperation } from "./operations/types/rename-list.operation";
 import { ReorderItemsOperation } from "./operations/types/reorder-items.operation";
 import { SetListModeOperation } from "./operations/types/set-list-mode.operation";
 import { UpdateItemOperation } from "./operations/types/update-item.operation";
@@ -38,10 +42,8 @@ type GroceryListStore = {
   deleteItem: (listId: string, itemId: string) => Promise<void>;
   addPastItem: (listId: string, item: GroceryItem) => Promise<void>;
   reorderItems: (listId: string, newItems: GroceryItem[]) => Promise<void>;
-  updateList: (
-    id: string,
-    updatedFields: Partial<GroceryList>,
-  ) => Promise<void>;
+  renameList: (listId: string, name: string) => Promise<void>;
+  finishShopping: (listId: string, checkOrder: string[]) => Promise<void>;
 
   dispatchOperation: (operation: Operation) => Promise<void>;
   applyOperation: (operation: Operation) => void;
@@ -83,24 +85,6 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
     };
 
     get().dispatchOperation(op);
-  },
-
-  updateList: async (id: string, updatedFields: Partial<GroceryList>) => {
-    const existing = get().lists[id];
-    if (!existing) return;
-
-    const updated = { ...existing, ...updatedFields };
-    set(
-      produce((draft: GroceryListStore) => {
-        draft.lists[id] = updated;
-      }),
-    );
-
-    try {
-      await storageService.saveList(updated);
-    } catch {
-      toast.error("Failed to save changes");
-    }
   },
 
   deleteList: async (id: string) => {
@@ -189,6 +173,34 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
     get().dispatchOperation(op);
   },
 
+  renameList: async (listId: string, name: string) => {
+    if (!get().lists[listId]) return;
+
+    const op: RenameListOperation = {
+      id: generateId(),
+      type: OperationType.RENAME_LIST,
+      actorId: "local",
+      payload: { listId, name },
+      sequence: Date.now(),
+    };
+
+    get().dispatchOperation(op);
+  },
+
+  finishShopping: async (listId: string, checkOrder: string[]) => {
+    if (!get().lists[listId]) return;
+
+    const op: FinishShoppingOperation = {
+      id: generateId(),
+      type: OperationType.FINISH_SHOPPING,
+      actorId: "local",
+      payload: { listId, checkOrder },
+      sequence: Date.now(),
+    };
+
+    get().dispatchOperation(op);
+  },
+
   dispatchOperation: async (operation: Operation) => {
     get().applyOperation(operation);
     await get().queueOperation(operation);
@@ -221,6 +233,12 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
             break;
           case OperationType.REORDER_ITEMS:
             reorderItemsHandler(draft, operation as ReorderItemsOperation);
+            break;
+          case OperationType.RENAME_LIST:
+            renameListHandler(draft, operation as RenameListOperation);
+            break;
+          case OperationType.FINISH_SHOPPING:
+            finishShoppingHandler(draft, operation as FinishShoppingOperation);
             break;
           default:
             console.warn(`No handler for operation type: ${operation.type}`);
