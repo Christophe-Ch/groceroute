@@ -15,17 +15,17 @@ const ListScreen = () => {
   const { listId } = useLocalSearchParams<ListScreenParams>();
   const list = useGroceryListStore((s) => s.lists[listId]);
   const setListMode = useGroceryListStore((s) => s.setListMode);
-  const updateList = useGroceryListStore((s) => s.updateList);
+  const reorderItems = useGroceryListStore((s) => s.reorderItems);
 
   const onModeChange = useCallback(
     async (next: "edit" | "play") => {
       if (next === "play" && list) {
         const orderedItems = orderItems(list.items, list.distances);
-        await updateList(list.id, { items: orderedItems });
+        await reorderItems(list.id, orderedItems);
       }
       setListMode(list.id, next);
     },
-    [list, updateList, setListMode],
+    [list, reorderItems, setListMode],
   );
 
   const onStartPlay = useCallback(() => onModeChange("play"), [onModeChange]);
