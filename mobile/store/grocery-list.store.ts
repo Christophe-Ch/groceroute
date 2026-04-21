@@ -4,27 +4,8 @@ import { generateId } from "@/utils/generate-id";
 import { produce } from "immer";
 import { toast } from "sonner-native";
 import { create } from "zustand";
-import { addItemHandler } from "./operations/handlers/add-item.handler";
-import { addPastItemHandler } from "./operations/handlers/add-past-item.handler";
-import { createListHandler } from "./operations/handlers/create-list.handler";
-import { deleteItemHandler } from "./operations/handlers/delete-item.handler";
-import { deleteListHandler } from "./operations/handlers/delete-list.handler";
-import { finishShoppingHandler } from "./operations/handlers/finish-shopping.handler";
-import { renameListHandler } from "./operations/handlers/rename-list.handler";
-import { reorderItemsHandler } from "./operations/handlers/reorder-items.handler";
-import { setListModeHandler } from "./operations/handlers/set-list-mode.handler";
-import { updateItemHandler } from "./operations/handlers/update-item.handler";
-import { AddItemOperation } from "./operations/types/add-item.operation";
-import { AddPastItemOperation } from "./operations/types/add-past-item.operation";
-import { CreateListOperation } from "./operations/types/create-list.operation";
-import { DeleteItemOperation } from "./operations/types/delete-item.operation";
-import { DeleteListOperation } from "./operations/types/delete-list.operation";
-import { FinishShoppingOperation } from "./operations/types/finish-shopping.operation";
+import { operationHandlers } from "./operations/handlers/registry";
 import { Operation, OperationInput, OperationType } from "./operations/types/operation";
-import { RenameListOperation } from "./operations/types/rename-list.operation";
-import { ReorderItemsOperation } from "./operations/types/reorder-items.operation";
-import { SetListModeOperation } from "./operations/types/set-list-mode.operation";
-import { UpdateItemOperation } from "./operations/types/update-item.operation";
 
 type GroceryListStore = {
   lists: Record<string, GroceryList>;
@@ -123,39 +104,11 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
   applyOperation: (operation: Operation) => {
     set(
       produce((draft: GroceryListStore) => {
-        switch (operation.type) {
-          case OperationType.CREATE_LIST:
-            createListHandler(draft, operation as CreateListOperation);
-            break;
-          case OperationType.SET_LIST_MODE:
-            setListModeHandler(draft, operation as SetListModeOperation);
-            break;
-          case OperationType.DELETE_LIST:
-            deleteListHandler(draft, operation as DeleteListOperation);
-            break;
-          case OperationType.ADD_ITEM:
-            addItemHandler(draft, operation as AddItemOperation);
-            break;
-          case OperationType.ADD_PAST_ITEM:
-            addPastItemHandler(draft, operation as AddPastItemOperation);
-            break;
-          case OperationType.UPDATE_ITEM:
-            updateItemHandler(draft, operation as UpdateItemOperation);
-            break;
-          case OperationType.DELETE_ITEM:
-            deleteItemHandler(draft, operation as DeleteItemOperation);
-            break;
-          case OperationType.REORDER_ITEMS:
-            reorderItemsHandler(draft, operation as ReorderItemsOperation);
-            break;
-          case OperationType.RENAME_LIST:
-            renameListHandler(draft, operation as RenameListOperation);
-            break;
-          case OperationType.FINISH_SHOPPING:
-            finishShoppingHandler(draft, operation as FinishShoppingOperation);
-            break;
-          default:
-            console.warn(`No handler for operation type: ${operation.type}`);
+        const handler = operationHandlers[operation.type];
+        if (handler) {
+          handler(draft, operation);
+        } else {
+          console.warn(`No handler for operation type: ${operation.type}`);
         }
       }),
     );
