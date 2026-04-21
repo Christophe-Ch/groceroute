@@ -3,6 +3,10 @@ export enum OperationType {
   SET_LIST_MODE = "SET_LIST_MODE",
   DELETE_LIST = "DELETE_LIST",
   ADD_ITEM = "ADD_ITEM",
+  ADD_PAST_ITEM = "ADD_PAST_ITEM",
+  UPDATE_ITEM = "UPDATE_ITEM",
+  DELETE_ITEM = "DELETE_ITEM",
+  REORDER_ITEMS = "REORDER_ITEMS",
 }
 
 export type Operation<T = Record<string, any>> = {
