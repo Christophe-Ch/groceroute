@@ -4,9 +4,11 @@ import { generateId } from "@/utils/generate-id";
 import { produce } from "immer";
 import { toast } from "sonner-native";
 import { create } from "zustand";
+import { addItemHandler } from "./operations/handlers/add-item.handler";
 import { createListHandler } from "./operations/handlers/create-list.handler";
 import { deleteListHandler } from "./operations/handlers/delete-list.handler";
 import { setListModeHandler } from "./operations/handlers/set-list-mode.handler";
+import { AddItemOperation } from "./operations/types/add-item.operation";
 import { CreateListOperation } from "./operations/types/create-list.operation";
 import { DeleteListOperation } from "./operations/types/delete-list.operation";
 import { Operation, OperationType } from "./operations/types/operation";
@@ -108,26 +110,15 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
   addItem: async (listId: string, name: string) => {
     if (!get().lists[listId]) return;
 
-    const newItem: GroceryItem = {
+    const op: AddItemOperation = {
       id: generateId(),
-      name,
-      quantity: "",
-      checked: false,
-      updatedAt: new Date(),
-      deletedAt: null,
+      type: OperationType.ADD_ITEM,
+      actorId: "local",
+      payload: { listId, name },
+      sequence: Date.now(),
     };
 
-    set(
-      produce((draft: GroceryListStore) => {
-        draft.lists[listId].items.push(newItem);
-      }),
-    );
-
-    try {
-      await storageService.saveList(get().lists[listId]);
-    } catch {
-      toast.error("Failed to save changes");
-    }
+    get().dispatchOperation(op);
   },
 
   addPastItem: async (listId: string, item: GroceryItem) => {
@@ -221,6 +212,9 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
             break;
           case OperationType.DELETE_LIST:
             deleteListHandler(draft, operation as DeleteListOperation);
+            break;
+          case OperationType.ADD_ITEM:
+            addItemHandler(draft, operation as AddItemOperation);
             break;
           // Future cases for other operation types will go here
           default:
