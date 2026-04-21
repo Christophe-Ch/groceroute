@@ -5,10 +5,12 @@ import { produce } from "immer";
 import { toast } from "sonner-native";
 import { create } from "zustand";
 import { createListHandler } from "./operations/handlers/create-list.handler";
+import { deleteListHandler } from "./operations/handlers/delete-list.handler";
+import { setListModeHandler } from "./operations/handlers/set-list-mode.handler";
 import { CreateListOperation } from "./operations/types/create-list.operation";
+import { DeleteListOperation } from "./operations/types/delete-list.operation";
 import { Operation, OperationType } from "./operations/types/operation";
 import { SetListModeOperation } from "./operations/types/set-list-mode.operation";
-import { setListModeHandler } from "./operations/handlers/set-list-mode.handler";
 
 type GroceryListStore = {
   lists: Record<string, GroceryList>;
@@ -92,17 +94,15 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
   },
 
   deleteList: async (id: string) => {
-    set(
-      produce((draft: GroceryListStore) => {
-        delete draft.lists[id];
-      }),
-    );
+    const op: DeleteListOperation = {
+      id: generateId(),
+      type: OperationType.DELETE_LIST,
+      actorId: "local",
+      payload: { id },
+      sequence: Date.now(),
+    };
 
-    try {
-      await storageService.deleteList(id);
-    } catch {
-      toast.error("Failed to delete list");
-    }
+    get().dispatchOperation(op);
   },
 
   addItem: async (listId: string, name: string) => {
@@ -218,6 +218,9 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
             break;
           case OperationType.SET_LIST_MODE:
             setListModeHandler(draft, operation as SetListModeOperation);
+            break;
+          case OperationType.DELETE_LIST:
+            deleteListHandler(draft, operation as DeleteListOperation);
             break;
           // Future cases for other operation types will go here
           default:
