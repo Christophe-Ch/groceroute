@@ -7,12 +7,15 @@ import { create } from "zustand";
 import { createListHandler } from "./operations/handlers/create-list.handler";
 import { CreateListOperation } from "./operations/types/create-list.operation";
 import { Operation, OperationType } from "./operations/types/operation";
+import { SetListModeOperation } from "./operations/types/set-list-mode.operation";
+import { setListModeHandler } from "./operations/handlers/set-list-mode.handler";
 
 type GroceryListStore = {
   lists: Record<string, GroceryList>;
   hydrated: boolean;
   hydrate: () => Promise<void>;
   createList: (name: string) => Promise<void>;
+  setListMode: (id: string, mode: "edit" | "play") => Promise<void>;
   deleteList: (id: string) => Promise<void>;
   addItem: (listId: string, name: string) => Promise<void>;
   updateItem: (
@@ -53,6 +56,18 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
       actorId: "local", // This should ideally be the user's ID
       payload: { name },
       sequence: Date.now(), // Using timestamp as a simple sequence generator
+    };
+
+    get().dispatchOperation(op);
+  },
+
+  setListMode: async (id: string, mode: "edit" | "play") => {
+    const op: SetListModeOperation = {
+      id: generateId(),
+      type: OperationType.SET_LIST_MODE,
+      actorId: "local",
+      payload: { id, mode },
+      sequence: Date.now(),
     };
 
     get().dispatchOperation(op);
@@ -201,12 +216,15 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
           case OperationType.CREATE_LIST:
             createListHandler(draft, operation as CreateListOperation);
             break;
+          case OperationType.SET_LIST_MODE:
+            setListModeHandler(draft, operation as SetListModeOperation);
+            break;
           // Future cases for other operation types will go here
           default:
             console.warn(`No handler for operation type: ${operation.type}`);
         }
       }),
-    )
+    );
   },
 
   queueOperation: async (operation: Operation) => {

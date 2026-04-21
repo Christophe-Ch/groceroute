@@ -16,6 +16,7 @@ export const createListHandler: OperationHandler<
     deletedAt: null,
     pastItems: [],
     distances: [],
+    mode: "edit",
   };
 
   state.lists[newList.id] = newList;
