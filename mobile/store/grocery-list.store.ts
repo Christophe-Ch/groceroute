@@ -15,11 +15,10 @@ type GroceryListStore = {
   setListMode: (id: string, mode: "edit" | "play") => Promise<void>;
   deleteList: (id: string) => Promise<void>;
   addItem: (listId: string, name: string) => Promise<void>;
-  updateItem: (
-    listId: string,
-    itemId: string,
-    updatedItem: Partial<GroceryItem>,
-  ) => Promise<void>;
+  renameItem: (listId: string, itemId: string, name: string) => Promise<void>;
+  setItemQuantity: (listId: string, itemId: string, quantity: string) => Promise<void>;
+  checkItem: (listId: string, itemId: string) => Promise<void>;
+  uncheckItem: (listId: string, itemId: string) => Promise<void>;
   deleteItem: (listId: string, itemId: string) => Promise<void>;
   addPastItem: (listId: string, item: GroceryItem) => Promise<void>;
   reorderItems: (listId: string, newItems: GroceryItem[]) => Promise<void>;
@@ -65,9 +64,24 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
     get().dispatchOperation({ type: OperationType.ADD_PAST_ITEM, payload: { listId, item } });
   },
 
-  updateItem: async (listId: string, itemId: string, updatedItem: Partial<GroceryItem>) => {
+  renameItem: async (listId: string, itemId: string, name: string) => {
     if (!get().lists[listId]) return;
-    get().dispatchOperation({ type: OperationType.UPDATE_ITEM, payload: { listId, itemId, updatedItem } });
+    get().dispatchOperation({ type: OperationType.RENAME_ITEM, payload: { listId, itemId, name } });
+  },
+
+  setItemQuantity: async (listId: string, itemId: string, quantity: string) => {
+    if (!get().lists[listId]) return;
+    get().dispatchOperation({ type: OperationType.SET_ITEM_QUANTITY, payload: { listId, itemId, quantity } });
+  },
+
+  checkItem: async (listId: string, itemId: string) => {
+    if (!get().lists[listId]) return;
+    get().dispatchOperation({ type: OperationType.CHECK_ITEM, payload: { listId, itemId } });
+  },
+
+  uncheckItem: async (listId: string, itemId: string) => {
+    if (!get().lists[listId]) return;
+    get().dispatchOperation({ type: OperationType.UNCHECK_ITEM, payload: { listId, itemId } });
   },
 
   deleteItem: async (listId: string, itemId: string) => {
