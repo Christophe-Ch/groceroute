@@ -31,7 +31,11 @@ export class OperationsService {
         const status = await this.apply(operation);
         results.push({ id: operation.id, status });
       } catch (error) {
-        results.push({ id: operation.id, status: 'failed', error: String(error) });
+        results.push({
+          id: operation.id,
+          status: 'failed',
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     }
     return results;

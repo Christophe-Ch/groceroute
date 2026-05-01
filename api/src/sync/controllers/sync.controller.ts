@@ -1,4 +1,5 @@
 import { JwtAuthGuard } from '@auth/strategies/jwt.strategy';
+import { Operation } from '@core/models/operation.entity';
 import { OperationsService } from '@core/services/operations.service';
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthenticatedRequest } from '@utils/types/authenticated-request';
@@ -21,8 +22,7 @@ export class SyncController {
         type: op.type,
         actorId: req.user.id,
         payload: op.payload,
-        sequence: null,
-      })),
+      })) as Operation[],
     );
   }
 }
