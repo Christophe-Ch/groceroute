@@ -22,7 +22,7 @@ type EditListProps = {
 };
 
 const EditList = ({ list, onModeChange }: EditListProps) => {
-  const { updateList, reorderItems } = useGroceryListStore();
+  const { renameList, reorderItems } = useGroceryListStore();
   const insets = useSafeAreaInsets();
 
   const currentItemIds = useMemo(
@@ -34,9 +34,9 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
   const onUpdateTitle = useCallback(() => {
     const trimmed = listName.trim();
     if (trimmed && trimmed !== list.name) {
-      updateList(list.id, { name: trimmed });
+      renameList(list.id, trimmed);
     }
-  }, [listName, list.name, list.id, updateList]);
+  }, [listName, list.name, list.id, renameList]);
 
   const onDragEnd = useCallback(
     ({ data }: { data: GroceryItem[] }) => reorderItems(list.id, data),

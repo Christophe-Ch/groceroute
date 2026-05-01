@@ -10,4 +10,5 @@ export type GroceryList = {
   items: GroceryItem[];
   pastItems: GroceryItem[];
   distances: ItemDistance[];
+  mode: "edit" | "play";
 };

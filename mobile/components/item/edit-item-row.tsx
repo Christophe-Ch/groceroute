@@ -13,7 +13,7 @@ type EditItemRowProps = {
 
 const EditItemRow = ({ listId, item }: EditItemRowProps) => {
   const muted = useThemeColor({}, "textMuted");
-  const { updateItem, deleteItem } = useGroceryListStore();
+  const { renameItem, setItemQuantity, deleteItem } = useGroceryListStore();
   const [focused, setFocused] = useState(false);
   const [name, setName] = useState(item.name);
   const [quantity, setQuantity] = useState(item.quantity);
@@ -23,7 +23,7 @@ const EditItemRow = ({ listId, item }: EditItemRowProps) => {
     setFocused(false);
     const trimmed = name.trim();
     if (trimmed) {
-      updateItem(listId, item.id, { name: trimmed });
+      renameItem(listId, item.id, trimmed);
     } else {
       deleteItem(listId, item.id);
     }
@@ -33,7 +33,7 @@ const EditItemRow = ({ listId, item }: EditItemRowProps) => {
     setQuantity(value);
     if (quantityDebounceRef.current) clearTimeout(quantityDebounceRef.current);
     quantityDebounceRef.current = setTimeout(() => {
-      updateItem(listId, item.id, { quantity: value });
+      setItemQuantity(listId, item.id, value);
     }, 400);
   };
 

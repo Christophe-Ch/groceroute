@@ -5,7 +5,7 @@ import { ThemedView } from "@/components/themed-view";
 import { orderItems } from "@/domain/grocery/distance";
 import { useGroceryListStore } from "@/store/grocery-list.store";
 import { useLocalSearchParams } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 
 type ListScreenParams = {
   listId: string;
@@ -14,16 +14,19 @@ type ListScreenParams = {
 const ListScreen = () => {
   const { listId } = useLocalSearchParams<ListScreenParams>();
   const list = useGroceryListStore((s) => s.lists[listId]);
-  const updateList = useGroceryListStore((s) => s.updateList);
-  const [mode, setMode] = useState<"edit" | "play">("edit");
+  const setListMode = useGroceryListStore((s) => s.setListMode);
+  const reorderItems = useGroceryListStore((s) => s.reorderItems);
 
-  const onModeChange = useCallback(async (next: "edit" | "play") => {
-    if (next === "play" && list) {
-      const orderedItems = orderItems(list.items, list.distances);
-      await updateList(list.id, { items: orderedItems });
-    }
-    setMode(next);
-  }, [list, updateList]);
+  const onModeChange = useCallback(
+    async (next: "edit" | "play") => {
+      if (next === "play" && list) {
+        const orderedItems = orderItems(list.items, list.distances);
+        await reorderItems(list.id, orderedItems);
+      }
+      setListMode(list.id, next);
+    },
+    [list, reorderItems, setListMode],
+  );
 
   const onStartPlay = useCallback(() => onModeChange("play"), [onModeChange]);
   const onStopPlay = useCallback(() => onModeChange("edit"), [onModeChange]);
@@ -40,7 +43,7 @@ const ListScreen = () => {
 
   return (
     <ThemedView style={{ flex: 1, paddingBlock: 20 }}>
-      {mode === "edit" ? (
+      {list.mode === "edit" ? (
         <EditList list={list} onModeChange={onStartPlay} />
       ) : (
         <PlayList list={list} onModeChange={onStopPlay} />

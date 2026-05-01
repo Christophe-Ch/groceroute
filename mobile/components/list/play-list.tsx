@@ -1,4 +1,3 @@
-import { computeDistances } from "@/domain/grocery/distance";
 import { GroceryList } from "@/models/grocery/grocery-list";
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { useGroceryListStore } from "@/store/grocery-list.store";
@@ -34,27 +33,7 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
   const [checkOrder, setCheckOrder] = useState<Set<string>>(
     new Set([SHOPPING_START_SENTINEL]),
   );
-  const { updateList } = useGroceryListStore();
-
-  const updateDistances = () => {
-    const distances = computeDistances(Array.from(checkOrder), list.distances);
-    updateList(list.id, {
-      items: [],
-      pastItems: [
-        ...list.pastItems,
-        ...list.items
-          .filter(
-            (item) => !list.pastItems.some((past) => past.name === item.name),
-          )
-          .map((i) =>
-            produce(i, (draft) => {
-              draft.quantity = "";
-            }),
-          ),
-      ],
-      distances,
-    });
-  };
+  const { finishShopping } = useGroceryListStore();
 
   const onItemCheckedChange = useCallback((itemId: string, checked: boolean) => {
     setList((list) =>
@@ -102,7 +81,7 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
           text: "Finish",
           style: "destructive",
           onPress: () => {
-            updateDistances();
+            finishShopping(list.id, Array.from(checkOrder));
             onModeChange();
           },
         },
