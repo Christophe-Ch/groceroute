@@ -1,4 +1,10 @@
-import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryColumn,
+} from 'typeorm';
 import { OperationType } from './operation-type.enum';
 
 @Entity()
@@ -18,4 +24,7 @@ export class Operation<T = Record<string, any>> {
   @Index()
   @Column({ type: 'bigint', generated: 'increment' })
   sequence: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }
