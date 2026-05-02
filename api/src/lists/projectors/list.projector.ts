@@ -6,11 +6,13 @@ import { Repository } from 'typeorm';
 import { List } from '../models/list.entity';
 import { CreateListOperation } from '../operations/create-list.operation';
 import { SetListModeOperation } from '../operations/set-list-mode.operation';
+import { ListsService } from '../services/lists.service';
 
 @Injectable()
 export class ListProjector {
   constructor(
     @InjectRepository(List) private readonly listsRepository: Repository<List>,
+    private readonly listsService: ListsService,
   ) {}
 
   public async handle(operation: Operation): Promise<void> {
@@ -34,11 +36,8 @@ export class ListProjector {
 
     if (await this.listsRepository.existsBy({ id: listId })) return;
 
-    await this.listsRepository.insert({
-      id: listId,
-      name: name,
-      ownerId: actorId,
-    });
+    await this.listsRepository.insert({ id: listId, name });
+    await this.listsService.addParticipant(listId, actorId);
   }
 
   private async setMode(
@@ -49,9 +48,7 @@ export class ListProjector {
       payload: { id: listId, mode },
     } = operation;
 
-    await this.listsRepository.update(
-      { id: listId, ownerId: actorId },
-      { mode },
-    );
+    if (!(await this.listsService.isParticipant(listId, actorId))) return;
+    await this.listsRepository.update({ id: listId }, { mode });
   }
 }

@@ -13,18 +13,32 @@ export class ListsService {
   ) {}
 
   public async create(createListDto: CreateListDto, user: User): Promise<List> {
-    const list = this.listsRepository.create({
-      name: createListDto.name,
-      owner: user,
-    });
-
-    return this.listsRepository.save(list);
+    const list = await this.listsRepository.save(
+      this.listsRepository.create({ name: createListDto.name }),
+    );
+    await this.addParticipant(list.id, user.id);
+    return list;
   }
 
   public async findAllByUser(user: User): Promise<List[]> {
     return this.listsRepository.find({
-      where: { owner: { id: user.id } },
+      where: { participants: { id: user.id } },
       relations: ['items'],
     });
+  }
+
+  public async addParticipant(listId: string, userId: string): Promise<void> {
+    await this.listsRepository
+      .createQueryBuilder()
+      .relation(List, 'participants')
+      .of(listId)
+      .add(userId);
+  }
+
+  public async isParticipant(listId: string, userId: string): Promise<boolean> {
+    const count = await this.listsRepository.count({
+      where: { id: listId, participants: { id: userId } },
+    });
+    return count > 0;
   }
 }

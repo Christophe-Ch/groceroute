@@ -1,10 +1,10 @@
 import { User } from '@users/models/user.entity';
-import { Exclude } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -28,12 +28,13 @@ export class List {
   @OneToMany(() => Item, (item) => item.list, { cascade: true })
   items: Item[];
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  @Exclude()
-  owner: User;
-
-  @Column()
-  ownerId: string;
+  @ManyToMany(() => User)
+  @JoinTable({
+    name: 'list_participants',
+    joinColumn: { name: 'list_id' },
+    inverseJoinColumn: { name: 'user_id' },
+  })
+  participants: User[];
 
   @Column({ type: 'enum', enum: ['edit', 'play'], default: 'edit' })
   mode: 'edit' | 'play';
