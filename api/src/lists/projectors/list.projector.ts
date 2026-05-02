@@ -18,17 +18,15 @@ export class ListProjector {
   public async handle(operation: Operation): Promise<void> {
     switch (operation.type) {
       case OperationType.CREATE_LIST:
-        await this.create(operation as Operation<CreateListOperation>);
+        await this.create(operation as CreateListOperation);
         break;
       case OperationType.SET_LIST_MODE:
-        await this.setMode(operation as Operation<SetListModeOperation>);
+        await this.setMode(operation as SetListModeOperation);
         break;
     }
   }
 
-  private async create(
-    operation: Operation<CreateListOperation>,
-  ): Promise<void> {
+  private async create(operation: CreateListOperation): Promise<void> {
     const {
       actorId,
       payload: { id: listId, name },
@@ -40,9 +38,7 @@ export class ListProjector {
     await this.listsService.addParticipant(listId, actorId);
   }
 
-  private async setMode(
-    operation: Operation<SetListModeOperation>,
-  ): Promise<void> {
+  private async setMode(operation: SetListModeOperation): Promise<void> {
     const {
       actorId,
       payload: { id: listId, mode },
