@@ -1,5 +1,6 @@
 import { OperationType } from "../types/operation";
 import { OperationHandler } from "./operation-handler";
+import { abandonShoppingHandler } from "./abandon-shopping.handler";
 import { addItemHandler } from "./add-item.handler";
 import { addPastItemHandler } from "./add-past-item.handler";
 import { checkItemHandler } from "./check-item.handler";
@@ -11,13 +12,14 @@ import { renameItemHandler } from "./rename-item.handler";
 import { renameListHandler } from "./rename-list.handler";
 import { reorderItemsHandler } from "./reorder-items.handler";
 import { setItemQuantityHandler } from "./set-item-quantity.handler";
-import { setListModeHandler } from "./set-list-mode.handler";
+import { startShoppingHandler } from "./start-shopping.handler";
 import { uncheckItemHandler } from "./uncheck-item.handler";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const operationHandlers: Record<OperationType, OperationHandler<any, any>> = {
   [OperationType.CREATE_LIST]: createListHandler,
-  [OperationType.SET_LIST_MODE]: setListModeHandler,
+  [OperationType.START_SHOPPING]: startShoppingHandler,
+  [OperationType.ABANDON_SHOPPING]: abandonShoppingHandler,
   [OperationType.DELETE_LIST]: deleteListHandler,
   [OperationType.ADD_ITEM]: addItemHandler,
   [OperationType.ADD_PAST_ITEM]: addPastItemHandler,

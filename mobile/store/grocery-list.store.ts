@@ -16,7 +16,8 @@ type GroceryListStore = {
   hydrated: boolean;
   hydrate: () => Promise<void>;
   createList: (name: string) => Promise<void>;
-  setListMode: (id: string, mode: "edit" | "play") => Promise<void>;
+  startShopping: (listId: string) => Promise<void>;
+  abandonShopping: (listId: string) => Promise<void>;
   deleteList: (id: string) => Promise<void>;
   addItem: (listId: string, name: string) => Promise<void>;
   renameItem: (listId: string, itemId: string, name: string) => Promise<void>;
@@ -58,10 +59,17 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
     });
   },
 
-  setListMode: async (id: string, mode: "edit" | "play") => {
+  startShopping: async (listId: string) => {
     get().dispatchOperation({
-      type: OperationType.SET_LIST_MODE,
-      payload: { id, mode },
+      type: OperationType.START_SHOPPING,
+      payload: { listId },
+    });
+  },
+
+  abandonShopping: async (listId: string) => {
+    get().dispatchOperation({
+      type: OperationType.ABANDON_SHOPPING,
+      payload: { listId },
     });
   },
 
@@ -187,8 +195,7 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
       }
 
       const listId =
-        operation.type === OperationType.CREATE_LIST ||
-        operation.type === OperationType.SET_LIST_MODE
+        operation.type === OperationType.CREATE_LIST
           ? (operation.payload as { id: string }).id
           : (operation.payload as { listId: string }).listId;
 

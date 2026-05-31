@@ -13,10 +13,9 @@ const SHOPPING_START_SENTINEL = "_start";
 
 type PlayListProps = {
   list: GroceryList;
-  onModeChange: () => void;
 };
 
-const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
+const PlayList = ({ list: baseList }: PlayListProps) => {
   // Shopping session state is intentionally ephemeral: checked items are held
   // in local state and not persisted to the store. Stopping or backgrounding
   // the app resets progress. GroceryItem.checked is unused during play mode.
@@ -33,7 +32,7 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
   const [checkOrder, setCheckOrder] = useState<Set<string>>(
     new Set([SHOPPING_START_SENTINEL]),
   );
-  const { finishShopping } = useGroceryListStore();
+  const { finishShopping, abandonShopping } = useGroceryListStore();
 
   const onItemCheckedChange = useCallback((itemId: string, checked: boolean) => {
     setList((list) =>
@@ -64,7 +63,7 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
           text: "Stop",
           style: "destructive",
           onPress: () => {
-            onModeChange();
+            abandonShopping(list.id);
           },
         },
       ],
@@ -82,7 +81,6 @@ const PlayList = ({ list: baseList, onModeChange }: PlayListProps) => {
           style: "destructive",
           onPress: () => {
             finishShopping(list.id, Array.from(checkOrder));
-            onModeChange();
           },
         },
       ],

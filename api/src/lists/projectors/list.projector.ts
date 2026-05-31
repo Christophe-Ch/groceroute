@@ -4,8 +4,10 @@ import { OperationType } from 'src/core/models/operation-type.enum';
 import { Operation } from 'src/core/models/operation.entity';
 import { Repository } from 'typeorm';
 import { List } from '../models/list.entity';
+import { AbandonShoppingOperation } from '../operations/abandon-shopping.operation';
 import { CreateListOperation } from '../operations/create-list.operation';
-import { SetListModeOperation } from '../operations/set-list-mode.operation';
+import { FinishShoppingOperation } from '../operations/finish-shopping.operation';
+import { StartShoppingOperation } from '../operations/start-shopping.operation';
 import { ListsService } from '../services/lists.service';
 
 @Injectable()
@@ -20,8 +22,14 @@ export class ListProjector {
       case OperationType.CREATE_LIST:
         await this.create(operation as CreateListOperation);
         break;
-      case OperationType.SET_LIST_MODE:
-        await this.setMode(operation as SetListModeOperation);
+      case OperationType.START_SHOPPING:
+        await this.startShopping(operation as StartShoppingOperation);
+        break;
+      case OperationType.ABANDON_SHOPPING:
+        await this.abandonShopping(operation as AbandonShoppingOperation);
+        break;
+      case OperationType.FINISH_SHOPPING:
+        await this.finishShopping(operation as FinishShoppingOperation);
         break;
     }
   }
@@ -38,13 +46,21 @@ export class ListProjector {
     await this.listsService.addParticipant(listId, actorId);
   }
 
-  private async setMode(operation: SetListModeOperation): Promise<void> {
-    const {
-      actorId,
-      payload: { id: listId, mode },
-    } = operation;
-
+  private async startShopping(operation: StartShoppingOperation): Promise<void> {
+    const { actorId, payload: { listId } } = operation;
     if (!(await this.listsService.isParticipant(listId, actorId))) return;
-    await this.listsRepository.update({ id: listId }, { mode });
+    await this.listsRepository.update({ id: listId }, { mode: 'play' });
+  }
+
+  private async abandonShopping(operation: AbandonShoppingOperation): Promise<void> {
+    const { actorId, payload: { listId } } = operation;
+    if (!(await this.listsService.isParticipant(listId, actorId))) return;
+    await this.listsRepository.update({ id: listId }, { mode: 'edit' });
+  }
+
+  private async finishShopping(operation: FinishShoppingOperation): Promise<void> {
+    const { actorId, payload: { listId } } = operation;
+    if (!(await this.listsService.isParticipant(listId, actorId))) return;
+    await this.listsRepository.update({ id: listId }, { mode: 'edit' });
   }
 }

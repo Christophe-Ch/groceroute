@@ -18,4 +18,5 @@ export const finishShoppingHandler: OperationHandler<
   list.distances = computeDistances(checkOrder, list.distances);
   list.pastItems = [...list.pastItems, ...newPastItems];
   list.items = [];
+  list.mode = "edit";
 };

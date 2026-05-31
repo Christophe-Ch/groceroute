@@ -14,22 +14,15 @@ type ListScreenParams = {
 const ListScreen = () => {
   const { listId } = useLocalSearchParams<ListScreenParams>();
   const list = useGroceryListStore((s) => s.lists[listId]);
-  const setListMode = useGroceryListStore((s) => s.setListMode);
+  const startShopping = useGroceryListStore((s) => s.startShopping);
   const reorderItems = useGroceryListStore((s) => s.reorderItems);
 
-  const onModeChange = useCallback(
-    async (next: "edit" | "play") => {
-      if (next === "play" && list) {
-        const orderedItems = orderItems(list.items, list.distances);
-        await reorderItems(list.id, orderedItems);
-      }
-      setListMode(list.id, next);
-    },
-    [list, reorderItems, setListMode],
-  );
-
-  const onStartPlay = useCallback(() => onModeChange("play"), [onModeChange]);
-  const onStopPlay = useCallback(() => onModeChange("edit"), [onModeChange]);
+  const onStartShopping = useCallback(async () => {
+    if (!list) return;
+    const orderedItems = orderItems(list.items, list.distances);
+    await reorderItems(list.id, orderedItems);
+    startShopping(list.id);
+  }, [list, reorderItems, startShopping]);
 
   if (!list) {
     return (
@@ -44,9 +37,9 @@ const ListScreen = () => {
   return (
     <ThemedView style={{ flex: 1, paddingBlock: 20 }}>
       {list.mode === "edit" ? (
-        <EditList list={list} onModeChange={onStartPlay} />
+        <EditList list={list} onModeChange={onStartShopping} />
       ) : (
-        <PlayList list={list} onModeChange={onStopPlay} />
+        <PlayList list={list} />
       )}
     </ThemedView>
   );
