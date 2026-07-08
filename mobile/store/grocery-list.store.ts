@@ -1,5 +1,7 @@
+import { sync } from "@/api/sync";
 import { GroceryItem, GroceryList } from "@/models/grocery";
 import { storageService } from "@/services/storage.service";
+import { debounce } from "@/utils/debounce";
 import { generateId } from "@/utils/generate-id";
 import { produce } from "immer";
 import { toast } from "sonner-native";
@@ -14,6 +16,8 @@ import {
 type GroceryListStore = {
   lists: Record<string, GroceryList>;
   hydrated: boolean;
+  isSyncing: boolean;
+
   hydrate: () => Promise<void>;
   createList: (name: string) => Promise<void>;
   startShopping: (listId: string) => Promise<void>;
@@ -38,182 +42,218 @@ type GroceryListStore = {
   applyOperation: (operation: Operation) => void;
   persistAfterOperation: (operation: Operation) => Promise<void>;
   queueOperation: (operation: Operation) => Promise<void>;
+  syncOperations: () => Promise<void>;
 };
 
-export const useGroceryListStore = create<GroceryListStore>((set, get) => ({
-  lists: {},
-  hydrated: false,
+export const useGroceryListStore = create<GroceryListStore>((set, get) => {
+  const executeDebouncedSync = debounce(async () => {
+    await get().syncOperations();
+  }, 1000);
 
-  hydrate: async () => {
-    const lists = await storageService.hydrate();
-    set({
-      lists: Object.fromEntries(lists.map((list) => [list.id, list])),
-      hydrated: true,
-    });
-  },
+  return {
+    lists: {},
+    hydrated: false,
+    isSyncing: false,
 
-  createList: async (name: string) => {
-    get().dispatchOperation({
-      type: OperationType.CREATE_LIST,
-      payload: { id: generateId(), name },
-    });
-  },
+    hydrate: async () => {
+      const lists = await storageService.hydrate();
+      set({
+        lists: Object.fromEntries(lists.map((list) => [list.id, list])),
+        hydrated: true,
+      });
+    },
 
-  startShopping: async (listId: string) => {
-    get().dispatchOperation({
-      type: OperationType.START_SHOPPING,
-      payload: { listId },
-    });
-  },
+    createList: async (name: string) => {
+      get().dispatchOperation({
+        type: OperationType.CREATE_LIST,
+        payload: { id: generateId(), name },
+      });
+    },
 
-  abandonShopping: async (listId: string) => {
-    get().dispatchOperation({
-      type: OperationType.ABANDON_SHOPPING,
-      payload: { listId },
-    });
-  },
+    startShopping: async (listId: string) => {
+      get().dispatchOperation({
+        type: OperationType.START_SHOPPING,
+        payload: { listId },
+      });
+    },
 
-  deleteList: async (id: string) => {
-    get().dispatchOperation({
-      type: OperationType.DELETE_LIST,
-      payload: { id },
-    });
-  },
+    abandonShopping: async (listId: string) => {
+      get().dispatchOperation({
+        type: OperationType.ABANDON_SHOPPING,
+        payload: { listId },
+      });
+    },
 
-  addItem: async (listId: string, name: string) => {
-    if (!get().lists[listId]) return;
-    get().dispatchOperation({
-      type: OperationType.ADD_ITEM,
-      payload: { listId, name },
-    });
-  },
+    deleteList: async (id: string) => {
+      get().dispatchOperation({
+        type: OperationType.DELETE_LIST,
+        payload: { id },
+      });
+    },
 
-  addPastItem: async (listId: string, item: GroceryItem) => {
-    if (!get().lists[listId]) return;
-    get().dispatchOperation({
-      type: OperationType.ADD_PAST_ITEM,
-      payload: { listId, item },
-    });
-  },
+    addItem: async (listId: string, name: string) => {
+      if (!get().lists[listId]) return;
+      get().dispatchOperation({
+        type: OperationType.ADD_ITEM,
+        payload: { listId, name },
+      });
+    },
 
-  renameItem: async (listId: string, itemId: string, name: string) => {
-    if (!get().lists[listId]) return;
-    get().dispatchOperation({
-      type: OperationType.RENAME_ITEM,
-      payload: { listId, itemId, name },
-    });
-  },
+    addPastItem: async (listId: string, item: GroceryItem) => {
+      if (!get().lists[listId]) return;
+      get().dispatchOperation({
+        type: OperationType.ADD_PAST_ITEM,
+        payload: { listId, item },
+      });
+    },
 
-  setItemQuantity: async (listId: string, itemId: string, quantity: string) => {
-    if (!get().lists[listId]) return;
-    get().dispatchOperation({
-      type: OperationType.SET_ITEM_QUANTITY,
-      payload: { listId, itemId, quantity },
-    });
-  },
+    renameItem: async (listId: string, itemId: string, name: string) => {
+      if (!get().lists[listId]) return;
+      get().dispatchOperation({
+        type: OperationType.RENAME_ITEM,
+        payload: { listId, itemId, name },
+      });
+    },
 
-  checkItem: async (listId: string, itemId: string) => {
-    if (!get().lists[listId]) return;
-    get().dispatchOperation({
-      type: OperationType.CHECK_ITEM,
-      payload: { listId, itemId },
-    });
-  },
+    setItemQuantity: async (
+      listId: string,
+      itemId: string,
+      quantity: string,
+    ) => {
+      if (!get().lists[listId]) return;
+      get().dispatchOperation({
+        type: OperationType.SET_ITEM_QUANTITY,
+        payload: { listId, itemId, quantity },
+      });
+    },
 
-  uncheckItem: async (listId: string, itemId: string) => {
-    if (!get().lists[listId]) return;
-    get().dispatchOperation({
-      type: OperationType.UNCHECK_ITEM,
-      payload: { listId, itemId },
-    });
-  },
+    checkItem: async (listId: string, itemId: string) => {
+      if (!get().lists[listId]) return;
+      get().dispatchOperation({
+        type: OperationType.CHECK_ITEM,
+        payload: { listId, itemId },
+      });
+    },
 
-  deleteItem: async (listId: string, itemId: string) => {
-    if (!get().lists[listId]) return;
-    get().dispatchOperation({
-      type: OperationType.DELETE_ITEM,
-      payload: { listId, itemId },
-    });
-  },
+    uncheckItem: async (listId: string, itemId: string) => {
+      if (!get().lists[listId]) return;
+      get().dispatchOperation({
+        type: OperationType.UNCHECK_ITEM,
+        payload: { listId, itemId },
+      });
+    },
 
-  reorderItems: async (listId: string, newItems: GroceryItem[]) => {
-    if (!get().lists[listId]) return;
-    get().dispatchOperation({
-      type: OperationType.REORDER_ITEMS,
-      payload: { listId, newItems },
-    });
-  },
+    deleteItem: async (listId: string, itemId: string) => {
+      if (!get().lists[listId]) return;
+      get().dispatchOperation({
+        type: OperationType.DELETE_ITEM,
+        payload: { listId, itemId },
+      });
+    },
 
-  renameList: async (listId: string, name: string) => {
-    if (!get().lists[listId]) return;
-    get().dispatchOperation({
-      type: OperationType.RENAME_LIST,
-      payload: { listId, name },
-    });
-  },
+    reorderItems: async (listId: string, newItems: GroceryItem[]) => {
+      if (!get().lists[listId]) return;
+      get().dispatchOperation({
+        type: OperationType.REORDER_ITEMS,
+        payload: { listId, newItems },
+      });
+    },
 
-  finishShopping: async (listId: string, checkOrder: string[]) => {
-    if (!get().lists[listId]) return;
-    get().dispatchOperation({
-      type: OperationType.FINISH_SHOPPING,
-      payload: { listId, checkOrder },
-    });
-  },
+    renameList: async (listId: string, name: string) => {
+      if (!get().lists[listId]) return;
+      get().dispatchOperation({
+        type: OperationType.RENAME_LIST,
+        payload: { listId, name },
+      });
+    },
 
-  dispatchOperation: async (input: OperationInput) => {
-    const operation: Operation = {
-      id: generateId(),
-      actorId: "local",
-      sequence: Date.now(),
-      ...input,
-    };
-    get().applyOperation(operation);
-    await get().persistAfterOperation(operation);
-    await get().queueOperation(operation);
-  },
+    finishShopping: async (listId: string, checkOrder: string[]) => {
+      if (!get().lists[listId]) return;
+      get().dispatchOperation({
+        type: OperationType.FINISH_SHOPPING,
+        payload: { listId, checkOrder },
+      });
+    },
 
-  applyOperation: (operation: Operation) => {
-    set(
-      produce((draft: GroceryListStore) => {
-        const handler = operationHandlers[operation.type];
-        if (handler) {
-          handler(draft, operation);
-        } else {
-          console.warn(`No handler for operation type: ${operation.type}`);
+    dispatchOperation: async (input: OperationInput) => {
+      const operation: Operation = {
+        id: generateId(),
+        actorId: "local",
+        createdAt: new Date(),
+        ...input,
+      };
+      get().applyOperation(operation);
+
+      Promise.all([
+        await get().persistAfterOperation(operation),
+        await get().queueOperation(operation),
+      ]).catch((err) => console.error("Background persistence failed", err));
+    },
+
+    applyOperation: (operation: Operation) => {
+      set(
+        produce((draft: GroceryListStore) => {
+          const handler = operationHandlers[operation.type];
+          if (handler) {
+            handler(draft, operation);
+          } else {
+            console.warn(`No handler for operation type: ${operation.type}`);
+          }
+        }),
+      );
+    },
+
+    persistAfterOperation: async (operation: Operation) => {
+      try {
+        if (operation.type === OperationType.DELETE_LIST) {
+          await storageService.deleteList(
+            (operation.payload as { id: string }).id,
+          );
+          return;
         }
-      }),
-    );
-  },
 
-  persistAfterOperation: async (operation: Operation) => {
-    try {
-      if (operation.type === OperationType.DELETE_LIST) {
-        await storageService.deleteList(
-          (operation.payload as { id: string }).id,
-        );
-        return;
+        const listId =
+          operation.type === OperationType.CREATE_LIST
+            ? (operation.payload as { id: string }).id
+            : (operation.payload as { listId: string }).listId;
+
+        if (operation.type === OperationType.CREATE_LIST) {
+          await storageService.registerList(listId);
+        }
+
+        await storageService.saveList(get().lists[listId]);
+      } catch {
+        toast.error("Something went wrong while saving your changes");
       }
+    },
 
-      const listId =
-        operation.type === OperationType.CREATE_LIST
-          ? (operation.payload as { id: string }).id
-          : (operation.payload as { listId: string }).listId;
-
-      if (operation.type === OperationType.CREATE_LIST) {
-        await storageService.registerList(listId);
+    queueOperation: async (operation: Operation) => {
+      try {
+        await storageService.storeOperation(operation);
+        executeDebouncedSync();
+      } catch {
+        toast.error("Something went wrong while processing operation");
       }
+    },
 
-      await storageService.saveList(get().lists[listId]);
-    } catch {
-      toast.error("Something went wrong while saving your changes");
-    }
-  },
+    syncOperations: async () => {
+      if (get().isSyncing) return;
 
-  queueOperation: async (operation: Operation) => {
-    try {
-      await storageService.storeOperation(operation);
-    } catch {
-      toast.error("Something went wrong while processing operation");
-    }
-  },
-}));
+      set({ isSyncing: true });
+
+      try {
+        const pendingOps = await storageService.getQueuedOperations();
+        if (pendingOps.length === 0) return;
+
+        const batchIds = pendingOps.map((op) => op.id);
+        await sync(pendingOps);
+
+        await storageService.clearQueuedOperations(batchIds);
+      } catch (err) {
+        console.error("Sync failed", err);
+      } finally {
+        set({ isSyncing: false });
+      }
+    },
+  };
+});

@@ -46,6 +46,28 @@ export const storageService = {
   async storeOperation(operation: Operation): Promise<void> {
     const rawOperations = await AsyncStorage.getItem(KEYS.operations);
     const operations = rawOperations ? JSON.parse(rawOperations) : [];
-    await AsyncStorage.setItem(KEYS.operations, JSON.stringify([...operations, operation]));
+    await AsyncStorage.setItem(
+      KEYS.operations,
+      JSON.stringify([...operations, operation]),
+    );
+  },
+
+  async getQueuedOperations(): Promise<Operation[]> {
+    const queuedOperationsRaw = await AsyncStorage.getItem(KEYS.operations);
+    if (!queuedOperationsRaw) return [];
+
+    return JSON.parse(queuedOperationsRaw);
+  },
+
+  async clearQueuedOperations(ids: string[]): Promise<void> {
+    const queuedOperations = await this.getQueuedOperations();
+    await AsyncStorage.setItem(
+      KEYS.operations,
+      JSON.stringify(queuedOperations.filter((op) => !ids.includes(op.id))),
+    );
+  },
+
+  async clear() {
+    await AsyncStorage.setItem(KEYS.operations, JSON.stringify([]));
   },
 };

@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { List } from '../models/list.entity';
 import { AbandonShoppingOperation } from '../operations/abandon-shopping.operation';
 import { CreateListOperation } from '../operations/create-list.operation';
+import { DeleteListOperation } from '../operations/delete-list.operation';
 import { FinishShoppingOperation } from '../operations/finish-shopping.operation';
 import { StartShoppingOperation } from '../operations/start-shopping.operation';
 import { ListsService } from '../services/lists.service';
@@ -21,6 +22,9 @@ export class ListProjector {
     switch (operation.type) {
       case OperationType.CREATE_LIST:
         await this.create(operation as CreateListOperation);
+        break;
+      case OperationType.DELETE_LIST:
+        await this.delete(operation as DeleteListOperation);
         break;
       case OperationType.START_SHOPPING:
         await this.startShopping(operation as StartShoppingOperation);
@@ -46,20 +50,41 @@ export class ListProjector {
     await this.listsService.addParticipant(listId, actorId);
   }
 
-  private async startShopping(operation: StartShoppingOperation): Promise<void> {
-    const { actorId, payload: { listId } } = operation;
+  private async delete({
+    payload: { id },
+  }: DeleteListOperation): Promise<void> {
+    await this.listsRepository.delete({ id });
+  }
+
+  private async startShopping(
+    operation: StartShoppingOperation,
+  ): Promise<void> {
+    const {
+      actorId,
+      payload: { listId },
+    } = operation;
     if (!(await this.listsService.isParticipant(listId, actorId))) return;
     await this.listsRepository.update({ id: listId }, { mode: 'play' });
   }
 
-  private async abandonShopping(operation: AbandonShoppingOperation): Promise<void> {
-    const { actorId, payload: { listId } } = operation;
+  private async abandonShopping(
+    operation: AbandonShoppingOperation,
+  ): Promise<void> {
+    const {
+      actorId,
+      payload: { listId },
+    } = operation;
     if (!(await this.listsService.isParticipant(listId, actorId))) return;
     await this.listsRepository.update({ id: listId }, { mode: 'edit' });
   }
 
-  private async finishShopping(operation: FinishShoppingOperation): Promise<void> {
-    const { actorId, payload: { listId } } = operation;
+  private async finishShopping(
+    operation: FinishShoppingOperation,
+  ): Promise<void> {
+    const {
+      actorId,
+      payload: { listId },
+    } = operation;
     if (!(await this.listsService.isParticipant(listId, actorId))) return;
     await this.listsRepository.update({ id: listId }, { mode: 'edit' });
   }

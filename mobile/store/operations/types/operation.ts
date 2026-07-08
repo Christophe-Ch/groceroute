@@ -20,7 +20,7 @@ export type Operation<T = Record<string, any>> = {
   type: OperationType;
   actorId: string;
   payload: T;
-  sequence: number;
+  createdAt: Date;
 };
 
 export type OperationInput = Pick<Operation, "type" | "payload">;

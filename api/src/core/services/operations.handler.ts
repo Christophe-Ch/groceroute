@@ -10,6 +10,7 @@ export class OperationsHandler {
   public async handle(operation: Operation): Promise<void> {
     switch (operation.type) {
       case OperationType.CREATE_LIST:
+      case OperationType.DELETE_LIST:
       case OperationType.START_SHOPPING:
       case OperationType.ABANDON_SHOPPING:
       case OperationType.FINISH_SHOPPING:
