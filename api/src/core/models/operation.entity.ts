@@ -8,7 +8,7 @@ import {
 import { OperationType } from './operation-type.enum';
 
 @Entity()
-export class Operation<T = Record<string, any>> {
+export class Operation<T = { listId: string } & Record<string, any>> {
   @PrimaryColumn()
   id: string;
 

@@ -1,3 +1,3 @@
 import { Operation } from "./operation";
 
-export type CreateListOperation = Operation<{ id: string; name: string }>;
+export type CreateListOperation = Operation<{ name: string }>;

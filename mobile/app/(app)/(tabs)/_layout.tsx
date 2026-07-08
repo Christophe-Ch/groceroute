@@ -1,4 +1,6 @@
 import { Colors } from "@/constants/theme";
+import { useAuth } from "@/hooks/auth/use-auth";
+import { useSync } from "@/hooks/sync/use-sync";
 import { useGroceryListStore } from "@/store/grocery-list.store";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
@@ -7,6 +9,9 @@ import { useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const AppLayout = () => {
+  const { token } = useAuth();
+  useSync(token);
+
   const hydrated = useGroceryListStore((s) => s.hydrated);
   const hydrate = useGroceryListStore((s) => s.hydrate);
   const colorScheme = useColorScheme() ?? "dark";

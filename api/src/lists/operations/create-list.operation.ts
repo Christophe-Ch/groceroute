@@ -1,6 +1,6 @@
 import { Operation } from '@core/models/operation.entity';
 
 export type CreateListOperation = Operation<{
-  id: string;
+  listId: string;
   name: string;
 }>;

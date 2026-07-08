@@ -41,7 +41,7 @@ export class ListProjector {
   private async create(operation: CreateListOperation): Promise<void> {
     const {
       actorId,
-      payload: { id: listId, name },
+      payload: { listId, name },
     } = operation;
 
     if (await this.listsRepository.existsBy({ id: listId })) return;
@@ -51,9 +51,9 @@ export class ListProjector {
   }
 
   private async delete({
-    payload: { id },
+    payload: { listId },
   }: DeleteListOperation): Promise<void> {
-    await this.listsRepository.delete({ id });
+    await this.listsRepository.delete({ id: listId });
   }
 
   private async startShopping(

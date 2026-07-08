@@ -66,7 +66,7 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
     createList: async (name: string) => {
       get().dispatchOperation({
         type: OperationType.CREATE_LIST,
-        payload: { id: generateId(), name },
+        payload: { listId: generateId(), name },
       });
     },
 
@@ -84,10 +84,10 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
       });
     },
 
-    deleteList: async (id: string) => {
+    deleteList: async (listId: string) => {
       get().dispatchOperation({
         type: OperationType.DELETE_LIST,
-        payload: { id },
+        payload: { listId },
       });
     },
 
@@ -205,17 +205,12 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
 
     persistAfterOperation: async (operation: Operation) => {
       try {
+        const listId = operation.payload.listId;
+
         if (operation.type === OperationType.DELETE_LIST) {
-          await storageService.deleteList(
-            (operation.payload as { id: string }).id,
-          );
+          await storageService.deleteList(listId);
           return;
         }
-
-        const listId =
-          operation.type === OperationType.CREATE_LIST
-            ? (operation.payload as { id: string }).id
-            : (operation.payload as { listId: string }).listId;
 
         if (operation.type === OperationType.CREATE_LIST) {
           await storageService.registerList(listId);

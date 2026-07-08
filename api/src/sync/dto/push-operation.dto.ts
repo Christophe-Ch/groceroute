@@ -10,7 +10,7 @@ export class PushOperationDto {
   type: OperationType;
 
   @IsObject()
-  payload: Record<string, any>;
+  payload: { listId: string } & Record<string, any>;
 
   @Type(() => Date)
   @IsDate()

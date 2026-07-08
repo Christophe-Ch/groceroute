@@ -6,5 +6,5 @@ export const deleteListHandler: OperationHandler<
   { lists: Record<string, GroceryList> },
   DeleteListOperation
 > = (state, operation) => {
-  delete state.lists[operation.payload.id];
+  delete state.lists[operation.payload.listId];
 };

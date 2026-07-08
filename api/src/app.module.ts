@@ -8,9 +8,11 @@ import { UsersModule } from '@users/users.module';
 import { CoreModule } from './core/core.module';
 import { ListsModule } from './lists/lists.module';
 import { SyncModule } from './sync/sync.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot({ wildcard: false, delimiter: '.' }),
     ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

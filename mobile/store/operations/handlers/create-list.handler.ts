@@ -7,7 +7,7 @@ export const createListHandler: OperationHandler<
   CreateListOperation
 > = (state, operation) => {
   const newList: GroceryList = {
-    id: operation.payload.id,
+    id: operation.payload.listId,
     name: operation.payload.name,
     items: [],
     createdAt: new Date(),

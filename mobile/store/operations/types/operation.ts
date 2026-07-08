@@ -19,7 +19,7 @@ export type Operation<T = Record<string, any>> = {
   id: string;
   type: OperationType;
   actorId: string;
-  payload: T;
+  payload: { listId: string } & T;
   createdAt: Date;
 };
 
