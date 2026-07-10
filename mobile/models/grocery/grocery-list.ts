@@ -11,4 +11,5 @@ export type GroceryList = {
   pastItems: GroceryItem[];
   distances: ItemDistance[];
   mode: "edit" | "play";
+  currentSequence: number;
 };

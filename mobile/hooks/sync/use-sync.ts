@@ -1,11 +1,10 @@
 import { useEffect } from "react";
 import Constants from "expo-constants";
 import EventSource from "react-native-sse";
+import { useGroceryListStore } from "@/store/grocery-list.store";
 
 export const useSync = (userToken: string | null) => {
-  const fetchLatestChanges = (listId: string) => {
-    // TODO: implement fetching
-  };
+  const { syncOperations } = useGroceryListStore();
 
   useEffect(() => {
     if (!userToken) return;
@@ -23,7 +22,7 @@ export const useSync = (userToken: string | null) => {
       if (event.data) {
         try {
           const { listId } = JSON.parse(event.data);
-          fetchLatestChanges(listId);
+          syncOperations(listId);
         } catch (e) {
           console.log("Error when parsing event", e);
         }

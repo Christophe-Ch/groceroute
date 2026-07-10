@@ -34,15 +34,28 @@ export class OperationsService {
         throw new Error('List not found');
       }
 
+      let currentSequence = '0';
       if (list) {
-        const nextSequence = list?.currentSequence + 1;
-        list.currentSequence = nextSequence;
-        await listRepository.save(list);
+        const result = await listRepository
+          .createQueryBuilder()
+          .update()
+          .set({ currentSequence: () => 'currentSequence + 1' })
+          .where('id = :id', { id: list.id })
+          .returning(['currentSequence'])
+          .execute();
+
+        const row = (result.raw as Array<{ current_sequence: string }>)[0] as
+          | { current_sequence: string }
+          | undefined;
+
+        if (row) {
+          currentSequence = row['current_sequence'];
+        }
       }
 
       await opRepository.insert({
         ...operation,
-        sequence: list?.currentSequence ?? 0,
+        sequence: currentSequence,
       });
 
       await this.operationsHandler.handle(operation, manager);
@@ -72,7 +85,7 @@ export class OperationsService {
 
   public async findForList(
     listId: string,
-    lastSequence: number,
+    lastSequence: string,
   ): Promise<Operation[]> {
     return this.operationsRepository.find({
       where: {

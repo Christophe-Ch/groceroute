@@ -1,4 +1,4 @@
-import { sync } from "@/api/sync";
+import { pull, push } from "@/api/sync";
 import { GroceryItem, GroceryList } from "@/models/grocery";
 import { storageService } from "@/services/storage.service";
 import { debounce } from "@/utils/debounce";
@@ -42,12 +42,13 @@ type GroceryListStore = {
   applyOperation: (operation: Operation) => void;
   persistAfterOperation: (operation: Operation) => Promise<void>;
   queueOperation: (operation: Operation) => Promise<void>;
-  syncOperations: () => Promise<void>;
+  pushOperations: () => Promise<void>;
+  syncOperations: (listId: string) => Promise<void>;
 };
 
 export const useGroceryListStore = create<GroceryListStore>((set, get) => {
   const executeDebouncedSync = debounce(async () => {
-    await get().syncOperations();
+    await get().pushOperations();
   }, 1000);
 
   return {
@@ -231,7 +232,7 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
       }
     },
 
-    syncOperations: async () => {
+    pushOperations: async () => {
       if (get().isSyncing) return;
 
       set({ isSyncing: true });
@@ -241,13 +242,37 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
         if (pendingOps.length === 0) return;
 
         const batchIds = pendingOps.map((op) => op.id);
-        await sync(pendingOps);
+        await push(pendingOps);
 
         await storageService.clearQueuedOperations(batchIds);
       } catch (err) {
         console.error("Sync failed", err);
       } finally {
         set({ isSyncing: false });
+      }
+    },
+
+    syncOperations: async (listId: string) => {
+      const list = get().lists[listId];
+      if (!list) return;
+
+      const { operations, currentSequence } = await pull(
+        listId,
+        list.currentSequence,
+      );
+
+      if (operations.length > 0) {
+        for (const operation of operations) {
+          get().applyOperation(operation);
+        }
+
+        set(
+          produce((draft: GroceryListStore) => {
+            draft.lists[listId].currentSequence = currentSequence;
+          }),
+        );
+
+        await storageService.saveList(get().lists[listId]);
       }
     },
   };

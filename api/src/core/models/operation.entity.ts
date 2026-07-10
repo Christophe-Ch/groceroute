@@ -23,7 +23,7 @@ export class Operation<T = { listId: string } & Record<string, any>> {
 
   @Index()
   @Column({ type: 'bigint' })
-  sequence: number;
+  sequence: string;
 
   @CreateDateColumn()
   createdAt: Date;

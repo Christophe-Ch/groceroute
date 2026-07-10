@@ -60,7 +60,7 @@ export class SyncController {
   @UseGuards(JwtAuthGuard)
   public async pull(
     @Query('listId') listId: string,
-    @Query('lastSequence') lastSequence: number,
+    @Query('lastSequence') lastSequence: string,
   ) {
     const [operations, currentSequence] = await Promise.all([
       this.operationsService.findForList(listId, lastSequence),
