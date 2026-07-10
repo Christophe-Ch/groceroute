@@ -41,4 +41,14 @@ export class ListsService {
     });
     return count > 0;
   }
+
+  public async getParticipantIds(listId: string): Promise<string[]> {
+    const participants = await this.listsRepository
+      .createQueryBuilder()
+      .relation(List, 'participants')
+      .of(listId)
+      .loadMany<User>();
+
+    return participants.map((p) => p.id);
+  }
 }

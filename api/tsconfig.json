@@ -25,7 +25,8 @@
       "@users/*": ["src/users/*"],
       "@auth/*": ["src/auth/*"],
       "@utils/*": ["src/utils/*"],
-      "@core/*": ["src/core/*"]
+      "@core/*": ["src/core/*"],
+      "@lists/*": ["src/lists/*"]
     }
   }
 }

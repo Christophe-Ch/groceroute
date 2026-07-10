@@ -11,6 +11,6 @@ import { ListsService } from './services/lists.service';
   imports: [TypeOrmModule.forFeature([List, Item, Distance])],
   providers: [ListsService, ListProjector],
   controllers: [ListsController],
-  exports: [ListProjector],
+  exports: [ListsService, ListProjector],
 })
 export class ListsModule {}

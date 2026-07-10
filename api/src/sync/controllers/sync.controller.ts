@@ -6,12 +6,14 @@ import { AuthenticatedRequest } from '@utils/types/authenticated-request';
 import { OperationSyncResultDto } from '../dto/operation-sync-result.dto';
 import { PushOperationsDto } from '../dto/push-operations.dto';
 import { SyncService } from '../services/sync.service';
+import { ListsService } from '@lists/services/lists.service';
 
 @Controller('sync')
 export class SyncController {
   constructor(
     private readonly operationsService: OperationsService,
     private readonly syncService: SyncService,
+    private readonly listsService: ListsService,
   ) {}
 
   @Post('push')
@@ -20,6 +22,13 @@ export class SyncController {
     @Body() dto: PushOperationsDto,
     @Req() req: AuthenticatedRequest,
   ): Promise<OperationSyncResultDto[]> {
+    if (dto.operations.length === 0) return;
+
+    const listId = dto.operations[0].payload.listId;
+    const userIdsToNotify = (
+      await this.listsService.getParticipantIds(listId)
+    ).filter((id) => id !== req.user.id);
+
     const result = await this.operationsService.applyBatch(
       dto.operations.map((op) => ({
         id: op.id,
@@ -29,10 +38,10 @@ export class SyncController {
       })) as Operation[],
     );
 
-    this.syncService.broadcastUpdate({
-      listId: dto.operations[0].payload.listId,
+    void this.syncService.broadcastUpdate({
+      listId,
       actorId: req.user.id,
-      userIdsToNotify: [req.user.id],
+      userIdsToNotify,
     });
 
     return result;
