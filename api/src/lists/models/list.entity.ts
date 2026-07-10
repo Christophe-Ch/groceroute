@@ -38,4 +38,7 @@ export class List {
 
   @Column({ type: 'enum', enum: ['edit', 'play'], default: 'edit' })
   mode: 'edit' | 'play';
+
+  @Column({ default: 0, type: 'bigint' })
+  currentSequence: number;
 }

@@ -1,16 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@users/models/user.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CreateListDto } from '../dto/create-list.dto';
 import { List } from '../models/list.entity';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class ListsService {
   constructor(
     @InjectRepository(List)
     private readonly listsRepository: Repository<List>,
   ) {}
+
+  public withTransaction(manager: EntityManager): ListsService {
+    return new ListsService(manager.getRepository(List));
+  }
 
   public async create(createListDto: CreateListDto, user: User): Promise<List> {
     const list = await this.listsRepository.save(

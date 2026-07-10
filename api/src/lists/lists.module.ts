@@ -4,8 +4,8 @@ import { ListsController } from './controllers/lists.controller';
 import { Distance } from './models/distance.entity';
 import { Item } from './models/item.entity';
 import { List } from './models/list.entity';
-import { ListProjector } from './projectors/list.projector';
 import { ListsService } from './services/lists.service';
+import { ListProjector } from './projectors/list.projector';
 
 @Module({
   imports: [TypeOrmModule.forFeature([List, Item, Distance])],

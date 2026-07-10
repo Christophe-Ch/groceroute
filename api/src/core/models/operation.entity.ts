@@ -22,7 +22,7 @@ export class Operation<T = { listId: string } & Record<string, any>> {
   payload: T;
 
   @Index()
-  @Column({ type: 'bigint', generated: 'increment' })
+  @Column({ type: 'bigint' })
   sequence: number;
 
   @CreateDateColumn()
