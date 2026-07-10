@@ -55,4 +55,18 @@ export class ListsService {
 
     return participants.map((p) => p.id);
   }
+
+  public async getListCurrentSequence(listId: string): Promise<string> {
+    const result = await this.listsRepository
+      .createQueryBuilder('list')
+      .select('list.currentSequence', 'currentSequence')
+      .where('list.id = :listId', { listId })
+      .getRawOne<{ currentSequence: string }>();
+
+    if (!result) {
+      throw new Error('List not found');
+    }
+
+    return result.currentSequence;
+  }
 }

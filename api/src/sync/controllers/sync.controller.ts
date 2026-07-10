@@ -1,7 +1,16 @@
 import { JwtAuthGuard } from '@auth/strategies/jwt.strategy';
 import { Operation } from '@core/models/operation.entity';
 import { OperationsService } from '@core/services/operations.service';
-import { Body, Controller, Post, Req, Sse, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Req,
+  Sse,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthenticatedRequest } from '@utils/types/authenticated-request';
 import { OperationSyncResultDto } from '../dto/operation-sync-result.dto';
 import { PushOperationsDto } from '../dto/push-operations.dto';
@@ -45,6 +54,23 @@ export class SyncController {
     });
 
     return result;
+  }
+
+  @Get('pull')
+  @UseGuards(JwtAuthGuard)
+  public async pull(
+    @Query('listId') listId: string,
+    @Query('lastSequence') lastSequence: number,
+  ) {
+    const [operations, currentSequence] = await Promise.all([
+      this.operationsService.findForList(listId, lastSequence),
+      this.listsService.getListCurrentSequence(listId),
+    ]);
+
+    return {
+      operations,
+      currentSequence,
+    };
   }
 
   @Sse('stream')
