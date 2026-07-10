@@ -44,5 +44,5 @@ export const useSync = (userToken: string | null) => {
       eventSource.removeAllEventListeners();
       eventSource.close();
     };
-  }, [userToken]);
+  }, [syncOperations, userToken]);
 };

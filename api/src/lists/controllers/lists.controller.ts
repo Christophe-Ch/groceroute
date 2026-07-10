@@ -1,5 +1,13 @@
 import { JwtAuthGuard } from '@auth/strategies/jwt.strategy';
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthenticatedRequest } from '@utils/types/authenticated-request';
 import { CreateListDto } from '../dto/create-list.dto';
 import { ListsService } from '../services/lists.service';
@@ -15,6 +23,15 @@ export class ListsController {
     @Req() req: AuthenticatedRequest,
   ) {
     return this.listsService.create(createListDto, req.user);
+  }
+
+  @Post(':id/join')
+  @UseGuards(JwtAuthGuard)
+  public async join(
+    @Param('id') listId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.listsService.addParticipant(listId, req.user.id);
   }
 
   @Get()

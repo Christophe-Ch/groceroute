@@ -1,4 +1,4 @@
-import CreateListSheet from "@/components/list/create-list-sheet";
+import ListActionSheet from "@/components/list/list-action-sheet";
 import ListCard from "@/components/list/list-card";
 import { ThemedIcon } from "@/components/themed-icon";
 import ThemedButton from "@/components/themed-button";
@@ -20,10 +20,14 @@ const Index = () => {
       ),
     ),
   );
+  const [sheet, setSheet] = useState<"create" | "join">("create");
   const [showSheet, setShowSheet] = useState(false);
   const iconColor = useThemeColor({}, "icon");
 
-  const onOpenSheet = useCallback(() => setShowSheet(true), []);
+  const onOpenSheet = useCallback((sheet: "create" | "join") => {
+    setSheet(sheet);
+    setShowSheet(true);
+  }, []);
   const onCloseSheet = useCallback(() => setShowSheet(false), []);
 
   const renderItem: ListRenderItem<GroceryList> = useCallback(
@@ -56,7 +60,11 @@ const Index = () => {
 
   return (
     <ThemedView style={{ flex: 1, paddingBlock: 20 }}>
-      <ThemedText type="title" style={{ padding: 20 }} accessibilityRole="header">
+      <ThemedText
+        type="title"
+        style={{ padding: 20 }}
+        accessibilityRole="header"
+      >
         My lists
       </ThemedText>
       <FlatList
@@ -64,19 +72,50 @@ const Index = () => {
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ListEmptyComponent={ListEmpty}
-        contentContainerStyle={lists.length > 0 ? { paddingHorizontal: 20 } : { flex: 1 }}
+        contentContainerStyle={
+          lists.length > 0 ? { paddingHorizontal: 20 } : { flex: 1 }
+        }
         keyboardShouldPersistTaps="handled"
       />
 
-      <ThemedButton
-        iconName={"add"}
-        style={{ position: "absolute", bottom: 20, right: 20, borderRadius: 50 }}
-        onPress={onOpenSheet}
-        accessibilityLabel="Create new list"
-        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-      />
+      <View
+        style={{
+          position: "absolute",
+          bottom: 20,
+          right: 20,
+          borderRadius: 50,
+          flexDirection: "row",
+          gap: 8,
+        }}
+      >
+        <ThemedButton
+          iconName={"add"}
+          text="Create"
+          style={{
+            borderRadius: 50,
+          }}
+          onPress={() => onOpenSheet("create")}
+          accessibilityLabel="Create new list"
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        />
 
-      <CreateListSheet visible={showSheet} onClose={onCloseSheet} />
+        <ThemedButton
+          iconName={"person-add"}
+          text="Join"
+          style={{
+            borderRadius: 50,
+          }}
+          onPress={() => onOpenSheet("join")}
+          accessibilityLabel="Join list"
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        />
+      </View>
+
+      <ListActionSheet
+        sheet={sheet}
+        visible={showSheet}
+        onClose={onCloseSheet}
+      />
     </ThemedView>
   );
 };

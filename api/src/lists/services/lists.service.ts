@@ -1,4 +1,4 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@users/models/user.entity';
 import { EntityManager, Repository } from 'typeorm';
@@ -32,6 +32,10 @@ export class ListsService {
   }
 
   public async addParticipant(listId: string, userId: string): Promise<void> {
+    if (!(await this.listsRepository.existsBy({ id: listId }))) {
+      throw new NotFoundException(`No list found for id ${listId}`);
+    }
+
     await this.listsRepository
       .createQueryBuilder()
       .relation(List, 'participants')

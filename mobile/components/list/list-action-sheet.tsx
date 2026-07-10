@@ -9,23 +9,29 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import JoinList from "./join-list";
 
 type Props = {
+  sheet: "create" | "join";
   visible: boolean;
   onClose: () => void;
 };
 
 const PANEL_SLIDE_DISTANCE = 400;
 
-const CreateListSheet = ({ visible, onClose }: Props) => {
+const ListActionSheet = ({ sheet, visible, onClose }: Props) => {
   const backdropAnim = useRef(new Animated.Value(0)).current;
   const panelAnim = useRef(new Animated.Value(PANEL_SLIDE_DISTANCE)).current;
   const keyboardOffset = useRef(new Animated.Value(0)).current;
-  const combinedTranslate = useRef(Animated.add(panelAnim, keyboardOffset)).current;
+  const combinedTranslate = useRef(
+    Animated.add(panelAnim, keyboardOffset),
+  ).current;
 
   useEffect(() => {
-    const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
-    const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+    const showEvent =
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvent =
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
 
     const showSub = Keyboard.addListener(showEvent, (e) => {
       Animated.timing(keyboardOffset, {
@@ -88,7 +94,7 @@ const CreateListSheet = ({ visible, onClose }: Props) => {
           useNativeDriver: true,
         }),
       ],
-      { stopTogether: false }
+      { stopTogether: false },
     ).start(onClose);
   };
 
@@ -114,7 +120,11 @@ const CreateListSheet = ({ visible, onClose }: Props) => {
         >
           {/* Absorbs taps so pressing inside the panel doesn't trigger the backdrop close */}
           <Pressable onPress={() => {}}>
-            <CreateList onCreate={close} />
+            {sheet === "create" ? (
+              <CreateList onCreate={close} />
+            ) : (
+              <JoinList onJoin={close} />
+            )}
           </Pressable>
         </Animated.View>
       </View>
@@ -122,7 +132,7 @@ const CreateListSheet = ({ visible, onClose }: Props) => {
   );
 };
 
-export default CreateListSheet;
+export default ListActionSheet;
 
 const styles = StyleSheet.create({
   container: {

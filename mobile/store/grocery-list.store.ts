@@ -12,6 +12,7 @@ import {
   OperationInput,
   OperationType,
 } from "./operations/types/operation";
+import { join } from "@/api/list";
 
 type GroceryListStore = {
   lists: Record<string, GroceryList>;
@@ -19,7 +20,10 @@ type GroceryListStore = {
   isSyncing: boolean;
 
   hydrate: () => Promise<void>;
+
   createList: (name: string) => Promise<void>;
+  joinList: (id: string) => Promise<boolean>;
+
   startShopping: (listId: string) => Promise<void>;
   abandonShopping: (listId: string) => Promise<void>;
   deleteList: (id: string) => Promise<void>;
@@ -69,6 +73,17 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
         type: OperationType.CREATE_LIST,
         payload: { listId: generateId(), name },
       });
+    },
+
+    joinList: async (id: string) => {
+      try {
+        await join(id);
+        await get().syncOperations(id);
+        return true;
+      } catch (err) {
+        console.error("Failed to join list", err);
+        return false;
+      }
     },
 
     startShopping: async (listId: string) => {
@@ -254,16 +269,16 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
 
     syncOperations: async (listId: string) => {
       const list = get().lists[listId];
-      if (!list) return;
 
       const { operations, currentSequence } = await pull(
         listId,
-        list.currentSequence,
+        list?.currentSequence ?? -1,
       );
 
       if (operations.length > 0) {
         for (const operation of operations) {
           get().applyOperation(operation);
+          await get().persistAfterOperation(operation);
         }
 
         set(
