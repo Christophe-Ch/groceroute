@@ -1,7 +1,6 @@
 import { GroceryList } from "@/models/grocery/grocery-list";
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { useGroceryListStore } from "@/store/grocery-list.store";
-import { produce } from "immer";
 import { useCallback, useMemo, useState } from "react";
 import { Alert, FlatList, StyleSheet, View } from "react-native";
 import PlayItemRow from "../item/play-item-row";
@@ -15,43 +14,45 @@ type PlayListProps = {
   list: GroceryList;
 };
 
-const PlayList = ({ list: baseList }: PlayListProps) => {
-  // Shopping session state is intentionally ephemeral: checked items are held
-  // in local state and not persisted to the store. Stopping or backgrounding
-  // the app resets progress. GroceryItem.checked is unused during play mode.
-  const [list, setList] = useState(baseList);
+const PlayList = ({ list }: PlayListProps) => {
   const items = useMemo(
     () => [...list.items].sort((a, b) => +a.checked - +b.checked),
     [list.items],
   );
   const primary = useThemeColor({}, "primary");
   const trackColor = useThemeColor({}, "surfaceElevated");
-  const checkedCount = useMemo(() => items.filter((i) => i.checked).length, [items]);
+  const checkedCount = useMemo(
+    () => items.filter((i) => i.checked).length,
+    [items],
+  );
   const totalCount = items.length;
 
   const [checkOrder, setCheckOrder] = useState<Set<string>>(
     new Set([SHOPPING_START_SENTINEL]),
   );
-  const { finishShopping, abandonShopping } = useGroceryListStore();
+  const { checkItem, uncheckItem, finishShopping, abandonShopping } =
+    useGroceryListStore();
 
-  const onItemCheckedChange = useCallback((itemId: string, checked: boolean) => {
-    setList((list) =>
-      produce(list, (draft) => {
-        const target = draft.items.find((i) => i.id === itemId);
-        if (target) target.checked = checked;
-      }),
-    );
-
-    setCheckOrder((order) => {
-      const next = new Set(order);
+  const onItemCheckedChange = useCallback(
+    (itemId: string, checked: boolean) => {
       if (checked) {
-        next.add(itemId);
+        checkItem(list.id, itemId);
       } else {
-        next.delete(itemId);
+        uncheckItem(list.id, itemId);
       }
-      return next;
-    });
-  }, []);
+
+      setCheckOrder((order) => {
+        const next = new Set(order);
+        if (checked) {
+          next.add(itemId);
+        } else {
+          next.delete(itemId);
+        }
+        return next;
+      });
+    },
+    [checkItem, list.id, uncheckItem],
+  );
 
   const onStop = () => {
     Alert.alert(

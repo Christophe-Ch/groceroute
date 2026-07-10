@@ -1,7 +1,7 @@
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { GroceryItem } from "@/models/grocery";
 import { Ionicons } from "@expo/vector-icons";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Pressable, StyleSheet } from "react-native";
 import { ThemedText } from "../themed-text";
 
@@ -15,6 +15,8 @@ const PlayItemRow = ({ item, onItemCheckedChange }: PlayItemRowProps) => {
   const muted = useThemeColor({}, "textMuted");
   const primary = useThemeColor({}, "primary");
 
+  useEffect(() => setChecked(item.checked), [item.checked]);
+
   const toggle = () => {
     const next = !checked;
     setChecked(next);
@@ -27,7 +29,9 @@ const PlayItemRow = ({ item, onItemCheckedChange }: PlayItemRowProps) => {
       onPress={toggle}
       accessibilityRole="checkbox"
       accessibilityState={{ checked }}
-      accessibilityLabel={item.quantity ? `${item.name}, ${item.quantity}` : item.name}
+      accessibilityLabel={
+        item.quantity ? `${item.name}, ${item.quantity}` : item.name
+      }
       accessibilityHint="Double tap to toggle"
     >
       <Ionicons

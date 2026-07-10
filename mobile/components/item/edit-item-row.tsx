@@ -1,7 +1,7 @@
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { GroceryItem } from "@/models/grocery";
 import { useGroceryListStore } from "@/store/grocery-list.store";
-import { memo, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { ThemedIcon } from "../themed-icon";
 import ThemedInput from "../themed-input";
@@ -16,8 +16,15 @@ const EditItemRow = ({ listId, item }: EditItemRowProps) => {
   const { renameItem, setItemQuantity, deleteItem } = useGroceryListStore();
   const [focused, setFocused] = useState(false);
   const [name, setName] = useState(item.name);
-  const [quantity, setQuantity] = useState(item.quantity);
-  const quantityDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [quantity, setQuantity] = useState(item.quantity ?? "");
+  const quantityDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  useEffect(() => {
+    setName(item.name);
+    setQuantity(item.quantity ?? "");
+  }, [item.name, item.quantity]);
 
   const onSubmit = () => {
     setFocused(false);
@@ -39,7 +46,13 @@ const EditItemRow = ({ listId, item }: EditItemRowProps) => {
 
   return (
     <View style={styles.row}>
-      <ThemedIcon name="menu" size={20} color={muted} importantForAccessibility="no" accessibilityElementsHidden={true} />
+      <ThemedIcon
+        name="menu"
+        size={20}
+        color={muted}
+        importantForAccessibility="no"
+        accessibilityElementsHidden={true}
+      />
       <ThemedInput
         onFocus={() => setFocused(true)}
         onChangeText={setName}
@@ -64,7 +77,13 @@ const EditItemRow = ({ listId, item }: EditItemRowProps) => {
           accessibilityRole="button"
           accessibilityLabel="Delete item"
         >
-          <ThemedIcon name="close" size={20} color={muted} importantForAccessibility="no" accessibilityElementsHidden={true} />
+          <ThemedIcon
+            name="close"
+            size={20}
+            color={muted}
+            importantForAccessibility="no"
+            accessibilityElementsHidden={true}
+          />
         </Pressable>
       )}
     </View>

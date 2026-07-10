@@ -47,7 +47,7 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
   const renderItem = useCallback(
     ({ item, drag }: { item: GroceryItem; drag: () => void }) => (
       <TouchableOpacity onLongPress={drag}>
-        <EditItemRow listId={list.id} item={item} />
+        <EditItemRow key={item.id} listId={list.id} item={item} />
       </TouchableOpacity>
     ),
 
