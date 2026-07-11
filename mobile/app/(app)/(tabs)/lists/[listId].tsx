@@ -3,9 +3,10 @@ import PlayList from "@/components/list/play-list";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { orderItems } from "@/domain/grocery/distance";
+import { useAppState } from "@/hooks/app/use-app-state";
 import { useGroceryListStore } from "@/store/grocery-list.store";
 import { useLocalSearchParams } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 type ListScreenParams = {
   listId: string;
@@ -14,6 +15,7 @@ type ListScreenParams = {
 const ListScreen = () => {
   const { listId } = useLocalSearchParams<ListScreenParams>();
   const list = useGroceryListStore((s) => s.lists[listId]);
+  const syncOperations = useGroceryListStore((s) => s.syncOperations);
   const startShopping = useGroceryListStore((s) => s.startShopping);
   const reorderItems = useGroceryListStore((s) => s.reorderItems);
 
@@ -23,6 +25,16 @@ const ListScreen = () => {
     await reorderItems(list.id, orderedItems);
     startShopping(list.id);
   }, [list, reorderItems, startShopping]);
+
+  useEffect(() => {
+    syncOperations(listId);
+  });
+
+  useAppState((state) => {
+    if (state === "active") {
+      syncOperations(listId);
+    }
+  });
 
   if (!list) {
     return (
