@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { OperationSyncResultDto } from 'src/sync/dto/operation-sync-result.dto';
-import { DataSource, JsonContains, MoreThan, Repository } from 'typeorm';
+import { DataSource, JsonContains, MoreThan, Not, Repository } from 'typeorm';
 import { Operation } from '../models/operation.entity';
 import { OperationsHandler } from './operations.handler';
 import { List } from '@lists/models/list.entity';
@@ -84,11 +84,13 @@ export class OperationsService {
   }
 
   public async findForList(
+    userId: string,
     listId: string,
     lastSequence: string,
   ): Promise<Operation[]> {
     return this.operationsRepository.find({
       where: {
+        actorId: Not(userId),
         payload: JsonContains({
           listId,
         }),

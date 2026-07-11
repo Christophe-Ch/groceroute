@@ -61,9 +61,10 @@ export class SyncController {
   public async pull(
     @Query('listId') listId: string,
     @Query('lastSequence') lastSequence: string,
+    @Req() req: AuthenticatedRequest,
   ) {
     const [operations, currentSequence] = await Promise.all([
-      this.operationsService.findForList(listId, lastSequence),
+      this.operationsService.findForList(req.user.id, listId, lastSequence),
       this.listsService.getListCurrentSequence(listId),
     ]);
 
