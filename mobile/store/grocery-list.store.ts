@@ -69,7 +69,7 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
     },
 
     createList: async (name: string) => {
-      get().dispatchOperation({
+      await get().dispatchOperation({
         type: OperationType.CREATE_LIST,
         payload: { listId: generateId(), name },
       });
@@ -87,21 +87,21 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
     },
 
     startShopping: async (listId: string) => {
-      get().dispatchOperation({
+      await get().dispatchOperation({
         type: OperationType.START_SHOPPING,
         payload: { listId },
       });
     },
 
     abandonShopping: async (listId: string) => {
-      get().dispatchOperation({
+      await get().dispatchOperation({
         type: OperationType.ABANDON_SHOPPING,
         payload: { listId },
       });
     },
 
     deleteList: async (listId: string) => {
-      get().dispatchOperation({
+      await get().dispatchOperation({
         type: OperationType.DELETE_LIST,
         payload: { listId },
       });
@@ -109,15 +109,15 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
 
     addItem: async (listId: string, name: string) => {
       if (!get().lists[listId]) return;
-      get().dispatchOperation({
+      await get().dispatchOperation({
         type: OperationType.ADD_ITEM,
-        payload: { listId, name },
+        payload: { listId, name, id: generateId() },
       });
     },
 
     addPastItem: async (listId: string, item: GroceryItem) => {
       if (!get().lists[listId]) return;
-      get().dispatchOperation({
+      await get().dispatchOperation({
         type: OperationType.ADD_PAST_ITEM,
         payload: { listId, item },
       });
@@ -125,7 +125,7 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
 
     renameItem: async (listId: string, itemId: string, name: string) => {
       if (!get().lists[listId]) return;
-      get().dispatchOperation({
+      await get().dispatchOperation({
         type: OperationType.RENAME_ITEM,
         payload: { listId, itemId, name },
       });
@@ -137,7 +137,7 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
       quantity: string,
     ) => {
       if (!get().lists[listId]) return;
-      get().dispatchOperation({
+      await get().dispatchOperation({
         type: OperationType.SET_ITEM_QUANTITY,
         payload: { listId, itemId, quantity },
       });
@@ -145,7 +145,7 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
 
     checkItem: async (listId: string, itemId: string) => {
       if (!get().lists[listId]) return;
-      get().dispatchOperation({
+      await get().dispatchOperation({
         type: OperationType.CHECK_ITEM,
         payload: { listId, itemId },
       });
@@ -153,7 +153,7 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
 
     uncheckItem: async (listId: string, itemId: string) => {
       if (!get().lists[listId]) return;
-      get().dispatchOperation({
+      await get().dispatchOperation({
         type: OperationType.UNCHECK_ITEM,
         payload: { listId, itemId },
       });
@@ -161,7 +161,7 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
 
     deleteItem: async (listId: string, itemId: string) => {
       if (!get().lists[listId]) return;
-      get().dispatchOperation({
+      await get().dispatchOperation({
         type: OperationType.DELETE_ITEM,
         payload: { listId, itemId },
       });
@@ -169,7 +169,7 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
 
     reorderItems: async (listId: string, newItems: GroceryItem[]) => {
       if (!get().lists[listId]) return;
-      get().dispatchOperation({
+      await get().dispatchOperation({
         type: OperationType.REORDER_ITEMS,
         payload: { listId, newItems },
       });
@@ -177,7 +177,7 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
 
     renameList: async (listId: string, name: string) => {
       if (!get().lists[listId]) return;
-      get().dispatchOperation({
+      await get().dispatchOperation({
         type: OperationType.RENAME_LIST,
         payload: { listId, name },
       });
@@ -185,7 +185,7 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
 
     finishShopping: async (listId: string, checkOrder: string[]) => {
       if (!get().lists[listId]) return;
-      get().dispatchOperation({
+      await get().dispatchOperation({
         type: OperationType.FINISH_SHOPPING,
         payload: { listId, checkOrder },
       });
@@ -200,10 +200,10 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
       };
       get().applyOperation(operation);
 
-      Promise.all([
-        await get().persistAfterOperation(operation),
-        await get().queueOperation(operation),
-      ]).catch((err) => console.error("Background persistence failed", err));
+      await Promise.all([
+        get().persistAfterOperation(operation),
+        get().queueOperation(operation),
+      ]);
     },
 
     applyOperation: (operation: Operation) => {
