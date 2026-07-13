@@ -91,12 +91,15 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
         />
       </KeyboardAvoidingView>
 
-      <ThemedButton
-        iconName="play"
-        text="Let's shop"
-        style={{ marginInline: 20, marginTop: 20, alignSelf: "stretch" }}
-        onPress={onModeChange}
-      />
+      <View style={styles.actions}>
+        <ThemedButton iconName="person-add" style={{ height: "100%" }} />
+        <ThemedButton
+          iconName="play"
+          text="Let's shop"
+          onPress={onModeChange}
+          style={{ flex: 1 }}
+        />
+      </View>
     </>
   );
 };
@@ -121,5 +124,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  actions: {
+    flexDirection: "row",
+    paddingInline: 20,
+    paddingTop: 20,
+    gap: 12,
   },
 });

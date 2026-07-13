@@ -12,6 +12,7 @@ import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Toaster } from "sonner-native";
 import { AuthProvider } from "../contexts/authContext";
+import { SheetProvider } from "@/contexts/sheet-context";
 
 const client = new QueryClient();
 
@@ -26,12 +27,20 @@ export default function RootLayout() {
           <ThemeProvider
             value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
           >
-            <Stack screenOptions={{ headerShown: false, animation: "none", contentStyle: { backgroundColor } }}>
-              <Stack.Screen
-                name="(auth)"
-                options={{ presentation: "modal" }}
-              />
-            </Stack>
+            <SheetProvider>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  animation: "none",
+                  contentStyle: { backgroundColor },
+                }}
+              >
+                <Stack.Screen
+                  name="(auth)"
+                  options={{ presentation: "modal" }}
+                />
+              </Stack>
+            </SheetProvider>
             <Toaster />
           </ThemeProvider>
         </AuthProvider>

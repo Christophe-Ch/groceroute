@@ -1,4 +1,3 @@
-import ListActionSheet from "@/components/list/list-action-sheet";
 import ListCard from "@/components/list/list-card";
 import { ThemedIcon } from "@/components/themed-icon";
 import ThemedButton from "@/components/themed-button";
@@ -7,9 +6,12 @@ import { ThemedView } from "@/components/themed-view";
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { GroceryList } from "@/models/grocery";
 import { useGroceryListStore } from "@/store/grocery-list.store";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { FlatList, ListRenderItem, StyleSheet, View } from "react-native";
 import { useShallow } from "zustand/react/shallow";
+import CreateList from "@/components/list/create-list";
+import JoinList from "@/components/list/join-list";
+import { useSheet } from "@/contexts/sheet-context";
 
 const Index = () => {
   const lists = useGroceryListStore(
@@ -20,15 +22,9 @@ const Index = () => {
       ),
     ),
   );
-  const [sheet, setSheet] = useState<"create" | "join">("create");
-  const [showSheet, setShowSheet] = useState(false);
-  const iconColor = useThemeColor({}, "icon");
 
-  const onOpenSheet = useCallback((sheet: "create" | "join") => {
-    setSheet(sheet);
-    setShowSheet(true);
-  }, []);
-  const onCloseSheet = useCallback(() => setShowSheet(false), []);
+  const iconColor = useThemeColor({}, "icon");
+  const { openSheet } = useSheet();
 
   const renderItem: ListRenderItem<GroceryList> = useCallback(
     ({ item }) => <ListCard list={item} />,
@@ -94,7 +90,7 @@ const Index = () => {
           style={{
             borderRadius: 50,
           }}
-          onPress={() => onOpenSheet("create")}
+          onPress={() => openSheet(<CreateList />)}
           accessibilityLabel="Create new list"
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         />
@@ -105,17 +101,11 @@ const Index = () => {
           style={{
             borderRadius: 50,
           }}
-          onPress={() => onOpenSheet("join")}
+          onPress={() => openSheet(<JoinList />)}
           accessibilityLabel="Join list"
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         />
       </View>
-
-      <ListActionSheet
-        sheet={sheet}
-        visible={showSheet}
-        onClose={onCloseSheet}
-      />
     </ThemedView>
   );
 };

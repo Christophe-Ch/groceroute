@@ -6,16 +6,13 @@ import ThemedButton from "../themed-button";
 import ThemedInput from "../themed-input";
 import { ThemedText } from "../themed-text";
 import { ThemedView } from "../themed-view";
+import { useSheet } from "@/contexts/sheet-context";
 
 type CreateListFormValues = {
   listName: string;
 };
 
-type CreateListProps = {
-  onCreate: () => void;
-};
-
-const CreateList = ({ onCreate }: CreateListProps) => {
+const CreateList = () => {
   const insets = useSafeAreaInsets();
   const {
     control,
@@ -23,16 +20,21 @@ const CreateList = ({ onCreate }: CreateListProps) => {
     formState: { errors },
   } = useForm<CreateListFormValues>();
   const { createList } = useGroceryListStore();
+  const { closeSheet } = useSheet();
 
   const onSubmit = async (data: CreateListFormValues) => {
     await createList(data.listName);
-    onCreate();
+    closeSheet();
   };
 
   return (
-    <ThemedView style={[styles.container, { paddingBottom: insets.bottom + 16 }]}>
+    <ThemedView
+      style={[styles.container, { paddingBottom: insets.bottom + 16 }]}
+    >
       <ThemedView style={styles.backgroundBleed} />
-      <ThemedText type="title" accessibilityRole="header">Create a list</ThemedText>
+      <ThemedText type="title" accessibilityRole="header">
+        Create a list
+      </ThemedText>
       <ThemedInput
         placeholder="List name"
         style={{ marginTop: 16 }}

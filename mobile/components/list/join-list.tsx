@@ -6,16 +6,13 @@ import ThemedButton from "../themed-button";
 import ThemedInput from "../themed-input";
 import { ThemedText } from "../themed-text";
 import { ThemedView } from "../themed-view";
+import { useSheet } from "@/contexts/sheet-context";
 
 type JoinListFormValues = {
   listId: string;
 };
 
-type JoinListProps = {
-  onJoin: () => void;
-};
-
-const JoinList = ({ onJoin }: JoinListProps) => {
+const JoinList = () => {
   const insets = useSafeAreaInsets();
   const {
     control,
@@ -23,10 +20,11 @@ const JoinList = ({ onJoin }: JoinListProps) => {
     formState: { errors },
   } = useForm<JoinListFormValues>();
   const { joinList } = useGroceryListStore();
+  const { closeSheet } = useSheet();
 
   const onSubmit = async (data: JoinListFormValues) => {
     await joinList(data.listId);
-    onJoin();
+    closeSheet();
   };
 
   return (
