@@ -15,6 +15,8 @@ import EditItemRow from "../item/edit-item-row";
 import ThemedButton from "../themed-button";
 import ThemedInput from "../themed-input";
 import { ThemedText } from "../themed-text";
+import { useSheet } from "@/contexts/sheet-context";
+import InviteToList from "./invite-to-list";
 
 type EditListProps = {
   list: GroceryList;
@@ -23,6 +25,7 @@ type EditListProps = {
 
 const EditList = ({ list, onModeChange }: EditListProps) => {
   const { renameList, reorderItems } = useGroceryListStore();
+  const { openSheet } = useSheet();
   const insets = useSafeAreaInsets();
 
   const currentItemIds = useMemo(
@@ -92,7 +95,11 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
       </KeyboardAvoidingView>
 
       <View style={styles.actions}>
-        <ThemedButton iconName="person-add" style={{ height: "100%" }} />
+        <ThemedButton
+          iconName="person-add"
+          style={{ height: "100%" }}
+          onPress={() => openSheet(<InviteToList list={list} />)}
+        />
         <ThemedButton
           iconName="play"
           text="Let's shop"

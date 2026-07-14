@@ -1,12 +1,12 @@
 import { useGroceryListStore } from "@/store/grocery-list.store";
-import { useForm } from "react-hook-form";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ThemedButton from "../themed-button";
-import ThemedInput from "../themed-input";
 import { ThemedText } from "../themed-text";
 import { ThemedView } from "../themed-view";
 import { useSheet } from "@/contexts/sheet-context";
+import { CameraView, useCameraPermissions } from "expo-camera";
+import { useState } from "react";
+import ThemedButton from "../themed-button";
 
 type JoinListFormValues = {
   listId: string;
@@ -14,16 +14,43 @@ type JoinListFormValues = {
 
 const JoinList = () => {
   const insets = useSafeAreaInsets();
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<JoinListFormValues>();
+
   const { joinList } = useGroceryListStore();
   const { closeSheet } = useSheet();
+  const [permission, requestPermission] = useCameraPermissions();
+  const [scanned, setScanned] = useState(false);
+  const [list, setList] = useState<{ id: string; name: string } | null>(null);
 
-  const onSubmit = async (data: JoinListFormValues) => {
-    await joinList(data.listId);
+  if (!permission) {
+    return <View />;
+  }
+
+  if (!permission.granted) {
+    return (
+      <ThemedView
+        style={[styles.container, { paddingBottom: insets.bottom + 16 }]}
+      >
+        <ThemedButton text="Enable camera" onPress={requestPermission} />
+      </ThemedView>
+    );
+  }
+
+  const handleCodeScan = async ({ data }: { data: string }) => {
+    if (scanned) return;
+
+    const prefix = "groceroute://join-list/";
+    if (data.startsWith(prefix)) {
+      const value = data.replace(prefix, "");
+      const [id, name] = value.split(":");
+      setList({ id, name });
+      setScanned(true);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!scanned || !list) return;
+
+    await joinList(list.id);
     closeSheet();
   };
 
@@ -35,21 +62,24 @@ const JoinList = () => {
       <ThemedText type="title" accessibilityRole="header">
         Join a list
       </ThemedText>
-      <ThemedInput
-        placeholder="List ID"
-        style={{ marginTop: 16 }}
-        name="listId"
-        control={control}
-        error={errors.listId}
-        rules={{
-          required: { value: true, message: "List ID cannot be empty." },
+      <ThemedText type="subtitle" accessibilityRole="header">
+        Scan the list QR code to join
+      </ThemedText>
+      <CameraView
+        style={styles.camera}
+        facing="back"
+        // We limit scanning only to QR codes for performance and accuracy
+        barcodeScannerSettings={{
+          barcodeTypes: ["qr"],
         }}
+        onBarcodeScanned={handleCodeScan}
       />
       <ThemedButton
         iconName={"person-add"}
-        text="Join"
-        style={{ alignSelf: "stretch", marginTop: 16 }}
-        onPress={handleSubmit(onSubmit)}
+        text={"Join" + (list ? ` ${list.name}` : "")}
+        disabled={!scanned}
+        style={styles.joinButton}
+        onPress={handleSubmit}
       />
     </ThemedView>
   );
@@ -73,5 +103,17 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: BACKGROUND_BLEED_HEIGHT,
+  },
+  camera: {
+    marginBlock: 24,
+    height: 300,
+    width: 300,
+    borderRadius: 12,
+    overflow: "hidden",
+    alignSelf: "center",
+  },
+  joinButton: {
+    width: 300,
+    alignSelf: "center",
   },
 });
