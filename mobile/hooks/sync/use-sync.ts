@@ -24,19 +24,8 @@ export const useSync = (userToken: string | null) => {
           const { listId } = JSON.parse(event.data);
           syncOperations(listId);
         } catch (e) {
-          console.log("Error when parsing event", e);
+          console.error("Error when parsing event", e);
         }
-      }
-    });
-    eventSource.addEventListener("error", (event) => {
-      if (event.type === "error") {
-        console.error("Network connection dropped/timed out:", event.message);
-      } else if (event.type === "exception") {
-        console.error(
-          "Internal polyfill execution crash:",
-          event.message,
-          event.error,
-        );
       }
     });
 

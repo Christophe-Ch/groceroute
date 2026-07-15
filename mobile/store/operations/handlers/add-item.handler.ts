@@ -8,7 +8,7 @@ export const addItemHandler: OperationHandler<
 > = (state, operation) => {
   const { listId, name, id } = operation.payload;
   const list = state.lists[listId];
-  if (!list) return;
+  if (!list || list.items.some((i) => i.id === id)) return;
 
   list.items.push({
     id,

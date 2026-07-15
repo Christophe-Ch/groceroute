@@ -8,7 +8,7 @@ export const addPastItemHandler: OperationHandler<
 > = (state, operation) => {
   const { listId, item } = operation.payload;
   const list = state.lists[listId];
-  if (!list) return;
+  if (!list || list.items.some((i) => i.id === item.id)) return;
 
   list.items.push({ ...item, checked: false });
 };

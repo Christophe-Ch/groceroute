@@ -6,6 +6,8 @@ export const createListHandler: OperationHandler<
   { lists: Record<string, GroceryList> },
   CreateListOperation
 > = (state, operation) => {
+  if (Object.hasOwn(state.lists, operation.payload.listId)) return;
+
   const newList: GroceryList = {
     id: operation.payload.listId,
     name: operation.payload.name,
