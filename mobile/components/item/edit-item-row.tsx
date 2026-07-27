@@ -1,6 +1,6 @@
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { GroceryItem } from "@/models/grocery";
-import { useGroceryListStore } from "@/store/grocery-list.store";
+import { useGroceryListStore } from "@/stores/groceries/grocery-list.store";
 import { memo, useEffect, useRef, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { ThemedIcon } from "../themed-icon";

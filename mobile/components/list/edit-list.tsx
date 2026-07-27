@@ -1,6 +1,6 @@
 import { GroceryItem } from "@/models/grocery";
 import { GroceryList } from "@/models/grocery/grocery-list";
-import { useGroceryListStore } from "@/store/grocery-list.store";
+import { useGroceryListStore } from "@/stores/groceries/grocery-list.store";
 import { useCallback, useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,

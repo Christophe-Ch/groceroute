@@ -1,5 +1,5 @@
 import { GroceryList } from "@/models/grocery";
-import { Operation } from "@/store/operations/types/operation";
+import { Operation } from "@/stores/groceries/operations/types/operation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const KEYS = {

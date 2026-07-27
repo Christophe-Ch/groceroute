@@ -1,6 +1,6 @@
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { GroceryItem } from "@/models/grocery";
-import { useGroceryListStore } from "@/store/grocery-list.store";
+import { useGroceryListStore } from "@/stores/groceries/grocery-list.store";
 import { findItems } from "@/utils/autocomplete";
 import { memo, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -42,7 +42,8 @@ const AddItemRow = ({ listId, pastItems, currentItemIds }: AddItemRowProps) => {
   const onChangeText = (text: string) => {
     setName(text);
     if (text.trim().length >= 2) {
-      if (pastItems) setAutocomplete(findItems(text, pastItems, currentItemIds));
+      if (pastItems)
+        setAutocomplete(findItems(text, pastItems, currentItemIds));
     } else {
       setAutocomplete(null);
     }
@@ -64,7 +65,10 @@ const AddItemRow = ({ listId, pastItems, currentItemIds }: AddItemRowProps) => {
       </View>
       {autocomplete && autocomplete.length > 0 && (
         <View
-          style={[styles.autocomplete, { backgroundColor: autocompleteBackground }]}
+          style={[
+            styles.autocomplete,
+            { backgroundColor: autocompleteBackground },
+          ]}
           accessibilityLiveRegion="polite"
         >
           {autocomplete.map((suggestion) => (

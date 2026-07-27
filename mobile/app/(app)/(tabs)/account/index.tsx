@@ -1,25 +1,15 @@
 import ThemedButton from "@/components/themed-button";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { useAuth } from "@/hooks/auth/use-auth";
+import { useAuthStore } from "@/stores/auth/auth.store";
 import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
 
-const decodeEmail = (jwt: string): string | null => {
-  try {
-    const payload = JSON.parse(atob(jwt.split(".")[1]));
-    // The API sets sub to the user's email (see auth.service.ts)
-    return (payload as { sub?: string }).sub ?? null;
-  } catch {
-    return null;
-  }
-};
-
 const AccountScreen = () => {
-  const { token, logout } = useAuth();
+  const currentUser = useAuthStore((s) => s.currentUser);
+  const logout = useAuthStore((s) => s.logout);
 
-  if (token) {
-    const email = decodeEmail(token);
+  if (currentUser) {
     return (
       <ThemedView style={styles.container}>
         <ThemedText type="title" style={{ paddingBlock: 20 }}>
@@ -27,7 +17,7 @@ const AccountScreen = () => {
         </ThemedText>
         <View style={styles.section}>
           <ThemedText type="muted">Signed in as</ThemedText>
-          <ThemedText type="defaultSemiBold">{email}</ThemedText>
+          <ThemedText type="defaultSemiBold">{currentUser.email}</ThemedText>
         </View>
         <ThemedButton text="Sign out" onPress={logout} style={styles.button} />
       </ThemedView>

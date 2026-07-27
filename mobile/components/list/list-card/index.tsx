@@ -1,6 +1,6 @@
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { GroceryList } from "@/models/grocery";
-import { useGroceryListStore } from "@/store/grocery-list.store";
+import { useGroceryListStore } from "@/stores/groceries/grocery-list.store";
 import { useRouter } from "expo-router";
 import { memo, useCallback } from "react";
 import { Alert, Pressable, StyleSheet, View } from "react-native";
@@ -30,7 +30,11 @@ const ListCard = ({ list }: ListCardProps) => {
   const onDeleteWithAlert = useCallback(() => {
     Alert.alert("Delete list", "Are you sure you want to delete this list?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Delete", style: "destructive", onPress: () => deleteList(list.id) },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => deleteList(list.id),
+      },
     ]);
   }, [list.id, deleteList]);
 
@@ -62,7 +66,12 @@ const ListCard = ({ list }: ListCardProps) => {
         <View style={styles.container}>
           <View style={styles.content}>
             <ThemedText>{list.name}</ThemedText>
-            <View style={[styles.badge, { backgroundColor: primary + BADGE_OPACITY_HEX }]}>
+            <View
+              style={[
+                styles.badge,
+                { backgroundColor: primary + BADGE_OPACITY_HEX },
+              ]}
+            >
               <ThemedText style={[styles.badgeText, { color: primary }]}>
                 {list.items.length} items
               </ThemedText>

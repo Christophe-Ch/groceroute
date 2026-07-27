@@ -1,6 +1,6 @@
 import { ThemedIcon } from "@/components/themed-icon";
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
-import { useGroceryListStore } from "@/store/grocery-list.store";
+import { useGroceryListStore } from "@/stores/groceries/grocery-list.store";
 import { Alert, Pressable, StyleSheet } from "react-native";
 import Reanimated, {
   SharedValue,
@@ -44,7 +44,11 @@ const DeleteAction = ({ drag, listId }: DeleteActionProps) => {
         accessibilityLabel="Delete list"
         accessibilityHint="Shows delete confirmation"
       >
-        <ThemedIcon name={"trash-bin-outline"} importantForAccessibility="no" accessibilityElementsHidden={true} />
+        <ThemedIcon
+          name={"trash-bin-outline"}
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        />
       </Pressable>
     </Reanimated.View>
   );

@@ -2,7 +2,7 @@ import ThemedButton from "@/components/themed-button";
 import ThemedInput from "@/components/themed-input";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { useAuth } from "@/hooks/auth/use-auth";
+import { useAuthStore } from "@/stores/auth/auth.store";
 import { isAxiosError } from "axios";
 import { Link, router } from "expo-router";
 import { useForm } from "react-hook-form";
@@ -19,7 +19,7 @@ interface SignupForm {
 const Signup = () => {
   const insets = useSafeAreaInsets();
 
-  const { signup } = useAuth();
+  const signup = useAuthStore((s) => s.signup);
 
   const {
     control,

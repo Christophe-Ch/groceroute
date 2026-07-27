@@ -5,7 +5,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { GroceryList } from "@/models/grocery";
-import { useGroceryListStore } from "@/store/grocery-list.store";
+import { useGroceryListStore } from "@/stores/groceries/grocery-list.store";
 import { useCallback } from "react";
 import { FlatList, ListRenderItem, StyleSheet, View } from "react-native";
 import { useShallow } from "zustand/react/shallow";

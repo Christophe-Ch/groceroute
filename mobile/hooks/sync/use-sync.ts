@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Constants from "expo-constants";
 import EventSource from "react-native-sse";
-import { useGroceryListStore } from "@/store/grocery-list.store";
+import { useGroceryListStore } from "@/stores/groceries/grocery-list.store";
 
 export const useSync = (userToken: string | null) => {
   const { syncOperations } = useGroceryListStore();

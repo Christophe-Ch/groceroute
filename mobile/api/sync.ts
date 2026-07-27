@@ -1,4 +1,4 @@
-import { Operation } from "@/store/operations/types/operation";
+import { Operation } from "@/stores/groceries/operations/types/operation";
 import { client } from "./client";
 
 export const push = async (operations: Operation[]) => {

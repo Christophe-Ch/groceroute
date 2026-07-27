@@ -1,6 +1,6 @@
 import { GroceryList } from "@/models/grocery/grocery-list";
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
-import { useGroceryListStore } from "@/store/grocery-list.store";
+import { useGroceryListStore } from "@/stores/groceries/grocery-list.store";
 import { useCallback, useMemo, useState } from "react";
 import { Alert, FlatList, StyleSheet, View } from "react-native";
 import PlayItemRow from "../item/play-item-row";
