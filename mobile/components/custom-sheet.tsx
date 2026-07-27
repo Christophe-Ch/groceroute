@@ -22,7 +22,7 @@ type Props = {
   onClose: () => void;
 };
 
-const PANEL_SLIDE_DISTANCE = 400;
+const PANEL_SLIDE_DISTANCE = 550;
 
 const CustomSheet = forwardRef<SheetRef, Props>(
   ({ children, visible, onClose }: Props, ref) => {

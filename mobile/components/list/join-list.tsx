@@ -7,10 +7,7 @@ import { useSheet } from "@/contexts/sheet-context";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useState } from "react";
 import ThemedButton from "../themed-button";
-
-type JoinListFormValues = {
-  listId: string;
-};
+import * as Haptics from "expo-haptics";
 
 const JoinList = () => {
   const insets = useSafeAreaInsets();
@@ -44,6 +41,7 @@ const JoinList = () => {
       const [id, name] = value.split(":");
       setList({ id, name });
       setScanned(true);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
   };
 
