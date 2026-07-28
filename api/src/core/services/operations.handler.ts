@@ -1,25 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { ListProjector } from 'src/lists/projectors/list.projector';
 import { OperationType } from '../models/operation-type.enum';
-import { Operation } from '../models/operation.entity';
-import { EntityManager } from 'typeorm';
+import { OperationProjector } from '@core/projectors/operation-projector';
 
 @Injectable()
 export class OperationsHandler {
-  constructor(private readonly listProjector: ListProjector) {}
+  private handlers = new Map<OperationType, OperationProjector>();
 
-  public async handle(
-    operation: Operation,
-    manager: EntityManager,
-  ): Promise<void> {
-    switch (operation.type) {
-      case OperationType.CREATE_LIST:
-      case OperationType.DELETE_LIST:
-      case OperationType.START_SHOPPING:
-      case OperationType.ABANDON_SHOPPING:
-      case OperationType.FINISH_SHOPPING:
-        await this.listProjector.handle(operation, manager);
-        break;
-    }
+  public for(type: OperationType) {
+    return this.handlers.get(type);
+  }
+
+  public register(projector: OperationProjector) {
+    projector.handles.forEach((type) => this.handlers.set(type, projector));
   }
 }

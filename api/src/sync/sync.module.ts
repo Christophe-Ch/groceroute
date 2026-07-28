@@ -8,5 +8,6 @@ import { ListsModule } from 'src/lists/lists.module';
   imports: [CoreModule, ListsModule],
   controllers: [SyncController],
   providers: [SyncService],
+  exports: [SyncService],
 })
 export class SyncModule {}

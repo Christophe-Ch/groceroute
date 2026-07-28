@@ -33,11 +33,6 @@ export class SyncController {
   ): Promise<OperationSyncResultDto[]> {
     if (dto.operations.length === 0) return;
 
-    const listId = dto.operations[0].payload.listId;
-    const userIdsToNotify = (
-      await this.listsService.getParticipantIds(listId)
-    ).filter((id) => id !== req.user.id);
-
     const result = await this.operationsService.applyBatch(
       dto.operations.map((op) => ({
         id: op.id,
@@ -46,12 +41,6 @@ export class SyncController {
         payload: op.payload,
       })) as Operation[],
     );
-
-    void this.syncService.broadcastUpdate({
-      listId,
-      actorId: req.user.id,
-      userIdsToNotify,
-    });
 
     return result;
   }

@@ -1,11 +1,11 @@
-import { Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@users/models/user.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { CreateListDto } from '../dto/create-list.dto';
 import { List } from '../models/list.entity';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class ListsService {
   constructor(
     @InjectRepository(List)

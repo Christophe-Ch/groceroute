@@ -1,5 +1,3 @@
-import { Operation } from 'src/core/models/operation.entity';
+import { Operation } from '@core/models/operation.entity';
 
-export type StartShoppingOperation = Operation<{
-  listId: string;
-}>;
+export type StartShoppingOperation = Operation;

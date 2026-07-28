@@ -1,4 +1,4 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { OperationType } from 'src/core/models/operation-type.enum';
 import { Operation } from 'src/core/models/operation.entity';
 import { EntityManager, Repository } from 'typeorm';
@@ -9,10 +9,26 @@ import { DeleteListOperation } from '../operations/delete-list.operation';
 import { FinishShoppingOperation } from '../operations/finish-shopping.operation';
 import { StartShoppingOperation } from '../operations/start-shopping.operation';
 import { ListsService } from '../services/lists.service';
+import { OperationProjector } from '@core/projectors/operation-projector';
+import { OperationsHandler } from '@core/services/operations.handler';
 
-@Injectable({ scope: Scope.REQUEST })
-export class ListProjector {
-  constructor(private readonly listsService: ListsService) {}
+@Injectable()
+export class ListProjector extends OperationProjector {
+  constructor(
+    private readonly listsService: ListsService,
+    operationsHandler: OperationsHandler,
+  ) {
+    super(
+      [
+        OperationType.CREATE_LIST,
+        OperationType.DELETE_LIST,
+        OperationType.START_SHOPPING,
+        OperationType.ABANDON_SHOPPING,
+        OperationType.FINISH_SHOPPING,
+      ],
+      operationsHandler,
+    );
+  }
 
   public async handle(
     operation: Operation,

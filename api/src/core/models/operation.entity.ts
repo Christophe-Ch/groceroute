@@ -8,7 +8,7 @@ import {
 import { OperationType } from './operation-type.enum';
 
 @Entity()
-export class Operation<T = { listId: string } & Record<string, any>> {
+export class Operation<T = Record<string, any>> {
   @PrimaryColumn()
   id: string;
 
@@ -19,11 +19,11 @@ export class Operation<T = { listId: string } & Record<string, any>> {
   actorId: string;
 
   @Column('jsonb')
-  payload: T;
+  payload: { listId: string } & T;
 
   @Index()
   @Column({ type: 'bigint' })
-  sequence: string;
+  sequence?: string;
 
   @CreateDateColumn()
   createdAt: Date;
