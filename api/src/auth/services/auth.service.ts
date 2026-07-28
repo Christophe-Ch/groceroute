@@ -33,6 +33,7 @@ export class AuthService {
 
     return {
       token: await this.jwtService.signAsync({
+        id: user.id,
         sub: user.email,
       }),
       refreshToken: user.refreshToken,

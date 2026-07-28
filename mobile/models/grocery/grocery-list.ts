@@ -1,5 +1,6 @@
 import { GroceryItem } from "./grocery-item";
 import { ItemDistance } from "./item-distance";
+import { Participant } from "./participant";
 
 export type GroceryList = {
   id: string;
@@ -12,4 +13,5 @@ export type GroceryList = {
   distances: ItemDistance[];
   mode: "edit" | "play";
   currentSequence: number;
+  participants: Participant[];
 };

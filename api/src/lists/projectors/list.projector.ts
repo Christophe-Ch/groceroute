@@ -9,6 +9,8 @@ import { DeleteListOperation } from '../operations/delete-list.operation';
 import { FinishShoppingOperation } from '../operations/finish-shopping.operation';
 import { StartShoppingOperation } from '../operations/start-shopping.operation';
 import { ListsService } from '../services/lists.service';
+import { AddParticipantOperation } from '@lists/operations/add-participant.operation';
+import { User } from '@users/models/user.entity';
 import { OperationProjector } from '@core/projectors/operation-projector';
 import { OperationsHandler } from '@core/services/operations.handler';
 
@@ -25,6 +27,7 @@ export class ListProjector extends OperationProjector {
         OperationType.START_SHOPPING,
         OperationType.ABANDON_SHOPPING,
         OperationType.FINISH_SHOPPING,
+        OperationType.ADD_PARTICIPANT,
       ],
       operationsHandler,
     );
@@ -52,18 +55,22 @@ export class ListProjector extends OperationProjector {
       case OperationType.FINISH_SHOPPING:
         await executor.finishShopping(operation as FinishShoppingOperation);
         break;
+      case OperationType.ADD_PARTICIPANT:
+        await executor.addParticipant(operation as AddParticipantOperation);
     }
   }
 }
 
 class ListProjectorExecutor {
   private readonly listsRepository: Repository<List>;
+  private readonly usersRepository: Repository<User>;
 
   constructor(
     manager: EntityManager,
     private listsService: ListsService,
   ) {
     this.listsRepository = manager.getRepository(List);
+    this.usersRepository = manager.getRepository(User);
     this.listsService = this.listsService.withTransaction(manager);
   }
 
@@ -77,6 +84,30 @@ class ListProjectorExecutor {
 
     await this.listsRepository.insert({ id: listId, name });
     await this.listsService.addParticipant(listId, actorId);
+
+    const owner = await this.usersRepository.findOneBy({ id: actorId });
+    operation.payload.owner = {
+      id: actorId,
+      email: owner.email,
+    };
+  }
+
+  public async addParticipant(
+    operation: AddParticipantOperation,
+  ): Promise<void> {
+    const {
+      payload: { listId, participant },
+    } = operation;
+
+    const list = await this.listsRepository.findOne({
+      where: { id: listId },
+      relations: ['participants'],
+    });
+
+    if (!list || list.participants.some((p) => p.id === participant.id)) return;
+
+    list.participants.push(participant);
+    await this.listsRepository.save(list);
   }
 
   public async delete({

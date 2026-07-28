@@ -14,9 +14,12 @@ import { reorderItemsHandler } from "./reorder-items.handler";
 import { setItemQuantityHandler } from "./set-item-quantity.handler";
 import { startShoppingHandler } from "./start-shopping.handler";
 import { uncheckItemHandler } from "./uncheck-item.handler";
+import { addParticipantHandler } from "./add-participant.handler";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const operationHandlers: Record<OperationType, OperationHandler<any, any>> = {
+export const operationHandlers: Record<
+  OperationType,
+  OperationHandler<any, any>
+> = {
   [OperationType.CREATE_LIST]: createListHandler,
   [OperationType.START_SHOPPING]: startShoppingHandler,
   [OperationType.ABANDON_SHOPPING]: abandonShoppingHandler,
@@ -31,4 +34,5 @@ export const operationHandlers: Record<OperationType, OperationHandler<any, any>
   [OperationType.REORDER_ITEMS]: reorderItemsHandler,
   [OperationType.RENAME_LIST]: renameListHandler,
   [OperationType.FINISH_SHOPPING]: finishShoppingHandler,
+  [OperationType.ADD_PARTICIPANT]: addParticipantHandler,
 };

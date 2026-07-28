@@ -4,7 +4,6 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { orderItems } from "@/domain/grocery/distance";
 import { useAppState } from "@/hooks/app/use-app-state";
-import { useAuthStore } from "@/stores/auth/auth.store";
 import { useGroceryListStore } from "@/stores/groceries/grocery-list.store";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect } from "react";
@@ -14,7 +13,6 @@ type ListScreenParams = {
 };
 
 const ListScreen = () => {
-  const token = useAuthStore((s) => s.token);
   const { listId } = useLocalSearchParams<ListScreenParams>();
   const list = useGroceryListStore((s) => s.lists[listId]);
   const syncOperations = useGroceryListStore((s) => s.syncOperations);

@@ -11,10 +11,17 @@ import {
 import { AuthenticatedRequest } from '@utils/types/authenticated-request';
 import { CreateListDto } from '../dto/create-list.dto';
 import { ListsService } from '../services/lists.service';
+import { OperationsService } from '@core/services/operations.service';
+import { OperationType } from '@core/models/operation-type.enum';
+import { generateId } from '@utils/generate-id';
+import { AddParticipantOperation } from '@lists/operations/add-participant.operation';
 
 @Controller('lists')
 export class ListsController {
-  constructor(private readonly listsService: ListsService) {}
+  constructor(
+    private readonly listsService: ListsService,
+    private readonly operationsService: OperationsService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -31,7 +38,18 @@ export class ListsController {
     @Param('id') listId: string,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.listsService.addParticipant(listId, req.user.id);
+    await this.operationsService.applyBatch([
+      {
+        id: generateId(),
+        type: OperationType.ADD_PARTICIPANT,
+        actorId: req.user.id,
+        payload: {
+          listId,
+          participant: req.user,
+        },
+        createdAt: new Date(),
+      } as AddParticipantOperation,
+    ]);
   }
 
   @Get()

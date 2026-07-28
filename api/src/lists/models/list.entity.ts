@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Item } from './item.entity';
+import { Participant } from './participant';
 
 @Entity()
 export class List {
@@ -34,7 +35,7 @@ export class List {
     joinColumn: { name: 'list_id' },
     inverseJoinColumn: { name: 'user_id' },
   })
-  participants: User[];
+  participants: Participant[];
 
   @Column({ type: 'enum', enum: ['edit', 'play'], default: 'edit' })
   mode: 'edit' | 'play';

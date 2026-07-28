@@ -69,9 +69,10 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
     },
 
     createList: async (name: string) => {
+      const listId = generateId();
       await get().dispatchOperation({
         type: OperationType.CREATE_LIST,
-        payload: { listId: generateId(), name },
+        payload: { listId, name },
       });
     },
 
@@ -286,8 +287,6 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
             draft.lists[listId].currentSequence = currentSequence;
           }),
         );
-
-        await storageService.saveList(get().lists[listId]);
       }
     },
   };

@@ -13,6 +13,7 @@ export enum OperationType {
   REORDER_ITEMS = "REORDER_ITEMS",
   RENAME_LIST = "RENAME_LIST",
   FINISH_SHOPPING = "FINISH_SHOPPING",
+  ADD_PARTICIPANT = "ADD_PARTICIPANT",
 }
 
 export type Operation<T = Record<string, any>> = {
