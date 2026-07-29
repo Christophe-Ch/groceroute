@@ -4,6 +4,7 @@ import { useGroceryListStore } from "@/stores/groceries/grocery-list.store";
 import { useCallback, useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
+  Pressable,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -17,6 +18,8 @@ import ThemedInput from "../themed-input";
 import { ThemedText } from "../themed-text";
 import { useSheet } from "@/contexts/sheet-context";
 import InviteToList from "./invite-to-list";
+import { ThemedIcon } from "../themed-icon";
+import ViewParticipants from "./participants/view-participants";
 
 type EditListProps = {
   list: GroceryList;
@@ -59,13 +62,24 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
 
   return (
     <>
-      <ThemedInput
-        style={styles.title}
-        value={listName}
-        onChangeText={setListName}
-        onBlur={onUpdateTitle}
-        maxLength={20}
-      />
+      <View style={{ flexDirection: "row", alignItems: "center", margin: 20 }}>
+        <ThemedInput
+          style={styles.title}
+          value={listName}
+          onChangeText={setListName}
+          onBlur={onUpdateTitle}
+          maxLength={20}
+        />
+        <Pressable
+          style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+          onPress={() =>
+            openSheet(<ViewParticipants participants={list.participants} />)
+          }
+        >
+          <ThemedIcon name="person" size={16} />
+          <ThemedText>{list.participants.length}</ThemedText>
+        </Pressable>
+      </View>
 
       <View style={styles.listHeader}>
         <ThemedText type="muted">{list.items.length} items</ThemedText>
@@ -123,7 +137,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     borderWidth: 0,
     padding: 0,
-    margin: 20,
+    flex: 1,
   },
   listHeader: {
     paddingInline: 20,
