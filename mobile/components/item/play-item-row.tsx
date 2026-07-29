@@ -7,10 +7,10 @@ import { ThemedText } from "../themed-text";
 
 type PlayItemRowProps = {
   item: GroceryItem;
-  onItemCheckedChange: (itemId: string, checked: boolean) => void;
+  onItemCheckChange: (itemId: string, checked: boolean) => void;
 };
 
-const PlayItemRow = ({ item, onItemCheckedChange }: PlayItemRowProps) => {
+const PlayItemRow = ({ item, onItemCheckChange }: PlayItemRowProps) => {
   const [checked, setChecked] = useState(false);
   const muted = useThemeColor({}, "textMuted");
   const primary = useThemeColor({}, "primary");
@@ -20,7 +20,7 @@ const PlayItemRow = ({ item, onItemCheckedChange }: PlayItemRowProps) => {
   const toggle = () => {
     const next = !checked;
     setChecked(next);
-    onItemCheckedChange(item.id, next);
+    onItemCheckChange(item.id, next);
   };
 
   return (

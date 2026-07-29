@@ -1,5 +1,5 @@
 import EditList from "@/components/list/edit-list";
-import PlayList from "@/components/list/play-list";
+import PlayList from "@/components/list/play-list/play-list";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useAppState } from "@/hooks/app/use-app-state";
