@@ -1,5 +1,5 @@
 import { pull, push } from "@/api/sync";
-import { GroceryItem, GroceryList } from "@/models/grocery";
+import { GroceryItem, GroceryList, Participant } from "@/models/grocery";
 import { storageService } from "@/services/storage.service";
 import { debounce } from "@/utils/debounce";
 import { generateId } from "@/utils/generate-id";
@@ -24,7 +24,7 @@ type GroceryListStore = {
   createList: (name: string) => Promise<void>;
   joinList: (id: string) => Promise<boolean>;
 
-  startShopping: (listId: string) => Promise<void>;
+  startShopping: (listId: string, participants: Participant[]) => Promise<void>;
   abandonShopping: (listId: string) => Promise<void>;
   deleteList: (id: string) => Promise<void>;
   addItem: (listId: string, name: string) => Promise<void>;
@@ -87,10 +87,10 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
       }
     },
 
-    startShopping: async (listId: string) => {
+    startShopping: async (listId: string, participants: Participant[]) => {
       await get().dispatchOperation({
         type: OperationType.START_SHOPPING,
-        payload: { listId },
+        payload: { listId, participants },
       });
     },
 

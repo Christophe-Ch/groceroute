@@ -16,7 +16,9 @@ type ParticipantsProps = {
 
 const PickParticipants = ({ list }: ParticipantsProps) => {
   const insets = useSafeAreaInsets();
-  const [pickedParticipants, setPickedParticipants] = useState(new Set());
+  const [pickedParticipants, setPickedParticipants] = useState(
+    new Set<Participant>(),
+  );
   const { closeSheet } = useSheet();
 
   const startShopping = useGroceryListStore((s) => s.startShopping);
@@ -26,9 +28,9 @@ const PickParticipants = ({ list }: ParticipantsProps) => {
     if (!list) return;
     const orderedItems = orderItems(list.items, list.distances);
     await reorderItems(list.id, orderedItems);
-    startShopping(list.id);
+    startShopping(list.id, [...pickedParticipants]);
     closeSheet();
-  }, [list, reorderItems, startShopping, closeSheet]);
+  }, [list, reorderItems, startShopping, closeSheet, pickedParticipants]);
 
   const onParticipantPickChanged = (
     participant: Participant,
@@ -37,9 +39,9 @@ const PickParticipants = ({ list }: ParticipantsProps) => {
     const updated = new Set(pickedParticipants);
 
     if (checked) {
-      updated.add(participant.id);
+      updated.add(participant);
     } else {
-      updated.delete(participant.id);
+      updated.delete(participant);
     }
 
     setPickedParticipants(updated);
