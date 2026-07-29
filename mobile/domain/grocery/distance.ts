@@ -1,6 +1,9 @@
 import { GroceryItem } from "@/models/grocery";
 import { ItemDistance } from "@/models/grocery/item-distance";
 
+// "_start" is the virtual entry node for the shopping route graph
+export const SHOPPING_START_SENTINEL = "_start";
+
 export const computeDistances = (
   checkOrder: string[],
   existingDistances: ItemDistance[],
@@ -43,8 +46,8 @@ export const orderItems = (
 
   const itemsMap = Object.fromEntries(items.map((item) => [item.id, item]));
   const sorted = [];
-  // "_start" is the virtual entry node for the shopping route graph
-  let lastItemId = "_start";
+
+  let lastItemId = SHOPPING_START_SENTINEL;
 
   while (sorted.length < items.length) {
     const matchingDistance = distances.filter(

@@ -3,11 +3,12 @@ import { GroceryList } from "@/models/grocery";
 import { useGroceryListStore } from "@/stores/groceries/grocery-list.store";
 import { useRouter } from "expo-router";
 import { memo, useCallback } from "react";
-import { Alert, Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { SharedValue } from "react-native-reanimated";
 import { ThemedText } from "../../themed-text";
 import DeleteAction from "./delete-action";
+import { confirmDestructive } from "@/utils/confirm-destructive";
 
 // "26" = ~15% opacity hex suffix appended to 6-digit hex colors
 const BADGE_OPACITY_HEX = "26";
@@ -27,22 +28,22 @@ const ListCard = ({ list }: ListCardProps) => {
     [router, list.id],
   );
 
-  const onDeleteWithAlert = useCallback(() => {
-    Alert.alert("Delete list", "Are you sure you want to delete this list?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: () => deleteList(list.id),
-      },
-    ]);
-  }, [list.id, deleteList]);
+  const onDeleteWithAlert = useCallback(
+    () =>
+      confirmDestructive({
+        title: "Delete list",
+        message: "Are you sure you want to delete this list?",
+        confirmLabel: "Delete",
+        onConfirm: () => deleteList(list.id),
+      }),
+    [list.id, deleteList],
+  );
 
   const renderRightActions = useCallback(
     (_: SharedValue<number>, drag: SharedValue<number>) => (
-      <DeleteAction drag={drag} listId={list.id} />
+      <DeleteAction drag={drag} onDelete={onDeleteWithAlert} />
     ),
-    [list.id],
+    [onDeleteWithAlert],
   );
 
   return (
@@ -50,7 +51,7 @@ const ListCard = ({ list }: ListCardProps) => {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${list.name}, ${list.items.length} items`}
-      accessibilityHint="Opens list"
+      accessibilityHint="Opens the list"
       accessibilityActions={[{ name: "delete", label: "Delete list" }]}
       onAccessibilityAction={(event) => {
         if (event.nativeEvent.actionName === "delete") onDeleteWithAlert();
