@@ -20,13 +20,13 @@ import { useSheet } from "@/contexts/sheet-context";
 import InviteToList from "./invite-to-list";
 import { ThemedIcon } from "../themed-icon";
 import ViewParticipants from "./participants/view-participants";
+import PickParticipants from "./participants/pick-participants";
 
 type EditListProps = {
   list: GroceryList;
-  onModeChange: () => void;
 };
 
-const EditList = ({ list, onModeChange }: EditListProps) => {
+const EditList = ({ list }: EditListProps) => {
   const { renameList, reorderItems } = useGroceryListStore();
   const { openSheet } = useSheet();
   const insets = useSafeAreaInsets();
@@ -117,7 +117,7 @@ const EditList = ({ list, onModeChange }: EditListProps) => {
         <ThemedButton
           iconName="play"
           text="Let's shop"
-          onPress={onModeChange}
+          onPress={() => openSheet(<PickParticipants list={list} />)}
           style={{ flex: 1 }}
         />
       </View>
