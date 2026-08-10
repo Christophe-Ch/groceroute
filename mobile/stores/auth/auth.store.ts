@@ -51,6 +51,11 @@ export const useAuthStore = create<AuthStore>((set) => {
 
     async logout() {
       await tokenService.clearTokens();
+      set(
+        produce((draft: AuthStore) => {
+          draft.currentUser = null;
+        }),
+      );
     },
   };
 });
