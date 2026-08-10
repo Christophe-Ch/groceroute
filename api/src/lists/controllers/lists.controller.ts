@@ -14,7 +14,7 @@ import { ListsService } from '../services/lists.service';
 import { OperationsService } from '@core/services/operations.service';
 import { OperationType } from '@core/models/operation-type.enum';
 import { generateId } from '@utils/generate-id';
-import { AddParticipantOperation } from '@lists/operations/add-participant.operation';
+import { AddParticipantOperation } from '@lists/operations/list/add-participant.operation';
 
 @Controller('lists')
 export class ListsController {

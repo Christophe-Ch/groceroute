@@ -15,18 +15,21 @@ export class Item {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ default: '' })
   quantity: string;
 
   @UpdateDateColumn({ type: 'timestamp with time zone' })
   updatedAt: Date;
 
-  @Column()
+  @Column({ default: false })
   checked: boolean;
 
-  @Column()
+  @Column({ default: false })
   isPast: boolean;
 
   @ManyToOne(() => List, (list) => list.items, { onDelete: 'CASCADE' })
   list: List;
+
+  @Column()
+  listId: string;
 }

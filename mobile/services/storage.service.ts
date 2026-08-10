@@ -16,11 +16,6 @@ export const storageService = {
     if (ids.length === 0) return [];
 
     const pairs = await AsyncStorage.multiGet(ids.map(KEYS.list));
-    console.log(
-      pairs.flatMap(([, value]) =>
-        value ? [JSON.parse(value)] : [],
-      ),
-    );
 
     return pairs.flatMap(([, value]) =>
       value ? [fromStored(JSON.parse(value))] : [],
