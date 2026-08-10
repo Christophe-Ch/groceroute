@@ -9,5 +9,6 @@ export const startShoppingHandler: OperationHandler<
   const list = state.lists[operation.payload.listId];
   if (list) {
     list.mode = "play";
+    list.sessionCheckOrder = new Map();
   }
 };

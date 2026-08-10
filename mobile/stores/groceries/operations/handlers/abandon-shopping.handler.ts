@@ -10,4 +10,5 @@ export const abandonShoppingHandler: OperationHandler<
   if (!list) return;
   list.mode = "edit";
   list.items = list.items.map((item) => ({ ...item, checked: false }));
+  list.sessionCheckOrder = null;
 };

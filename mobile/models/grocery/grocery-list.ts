@@ -2,6 +2,8 @@ import { GroceryItem } from "./grocery-item";
 import { ItemDistance } from "./item-distance";
 import { Participant } from "./participant";
 
+export type SessionCheckOrder = Map<string, Set<string>>;
+
 export type GroceryList = {
   id: string;
   name: string;
@@ -14,4 +16,5 @@ export type GroceryList = {
   mode: "edit" | "play";
   currentSequence: number;
   participants: Participant[];
+  sessionCheckOrder: SessionCheckOrder | null;
 };

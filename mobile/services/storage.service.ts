@@ -1,4 +1,5 @@
 import { GroceryList } from "@/models/grocery";
+import { fromStored, toStored } from "@/models/grocery/stored-grocery-list";
 import { Operation } from "@/stores/groceries/operations/types/operation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -15,10 +16,15 @@ export const storageService = {
     if (ids.length === 0) return [];
 
     const pairs = await AsyncStorage.multiGet(ids.map(KEYS.list));
+    console.log(
+      pairs.flatMap(([, value]) =>
+        value ? [JSON.parse(value)] : [],
+      ),
+    );
 
-    return pairs
-      .map(([_, value]) => (value ? JSON.parse(value) : null))
-      .filter(Boolean);
+    return pairs.flatMap(([, value]) =>
+      value ? [fromStored(JSON.parse(value))] : [],
+    );
   },
 
   /** Register a new list ID in the index. Call once at list creation. */
@@ -32,7 +38,10 @@ export const storageService = {
 
   /** Persist list data only — does not touch the index. */
   async saveList(list: GroceryList): Promise<void> {
-    await AsyncStorage.setItem(KEYS.list(list.id), JSON.stringify(list));
+    await AsyncStorage.setItem(
+      KEYS.list(list.id),
+      JSON.stringify(toStored(list)),
+    );
   },
 
   async deleteList(id: string): Promise<void> {

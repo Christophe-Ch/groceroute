@@ -13,6 +13,7 @@ import { Toaster } from "sonner-native";
 import { SheetProvider } from "@/contexts/sheet-context";
 import { useAuthStore } from "@/stores/auth/auth.store";
 import { useEffect } from "react";
+import { enableMapSet } from "immer";
 
 const client = new QueryClient();
 
@@ -20,6 +21,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const backgroundColor = useThemeColor({}, "background");
   const initAuth = useAuthStore((s) => s.init);
+  enableMapSet();
 
   useEffect(() => {
     initAuth();

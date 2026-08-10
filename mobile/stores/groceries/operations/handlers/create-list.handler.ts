@@ -32,6 +32,7 @@ export const createListHandler: OperationHandler<
     mode: "edit",
     currentSequence: 0,
     participants,
+    sessionCheckOrder: null,
   };
 
   state.lists[newList.id] = newList;

@@ -7,7 +7,6 @@ import ThemedButton from "../../themed-button";
 import { ThemedText } from "../../themed-text";
 import PlayListParticipantScreen from "./play-list-participant-screen";
 import { ThemedIcon } from "@/components/themed-icon";
-import { SHOPPING_START_SENTINEL } from "@/domain/grocery/distance";
 import { confirmDestructive } from "@/utils/confirm-destructive";
 
 type PlayListProps = {
@@ -39,9 +38,6 @@ const PlayList = ({ list }: PlayListProps) => {
     );
   }, [currentParticipantIndex, list.items, participants.length]);
 
-  const [checkOrder, setCheckOrder] = useState<Set<string>>(
-    new Set([SHOPPING_START_SENTINEL]),
-  );
   const { checkItem, uncheckItem, finishShopping, abandonShopping } =
     useGroceryListStore();
 
@@ -52,16 +48,6 @@ const PlayList = ({ list }: PlayListProps) => {
       } else {
         uncheckItem(list.id, itemId);
       }
-
-      setCheckOrder((order) => {
-        const next = new Set(order);
-        if (checked) {
-          next.add(itemId);
-        } else {
-          next.delete(itemId);
-        }
-        return next;
-      });
     },
     [checkItem, list.id, uncheckItem],
   );
@@ -84,7 +70,7 @@ const PlayList = ({ list }: PlayListProps) => {
         "Are you sure you want to finish shopping? This will clear the list and move it back to the main screen.",
       confirmLabel: "Finish",
       onConfirm: () => {
-        finishShopping(list.id, Array.from(checkOrder));
+        finishShopping(list.id);
       },
     });
 

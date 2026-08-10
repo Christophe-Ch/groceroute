@@ -13,6 +13,7 @@ import {
   OperationType,
 } from "./operations/types/operation";
 import { join } from "@/api/list";
+import { useAuthStore } from "../auth/auth.store";
 
 type GroceryListStore = {
   lists: Record<string, GroceryList>;
@@ -40,7 +41,7 @@ type GroceryListStore = {
   addPastItem: (listId: string, item: GroceryItem) => Promise<void>;
   reorderItems: (listId: string, newItems: GroceryItem[]) => Promise<void>;
   renameList: (listId: string, name: string) => Promise<void>;
-  finishShopping: (listId: string, checkOrder: string[]) => Promise<void>;
+  finishShopping: (listId: string) => Promise<void>;
 
   dispatchOperation: (input: OperationInput) => Promise<void>;
   applyOperation: (operation: Operation) => void;
@@ -184,18 +185,18 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
       });
     },
 
-    finishShopping: async (listId: string, checkOrder: string[]) => {
+    finishShopping: async (listId: string) => {
       if (!get().lists[listId]) return;
       await get().dispatchOperation({
         type: OperationType.FINISH_SHOPPING,
-        payload: { listId, checkOrder },
+        payload: { listId },
       });
     },
 
     dispatchOperation: async (input: OperationInput) => {
       const operation: Operation = {
         id: generateId(),
-        actorId: "local",
+        actorId: useAuthStore.getState().currentUser?.id ?? "local",
         createdAt: new Date(),
         ...input,
       };
