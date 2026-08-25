@@ -2,7 +2,7 @@ import { Colors } from "@/constants/theme";
 import { useSync } from "@/hooks/sync/use-sync";
 import { useAuthStore } from "@/stores/auth/auth.store";
 import { useGroceryListStore } from "@/stores/groceries/grocery-list.store";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@react-native-vector-icons/ionicons";
 import { Tabs } from "expo-router";
 import { useEffect } from "react";
 import { useColorScheme } from "@/hooks/ui/use-color-scheme";

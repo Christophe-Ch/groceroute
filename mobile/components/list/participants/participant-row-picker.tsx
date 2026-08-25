@@ -1,7 +1,7 @@
 import { ThemedText } from "@/components/themed-text";
 import { useThemeColor } from "@/hooks/ui/use-theme-color";
 import { Participant } from "@/models/grocery";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@react-native-vector-icons/ionicons";
 import { useState } from "react";
 import { Pressable, StyleSheet } from "react-native";
 
