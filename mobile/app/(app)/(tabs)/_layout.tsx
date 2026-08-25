@@ -5,7 +5,7 @@ import { useGroceryListStore } from "@/stores/groceries/grocery-list.store";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { useEffect } from "react";
-import { useColorScheme } from "react-native";
+import { useColorScheme } from "@/hooks/ui/use-color-scheme";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const AppLayout = () => {
