@@ -4,6 +4,8 @@ import {
   Control,
   Controller,
   FieldError,
+  FieldPath,
+  FieldValues,
   RegisterOptions,
 } from "react-hook-form";
 import {
@@ -17,16 +19,16 @@ import {
 } from "react-native";
 import { ThemedText } from "./themed-text";
 
-type InputProps = TextInputProps & {
-  control?: Control<any, any, any>;
-  name?: string;
+type InputProps<TFieldValues extends FieldValues> = TextInputProps & {
+  control?: Control<TFieldValues>;
+  name?: FieldPath<TFieldValues>;
   error?: FieldError;
-  rules?: RegisterOptions;
+  rules?: RegisterOptions<TFieldValues, FieldPath<TFieldValues>>;
   containerStyle?: StyleProp<ViewStyle>;
   label?: string;
 };
 
-const ThemedInput = ({
+const ThemedInput = <TFieldValues extends FieldValues = FieldValues>({
   control,
   name,
   error,
@@ -36,7 +38,7 @@ const ThemedInput = ({
   onFocus,
   onBlur,
   ...props
-}: InputProps) => {
+}: InputProps<TFieldValues>) => {
   const [focused, setFocused] = useState(false);
 
   const textColor = useThemeColor({}, "inputText");
