@@ -15,6 +15,10 @@ const PlayItemRow = ({ item, onItemCheckChange }: PlayItemRowProps) => {
   const muted = useThemeColor({}, "textMuted");
   const primary = useThemeColor({}, "primary");
 
+  // Resyncs local state when the item changes underneath us, e.g. from a pull.
+  // Should be derived during render instead; left as-is pending a look at the
+  // editing behaviour in the running app.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setChecked(item.checked), [item.checked]);
 
   const toggle = () => {

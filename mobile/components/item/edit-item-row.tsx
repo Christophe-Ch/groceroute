@@ -21,7 +21,11 @@ const EditItemRow = ({ listId, item }: EditItemRowProps) => {
     null,
   );
 
+  // Resyncs local state when the item changes underneath us, e.g. from a pull.
+  // Should be derived during render instead; left as-is pending a look at the
+  // editing behaviour in the running app.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setName(item.name);
     setQuantity(item.quantity ?? "");
   }, [item.name, item.quantity]);
