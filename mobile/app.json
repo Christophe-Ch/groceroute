@@ -9,7 +9,10 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.cchichmanian.groceroute"
+      "bundleIdentifier": "com.cchichmanian.groceroute",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -46,6 +49,20 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "API_BASE_URL": "",
+      "router": {},
+      "eas": {
+        "projectId": "f3475bda-dd0e-4fad-a568-2f768143d19f"
+      }
+    },
+    "owner": "christophe-chichmanian",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/f3475bda-dd0e-4fad-a568-2f768143d19f"
     }
   }
 }
