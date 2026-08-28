@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - feat/cloud-run-setup
     paths:
       - .github/workflows/api.dev.yml
       - api/**
