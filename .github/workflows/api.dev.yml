@@ -42,3 +42,41 @@ jobs:
           tags: |
             europe-west9-docker.pkg.dev/${{ vars.PROJECT_ID }}/docker/api:${{ github.sha }}
             europe-west9-docker.pkg.dev/${{ vars.PROJECT_ID }}/docker/api:latest
+
+      - name: Deploy migration job
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          job: api-migrate
+          image: europe-west9-docker.pkg.dev/${{ vars.PROJECT_ID }}/docker/api:latest
+          region: europe-west9
+          flags: |
+            --cpu=1
+            --memory=512Mi
+            --set-env-vars DB_USERNAME=${{ secrets.DB_USERNAME }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }},DB_PORT=${{ secrets.DB_PORT }},DB_HOST=${{ secrets.DB_HOST }},DB_SSL=true
+      
+      - name: Run migrations
+        run: |
+          gcloud run jobs update api-migrate \
+            --image europe-west9-docker.pkg.dev/${{ vars.PROJECT_ID }}/docker/api:latest \
+            --command="npm" \
+            --args="run,run-migrations:prod" \
+            --region europe-west9 \
+            --project ${{ vars.PROJECT_ID }}
+          
+          gcloud run jobs execute api-migrate --region europe-west9 --wait
+
+      - name: Deploy new revision
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: api
+          image: europe-west9-docker.pkg.dev/${{ vars.PROJECT_ID }}/docker/api:latest
+          region: europe-west9
+          flags: |
+            --max-instances=1
+            --cpu=1
+            --memory=256Mi
+            --no-cpu-throttling
+            --timeout=3600
+            --allow-unauthenticated
+            --concurrency=80
+            --set-env-vars JWT_SECRET=${{ secrets.JWT_SECRET }},JWT_EXPIRATION=${{ secrets.JWT_EXPIRATION }},DB_USERNAME=${{ secrets.DB_USERNAME }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }},DB_PORT=${{ secrets.DB_PORT }},DB_HOST=${{ secrets.DB_HOST }},DB_SSL=true,GCP_PROJECT_ID=${{ vars.PROJECT_ID }},REFRESH_EXPIRATION=${{ secrets.REFRESH_EXPIRATION }}
