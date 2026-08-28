@@ -74,7 +74,7 @@ jobs:
           flags: |
             --max-instances=1
             --cpu=1
-            --memory=256Mi
+            --memory=512Mi
             --no-cpu-throttling
             --timeout=3600
             --allow-unauthenticated
