@@ -1,0 +1,10 @@
+node_modules
+dist
+.env
+.env.template
+.git
+.gitignore
+.DS_Store
+Dockerfile*
+test
+*.md

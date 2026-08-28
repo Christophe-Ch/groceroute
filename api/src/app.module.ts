@@ -24,6 +24,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
+        ssl:
+          configService.get<string>('DB_SSL') === 'true'
+            ? { rejectUnauthorized: false }
+            : false,
         entities,
         namingStrategy: new SnakeCaseNamingStrategy(),
       }),

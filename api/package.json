@@ -21,6 +21,7 @@
     "create-migration": "typeorm-ts-node-commonjs migration:create",
     "generate-migration": "typeorm-ts-node-commonjs -d src/db/conf.ts migration:generate",
     "run-migrations": "typeorm-ts-node-commonjs -d src/db/conf.ts migration:run",
+    "run-migrations:prod": "typeorm -d dist/db/conf.js migration:run",
     "revert-migration": "typeorm-ts-node-commonjs -d src/db/conf.ts migration:revert",
     "show-migrations": "typeorm-ts-node-commonjs -d src/db/conf.ts migration:show"
   },
