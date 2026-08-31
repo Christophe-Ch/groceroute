@@ -18,6 +18,22 @@ export class OperationsService {
     private eventEmitter: EventEmitter2,
   ) {}
 
+  public async findForList(
+    userId: string,
+    listId: string,
+    lastSequence: string,
+  ): Promise<Operation[]> {
+    return this.operationsRepository.find({
+      where: {
+        actorId: Not(userId),
+        payload: JsonContains({
+          listId,
+        }),
+        sequence: MoreThan(lastSequence),
+      },
+    });
+  }
+
   public async applyBatch(
     operations: Operation[],
   ): Promise<OperationSyncResultDto[]> {
@@ -39,14 +55,18 @@ export class OperationsService {
       }
     }
 
+    this.notifyListSubscribers(Array.from(lists.values()));
+
+    return results;
+  }
+
+  private notifyListSubscribers(lists: List[]): void {
     lists.forEach((list) => {
       this.eventEmitter.emit('list.updated', {
         listId: list.id,
         userIdsToNotify: list.participants.map((p) => p.id),
       });
     });
-
-    return results;
   }
 
   private async apply(
@@ -65,28 +85,12 @@ export class OperationsService {
         lock: { mode: 'pessimistic_write' },
       });
 
-      if (!list && operation.type !== OperationType.CREATE_LIST) {
-        throw new Error('List not found');
-      }
+      this.checkListExistsIfRequired(list, operation);
 
-      let currentSequence = '0';
-      if (list) {
-        const result = await listRepository
-          .createQueryBuilder()
-          .update()
-          .set({ currentSequence: () => 'currentSequence + 1' })
-          .where('id = :id', { id: list.id })
-          .returning(['currentSequence'])
-          .execute();
-
-        const row = (result.raw as Array<{ current_sequence: string }>)[0] as
-          | { current_sequence: string }
-          | undefined;
-
-        if (row) {
-          currentSequence = row['current_sequence'];
-        }
-      }
+      const currentSequence = await this.getListCurrentSequence(
+        list,
+        listRepository,
+      );
 
       try {
         await this.operationsHandler
@@ -111,19 +115,39 @@ export class OperationsService {
     };
   }
 
-  public async findForList(
-    userId: string,
-    listId: string,
-    lastSequence: string,
-  ): Promise<Operation[]> {
-    return this.operationsRepository.find({
-      where: {
-        actorId: Not(userId),
-        payload: JsonContains({
-          listId,
-        }),
-        sequence: MoreThan(lastSequence),
-      },
-    });
+  private checkListExistsIfRequired(
+    list: List | null,
+    operation: Operation,
+  ): void {
+    if (!list && operation.type !== OperationType.CREATE_LIST) {
+      throw new Error('List not found');
+    }
+  }
+
+  private async getListCurrentSequence(
+    list: List | null,
+    listRepository: Repository<List>,
+  ): Promise<string> {
+    if (!list) {
+      return '0';
+    }
+
+    const result = await listRepository
+      .createQueryBuilder()
+      .update()
+      .set({ currentSequence: () => 'currentSequence + 1' })
+      .where('id = :id', { id: list.id })
+      .returning(['currentSequence'])
+      .execute();
+
+    const row = (result.raw as Array<{ current_sequence: string }>)[0] as
+      | { current_sequence: string }
+      | undefined;
+
+    if (row) {
+      return row['current_sequence'];
+    }
+
+    return '0';
   }
 }
