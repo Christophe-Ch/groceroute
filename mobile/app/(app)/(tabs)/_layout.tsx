@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/theme";
+import { useAppState } from "@/hooks/app/use-app-state";
 import { useSync } from "@/hooks/sync/use-sync";
 import { useAuthStore } from "@/stores/auth/auth.store";
 import { useGroceryListStore } from "@/stores/groceries/grocery-list.store";
@@ -14,6 +15,8 @@ const AppLayout = () => {
 
   const hydrated = useGroceryListStore((s) => s.hydrated);
   const hydrate = useGroceryListStore((s) => s.hydrate);
+  const pushOperations = useGroceryListStore((s) => s.pushOperations);
+  const syncAllLists = useGroceryListStore((s) => s.syncAllLists);
   const colorScheme = useColorScheme() ?? "dark";
   const theme = Colors[colorScheme];
 
@@ -22,6 +25,13 @@ const AppLayout = () => {
       hydrate();
     }
   }, [hydrate, hydrated]);
+
+  useAppState(async (state) => {
+    if (state !== "active") return;
+
+    await pushOperations();
+    await syncAllLists();
+  });
 
   if (!hydrated) return null;
 

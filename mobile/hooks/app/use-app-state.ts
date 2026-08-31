@@ -28,5 +28,5 @@ export const useAppState = (
     );
 
     return () => subscription.remove();
-  });
+  }, []);
 };

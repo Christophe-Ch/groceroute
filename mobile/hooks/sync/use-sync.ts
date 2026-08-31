@@ -4,7 +4,8 @@ import EventSource from "react-native-sse";
 import { useGroceryListStore } from "@/stores/groceries/grocery-list.store";
 
 export const useSync = (userToken: string | null) => {
-  const { syncOperations } = useGroceryListStore();
+  const syncOperations = useGroceryListStore((s) => s.syncOperations);
+  const syncAllLists = useGroceryListStore((s) => s.syncAllLists);
 
   useEffect(() => {
     if (!userToken) return;
@@ -16,6 +17,10 @@ export const useSync = (userToken: string | null) => {
         Authorization: `Bearer ${userToken}`,
         Accept: "text/event-stream",
       },
+    });
+
+    eventSource.addEventListener("open", () => {
+      syncAllLists();
     });
 
     eventSource.addEventListener("message", (event) => {
@@ -33,5 +38,5 @@ export const useSync = (userToken: string | null) => {
       eventSource.removeAllEventListeners();
       eventSource.close();
     };
-  }, [syncOperations, userToken]);
+  }, [syncAllLists, syncOperations, userToken]);
 };

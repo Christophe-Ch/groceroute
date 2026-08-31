@@ -49,12 +49,15 @@ type GroceryListStore = {
   queueOperation: (operation: Operation) => Promise<void>;
   pushOperations: () => Promise<void>;
   syncOperations: (listId: string) => Promise<void>;
+  syncAllLists: () => Promise<void>;
 };
 
 export const useGroceryListStore = create<GroceryListStore>((set, get) => {
   const executeDebouncedSync = debounce(async () => {
     await get().pushOperations();
   }, 1000);
+
+  let pullAllInFlight: Promise<void> | null = null;
 
   return {
     lists: {},
@@ -271,23 +274,46 @@ export const useGroceryListStore = create<GroceryListStore>((set, get) => {
 
     syncOperations: async (listId: string) => {
       const list = get().lists[listId];
+      const lastSequence = list?.currentSequence ?? -1;
 
-      const { operations, currentSequence } = await pull(
-        listId,
-        list?.currentSequence ?? -1,
+      const { operations, currentSequence } = await pull(listId, lastSequence);
+
+      for (const operation of operations) {
+        get().applyOperation(operation);
+        await get().persistAfterOperation(operation);
+      }
+
+      if (!get().lists[listId]) return;
+      if (operations.length === 0 && lastSequence === currentSequence) return;
+
+      set(
+        produce((draft: GroceryListStore) => {
+          draft.lists[listId].currentSequence = currentSequence;
+        }),
       );
 
-      if (operations.length > 0) {
-        for (const operation of operations) {
-          get().applyOperation(operation);
-          await get().persistAfterOperation(operation);
-        }
+      await storageService.saveList(get().lists[listId]);
+    },
 
-        set(
-          produce((draft: GroceryListStore) => {
-            draft.lists[listId].currentSequence = currentSequence;
-          }),
-        );
+    syncAllLists: async () => {
+      if (pullAllInFlight) return pullAllInFlight;
+
+      const listIds = Object.keys(get().lists);
+
+      pullAllInFlight = Promise.all(
+        listIds.map(async (listId) => {
+          try {
+            await get().syncOperations(listId);
+          } catch (err) {
+            console.error(`Failed to sync list ${listId}`, err);
+          }
+        }),
+      ).then(() => undefined);
+
+      try {
+        await pullAllInFlight;
+      } finally {
+        pullAllInFlight = null;
       }
     },
   };
