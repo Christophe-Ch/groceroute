@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { OperationType } from 'src/core/models/operation-type.enum';
-import { Operation } from 'src/core/models/operation.entity';
+import { OperationType } from '@core/models/operation-type.enum';
+import { Operation } from '@core/models/operation.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { List } from '../models/list.entity';
 import { AbandonShoppingOperation } from '../operations/list/abandon-shopping.operation';
