@@ -40,6 +40,34 @@ Everything works without a network connection. Data is stored on-device and load
 
 ---
 
+## 🔄 How sync works
+
+Every change is an **operation**, not a state update. `ADD_ITEM`, `CHECK_ITEM`, `START_SHOPPING`, `ADD_PARTICIPANT` — each one is a small, self-describing record with a client-generated id. The same operation types are defined on both sides, and both sides apply them through their own handler registry, so a change replays identically on the device that made it and on every other device that receives it.
+
+```mermaid
+sequenceDiagram
+    participant A as Device A
+    participant API as API
+    participant B as Device B
+    A->>A: apply locally + persist + queue in outbox
+    A->>API: POST /sync/push (batch)
+    API->>API: dedupe by id, lock list, assign sequence, project
+    API-->>B: SSE /sync/stream → { listId }
+    B->>API: GET /sync/pull?listId&lastSequence
+    API-->>B: operations since lastSequence
+    B->>B: apply through the same handlers
+```
+
+**On the device** — an operation is applied to the Zustand store immediately, written to AsyncStorage, and appended to an outbox queue. The UI never waits on the network; a debounced push drains the queue whenever it can.
+
+**On the server** — pushes arrive as a batch. Each operation is deduplicated by its id (replaying a batch is a no-op), the target list is taken under a pessimistic lock, the actor is checked against the list's participants, and the operation is assigned a monotonically increasing **sequence** before projectors fold it into the relational entities. The response reports `applied` / `skipped` / `failed` per operation, so a partially rejected batch doesn't block the rest.
+
+**Fan-out** — after a batch commits, the server emits an event to the list's participants. Each connected client holds an SSE stream at `/sync/stream`, filtered server-side by user id, and receives just the id of the list that changed.
+
+**Catch-up** — the SSE message is a hint, not the data. On receiving it the client pulls `/sync/pull` from the last sequence it has and applies whatever it missed. The same pull runs when the stream opens and when the app returns to the foreground, which is what makes a device that was offline, backgrounded, or disconnected converge without any special-casing: the sequence number is the only state it needs to catch up.
+
+---
+
 ## 🚀 What's coming
 
 | Feature | Status |
@@ -134,3 +162,9 @@ The app uses native modules (camera, secure store, updates), so it runs on a **d
 ## 🚢 Deployment
 
 The API deploys to **Google Cloud Run** (region `europe-west9`). Pushing to `main` with changes under `api/` triggers [`.github/workflows/api.dev.yml`](./.github/workflows/api.dev.yml), which lints, runs the tests, builds the image to Artifact Registry, runs migrations as a Cloud Run job, then rolls out a new revision.
+
+---
+
+## 📄 License
+
+[MIT](./LICENSE)

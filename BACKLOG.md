@@ -1,79 +1,45 @@
 # Groceroute — Product Backlog
 
 > Living document. Move items to **Done** when shipped. Add notes inline.
-> Last updated: 2026-04-12
+> Last updated: 2026-08-31
+
+The core product is shipped: lists, play mode with learned ordering, auth, offline-first
+operation sync, live collaboration and split shopping. What's left below is deliberately
+optional — nice-to-haves picked up when there's an appetite for them, not a path to a
+release.
 
 ---
 
-## Phase 0 — Polish before backend (quick wins)
+## Next up (small, worth doing)
 
-These are gaps in the existing local-only app that are worth closing before adding backend complexity.
-
-### Auth routing (partial — needs finishing)
-- [ ] Gate `(app)/` routes: if no token → redirect to `(auth)/login`
-- [ ] Gate `(auth)/` routes: if token present → redirect to `(app)/`
-- [ ] Hook up `AuthContext` token state to Expo Router conditional `<Slot>` in root layout
-- **Why**: The axios interceptor, token service, and mutations are all wired — routing is the last missing piece. Doing this now avoids a mess when backend is live.
-
-### Login / signup screens
-- [ ] Replace "App title" placeholder with real branding
-- [ ] Add proper error display on failed login / signup (currently mutations fire but no UI feedback)
-- [ ] Basic form validation messages (empty fields, password length)
-
-### Play session persistence
-- [ ] Checked items reset when navigating away from play mode — decide: persist per-session in store, or accept reset?
-- [ ] If persisting: add `playSession: Record<listId, Set<itemId>>` to store (ephemeral, not AsyncStorage)
-
-### UX gaps
-- [ ] Loading/skeleton state while `hydrated === false` (currently shows nothing)
-- [ ] Confirmation toast after list delete (currently silent)
-- [ ] Quantity input: allow decimal values (e.g. `0.5 kg`) — currently integer only?
-- [ ] Long list names overflow in `ListCard` — add `numberOfLines={1}` truncation
-
-### Accessibility
-- [ ] Add `accessibilityLabel` to icon-only buttons (`ListCard` delete, `EditItemRow` delete)
-- [ ] Ensure `TextInput` fields have associated labels (currently rely on placeholder text)
+- [ ] Loading / skeleton state while `hydrated === false` — `AppLayout` currently renders `null`
+- [ ] Truncate long list names in `ListCard` (`numberOfLines={1}`)
+- [ ] Confirmation toast after deleting a list (currently silent)
+- [ ] Sync status indicator — surface queued-but-unpushed operations in the UI
+- [ ] Unit tests on the mobile side: `orderItems()` distance algorithm and the operation handlers
 
 ---
 
-## Phase 1 — Backend: Auth + Sync
-
-### 1.1 Auth management
-- [ ] Wire login success → store token → redirect to app
-- [ ] Wire logout → clear token → redirect to login
-- [ ] Refresh token flow is already implemented in axios interceptor — test it end-to-end
-- [ ] Handle expired/invalid token on cold start (tokenService `get()` → validate → logout if bad)
-
-### 1.2 List sync
-- [ ] `POST /lists` on `createList()`
-- [ ] `DELETE /lists/:id` on `deleteList()`
-- [ ] `PUT /lists/:id` on `updateList()` (name changes, item changes)
-- [ ] `GET /lists` on `hydrate()` — replace AsyncStorage-only hydration with API fetch (keep AsyncStorage as offline cache)
-- [ ] Conflict strategy: last-write-wins for MVP, flag for future CRDTs
-
-### 1.3 Offline support
-- [ ] Keep AsyncStorage as write-behind cache
-- [ ] Queue mutations when offline, replay on reconnect
-- [ ] Show sync status indicator (optional for MVP)
-
----
-
-## Phase 2 — Multi-user & Collaboration
+## Phase 2 — Collaboration (remainder)
 
 ### 2.1 Shared lists
-- [ ] Invite user to a list by email / username
-- [ ] List ownership model (owner + collaborators)
-- [ ] Show collaborator avatars on `ListCard`
+- [x] Share a list — join by ID, or by scanning its QR code
+- [x] Participant model: creator recorded as owner on `CREATE_LIST`
+- [ ] Permissions are currently flat — any participant can apply any operation. Introduce
+      owner-only operations (rename, delete, remove participant) if it ever matters
+- [ ] Show participant avatars on `ListCard`
+- [ ] Invite by email / username (QR + ID covers the need today — only worth it if sharing
+      needs to work without both people present)
 
 ### 2.2 Split list at play time
-- [ ] During play mode, split items N ways among participants
-- [ ] Each participant gets their own subset, shown on their device
-- [ ] Algorithm: round-robin or by aisle/category proximity
+- [x] Pick participants when starting a session
+- [x] Items divided between shoppers, each swiping to their own subset
+- [ ] Smarter split than contiguous slices — balance by aisle/category proximity
 
 ### 2.3 Live updates
-- [ ] WebSocket or SSE channel per list
-- [ ] Real-time check/uncheck sync during shared play session
-- [ ] Item add/remove propagated live to all collaborators
+- [x] SSE channel per user, filtered to the lists they participate in
+- [x] Real-time check/uncheck and item add/remove across collaborators
+- [x] Catch-up pull on stream open, on app foreground, and after reconnect
 
 ---
 
@@ -100,6 +66,10 @@ These are gaps in the existing local-only app that are worth closing before addi
 - [ ] Show estimated total on list and in play mode
 - [ ] Track price history per item across lists
 
+### 3.5 Shopping timer
+- [ ] Track session duration from `START_SHOPPING` to `FINISH_SHOPPING`
+- [ ] Show elapsed time in play mode, and history per list
+
 ---
 
 ## Phase 4 — Platform & Distribution
@@ -109,17 +79,44 @@ These are gaps in the existing local-only app that are worth closing before addi
 - [ ] Barcode scanner → look up product name, pre-fill item
 - [ ] App Store / Play Store submission checklist
 - [ ] App icon finalization + splash screen
+- [ ] README screenshots / demo GIF
 
 ---
 
 ## Done
 
-- [x] Create / delete lists
-- [x] Add / remove items with quantity support
+### Lists & play mode
+- [x] Create / delete / rename lists
+- [x] Add / remove items, rename items, quantity support (free-text, so decimals work)
 - [x] Play mode with check / uncheck + progress bar
+- [x] Finish or abandon a shopping session
 - [x] Past items for autocomplete
 - [x] Check-order detection (distance graph) for auto-ordering on play start
 - [x] Drag & drop reordering in edit mode
+- [x] Checked state survives navigating away — it lives in the list, not in ephemeral UI state
+
+### Auth
 - [x] Axios client with bearer token injection + auto-refresh interceptor
 - [x] Token service (SecureStore) with subscription model
+- [x] Login / signup screens with real branding, validation messages and error toasts
+- [x] Auth state in `useAuthStore`; login is a modal, sign-out from the Account tab
+- [x] ~~Gate `(app)` / `(auth)` routes by token~~ — obsolete: the app is usable signed out
+      (local-only lists) and prompts for sign-in where an account is actually required
+
+### Sync
+- [x] Operation-based sync engine — client and server share operation types and apply them
+      through their own handler registries
+- [x] `POST /sync/push` batch endpoint, idempotent by operation id, per-list locking,
+      monotonic sequence numbers, projectors folding operations into entities
+- [x] `GET /sync/pull?listId&lastSequence` for catch-up
+- [x] Actor authorization at the operations-service level
 - [x] AsyncStorage persistence with hydration on app start
+- [x] Offline outbox: operations queued locally, debounced push, replayed on reconnect
+- [x] Conflict strategy: the server-assigned sequence is authoritative and ordering is
+      last-write-wins — good enough for lists, revisit only if a real conflict shows up
+
+### Infrastructure
+- [x] API on Cloud Run, deployed from `main` via GitHub Actions (lint + tests, image to
+      Artifact Registry, migrations as a Cloud Run job, then a new revision)
+- [x] EAS Build + EAS Update with development / preview / production channels
+- [x] Unit tests on the API: operations service/handler, projectors, auth controller
