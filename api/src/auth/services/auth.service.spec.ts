@@ -6,7 +6,7 @@ import { User } from '@users/models/user.entity';
 import { BadRequestException } from '@nestjs/common';
 
 const mockUser: User = {
-  id: 1,
+  id: '1',
   email: 'test@example.com',
   password: 'hashed',
   refreshToken: '',
