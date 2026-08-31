@@ -61,6 +61,8 @@ class ItemProjectorExecutor {
       payload: { id, listId, name },
     } = operation;
 
+    if (await this.itemRepository.existsBy({ id })) return;
+
     await this.itemRepository.insert({ id, listId, name });
   }
 

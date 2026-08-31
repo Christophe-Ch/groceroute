@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { OperationSyncResultDto } from 'src/sync/dto/operation-sync-result.dto';
 import { DataSource, JsonContains, MoreThan, Not, Repository } from 'typeorm';
@@ -7,6 +7,7 @@ import { OperationsHandler } from './operations.handler';
 import { List } from '@lists/models/list.entity';
 import { OperationType } from '@core/models/operation-type.enum';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { AddParticipantOperation } from '@lists/operations/list/add-participant.operation';
 
 @Injectable()
 export class OperationsService {
@@ -86,6 +87,7 @@ export class OperationsService {
       });
 
       this.checkListExistsIfRequired(list, operation);
+      await this.authorizeActor(list, operation, listRepository);
 
       const currentSequence = await this.getListCurrentSequence(
         list,
@@ -121,6 +123,55 @@ export class OperationsService {
   ): void {
     if (!list && operation.type !== OperationType.CREATE_LIST) {
       throw new Error('List not found');
+    }
+  }
+
+  private async authorizeActor(
+    list: List | null,
+    operation: Operation,
+    listRepository: Repository<List>,
+  ): Promise<void> {
+    switch (operation.type) {
+      case OperationType.CREATE_LIST:
+        this.checkListDoesNotExist(list);
+        break;
+      case OperationType.ADD_PARTICIPANT:
+        this.checkParticipantIsActor(operation);
+        break;
+      default:
+        await this.checkActorIsParticipant(operation, listRepository);
+    }
+  }
+
+  private checkListDoesNotExist(list: List | null): void {
+    if (list) {
+      throw new ForbiddenException(`List ${list.id} already exists`);
+    }
+  }
+
+  private checkParticipantIsActor(operation: Operation): void {
+    const { participant } = (operation as AddParticipantOperation).payload;
+
+    if (participant?.id !== operation.actorId) {
+      throw new ForbiddenException(
+        'An actor may only add itself as a participant',
+      );
+    }
+  }
+
+  private async checkActorIsParticipant(
+    operation: Operation,
+    listRepository: Repository<List>,
+  ): Promise<void> {
+    const isParticipant = await listRepository.existsBy({
+      id: operation.payload.listId,
+      participants: { id: operation.actorId },
+    });
+
+    if (!isParticipant) {
+      throw new ForbiddenException(
+        `Actor ${operation.actorId} is not a participant of list ${operation.payload.listId}`,
+      );
     }
   }
 

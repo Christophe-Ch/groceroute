@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { OperationType } from 'src/core/models/operation-type.enum';
-import { Operation } from 'src/core/models/operation.entity';
+import { OperationType } from '@core/models/operation-type.enum';
+import { Operation } from '@core/models/operation.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { List } from '../models/list.entity';
 import { AbandonShoppingOperation } from '../operations/list/abandon-shopping.operation';
@@ -80,8 +80,6 @@ class ListProjectorExecutor {
       payload: { listId, name },
     } = operation;
 
-    if (await this.listsRepository.existsBy({ id: listId })) return;
-
     await this.listsRepository.insert({ id: listId, name });
     await this.listsService.addParticipant(listId, actorId);
 
@@ -116,34 +114,21 @@ class ListProjectorExecutor {
     await this.listsRepository.delete({ id: listId });
   }
 
-  public async startShopping(operation: StartShoppingOperation): Promise<void> {
-    const {
-      actorId,
-      payload: { listId },
-    } = operation;
-    if (!(await this.listsService.isParticipant(listId, actorId))) return;
+  public async startShopping({
+    payload: { listId },
+  }: StartShoppingOperation): Promise<void> {
     await this.listsRepository.update({ id: listId }, { mode: 'play' });
   }
 
-  public async abandonShopping(
-    operation: AbandonShoppingOperation,
-  ): Promise<void> {
-    const {
-      actorId,
-      payload: { listId },
-    } = operation;
-    if (!(await this.listsService.isParticipant(listId, actorId))) return;
+  public async abandonShopping({
+    payload: { listId },
+  }: AbandonShoppingOperation): Promise<void> {
     await this.listsRepository.update({ id: listId }, { mode: 'edit' });
   }
 
-  public async finishShopping(
-    operation: FinishShoppingOperation,
-  ): Promise<void> {
-    const {
-      actorId,
-      payload: { listId },
-    } = operation;
-    if (!(await this.listsService.isParticipant(listId, actorId))) return;
+  public async finishShopping({
+    payload: { listId },
+  }: FinishShoppingOperation): Promise<void> {
     await this.listsRepository.update({ id: listId }, { mode: 'edit' });
   }
 }
