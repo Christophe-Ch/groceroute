@@ -17,6 +17,8 @@ import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
 import { OperationType } from '@core/models/operation-type.enum';
 import { OperationProjector } from '@core/projectors/operation-projector';
 import { List } from '@lists/models/list.entity';
+import { AddParticipantOperation } from '@lists/operations/list/add-participant.operation';
+import { Participant } from '@lists/models/participant';
 
 describe('OperationsService', () => {
   let service: OperationsService;
@@ -201,6 +203,7 @@ describe('OperationsService', () => {
       listRepository = buildMock<Repository<List>>([
         'findOne',
         'createQueryBuilder',
+        'existsBy',
       ]);
       opRepository = buildMock<Repository<Operation>>(['insert']);
       manager = buildMock<EntityManager>(['getRepository']);
@@ -211,6 +214,7 @@ describe('OperationsService', () => {
         queryBuilder as unknown as SelectQueryBuilder<List>,
       );
       listRepository.findOne.mockResolvedValue(buildList());
+      listRepository.existsBy.mockResolvedValue(true);
       projector.handle.mockResolvedValue(undefined);
       operationsHandler.for.mockReturnValue(projector);
 
@@ -327,6 +331,111 @@ describe('OperationsService', () => {
       expect(opRepository.insert).toHaveBeenCalled();
     });
 
+    describe('authorisation', () => {
+      it('should check that the actor participates in the operation list', async () => {
+        await service.applyBatch([buildOperation()]);
+
+        expect(listRepository.existsBy).toHaveBeenCalledWith({
+          id: 'list-1',
+          participants: { id: 'user-1' },
+        });
+      });
+
+      it('should reject an operation from an actor who is not a participant', async () => {
+        listRepository.existsBy.mockResolvedValue(false);
+
+        const results = await service.applyBatch([buildOperation()]);
+
+        expect(results).toEqual([
+          {
+            id: 'op-1',
+            status: 'failed',
+            error: 'Actor user-1 is not a participant of list list-1',
+          },
+        ]);
+      });
+
+      it('should not record nor sequence a rejected operation', async () => {
+        listRepository.existsBy.mockResolvedValue(false);
+
+        await service.applyBatch([buildOperation()]);
+
+        expect(projector.handle).not.toHaveBeenCalled();
+        expect(opRepository.insert).not.toHaveBeenCalled();
+        expect(listRepository.createQueryBuilder).not.toHaveBeenCalled();
+      });
+
+      it('should reject only the unauthorised operation of a batch', async () => {
+        listRepository.existsBy
+          .mockResolvedValueOnce(false)
+          .mockResolvedValueOnce(true);
+
+        const results = await service.applyBatch([
+          buildOperation({ id: 'op-1' }),
+          buildOperation({ id: 'op-2' }),
+        ]);
+
+        expect(results).toEqual([
+          {
+            id: 'op-1',
+            status: 'failed',
+            error: 'Actor user-1 is not a participant of list list-1',
+          },
+          { id: 'op-2', status: 'applied' },
+        ]);
+      });
+
+      it('should not require participation to create a list', async () => {
+        listRepository.findOne.mockResolvedValue(null);
+
+        const results = await service.applyBatch([
+          buildOperation({ type: OperationType.CREATE_LIST }),
+        ]);
+
+        expect(results).toEqual([{ id: 'op-1', status: 'applied' }]);
+        expect(listRepository.existsBy).not.toHaveBeenCalled();
+      });
+
+      it('should reject a creation targeting a list that already exists', async () => {
+        const results = await service.applyBatch([
+          buildOperation({ type: OperationType.CREATE_LIST }),
+        ]);
+
+        expect(results).toEqual([
+          {
+            id: 'op-1',
+            status: 'failed',
+            error: 'List list-1 already exists',
+          },
+        ]);
+        expect(opRepository.insert).not.toHaveBeenCalled();
+      });
+
+      it('should let an actor add itself as a participant', async () => {
+        const results = await service.applyBatch([
+          buildAddParticipantOperation({ id: 'user-1', email: 'a@b.c' }),
+        ]);
+
+        expect(results).toEqual([{ id: 'op-1', status: 'applied' }]);
+        expect(listRepository.existsBy).not.toHaveBeenCalled();
+      });
+
+      it('should reject an actor adding someone else as a participant', async () => {
+        const results = await service.applyBatch([
+          buildAddParticipantOperation({ id: 'user-3', email: 'c@b.c' }),
+        ]);
+
+        expect(results).toEqual([
+          {
+            id: 'op-1',
+            status: 'failed',
+            error: 'An actor may only add itself as a participant',
+          },
+        ]);
+        expect(opRepository.insert).not.toHaveBeenCalled();
+      });
+    });
+
     it('should fall back to sequence 0 when the update returns no row', async () => {
       queryBuilder = buildQueryBuilder([]);
       listRepository.createQueryBuilder.mockReturnValue(
@@ -373,12 +482,21 @@ describe('OperationsService', () => {
   function buildOperation(overrides: Partial<Operation> = {}): Operation {
     return {
       id: 'op-1',
-      type: OperationType.CREATE_LIST,
+      type: OperationType.ADD_ITEM,
       actorId: 'user-1',
       payload: { listId: 'list-1' },
       sequence: '1',
       createdAt: new Date('2026-01-01T00:00:00Z'),
       ...overrides,
+    };
+  }
+
+  function buildAddParticipantOperation(
+    participant: Participant,
+  ): AddParticipantOperation {
+    return {
+      ...buildOperation({ type: OperationType.ADD_PARTICIPANT }),
+      payload: { listId: 'list-1', participant },
     };
   }
 

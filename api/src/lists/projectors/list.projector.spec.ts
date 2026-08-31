@@ -114,19 +114,6 @@ describe('ListProjector', () => {
       expect(usersRepository.findOneBy).toHaveBeenCalledWith({ id: actor.id });
       expect(operation.payload.owner).toEqual(actor);
     });
-
-    it('should not create list if it already exists', async () => {
-      listsRepository.existsBy.mockResolvedValueOnce(true);
-
-      const operation = await handle(OperationType.CREATE_LIST, {
-        listId: '1',
-        name: 'Some list',
-      });
-
-      expect(listsRepository.insert).not.toHaveBeenCalled();
-      expect(listsService.addParticipant).not.toHaveBeenCalled();
-      expect(operation.payload.owner).toBeUndefined();
-    });
   });
 
   describe('ADD_PARTICIPANT', () => {
@@ -188,23 +175,12 @@ describe('ListProjector', () => {
     [OperationType.FINISH_SHOPPING, 'edit'],
   ])('%s', (type, mode) => {
     it(`should set the list mode to ${mode}`, async () => {
-      listsService.isParticipant.mockResolvedValueOnce(true);
-
       await handle(type, { listId: '1' });
 
-      expect(listsService.isParticipant).toHaveBeenCalledWith('1', actor.id);
       expect(listsRepository.update).toHaveBeenCalledWith(
         { id: '1' },
         { mode },
       );
-    });
-
-    it('should do nothing if the actor is not a participant', async () => {
-      listsService.isParticipant.mockResolvedValueOnce(false);
-
-      await handle(type, { listId: '1' });
-
-      expect(listsRepository.update).not.toHaveBeenCalled();
     });
   });
 });

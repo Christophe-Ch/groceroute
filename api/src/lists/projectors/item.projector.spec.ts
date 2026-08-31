@@ -2,7 +2,6 @@ import { OperationType } from '@core/models/operation-type.enum';
 import { Operation } from '@core/models/operation.entity';
 import { OperationsHandler } from '@core/services/operations.handler';
 import { Item } from '@lists/models/item.entity';
-import { ListsService } from '@lists/services/lists.service';
 import { EntityManager, Repository } from 'typeorm';
 import { ItemProjector } from './item.projector';
 
@@ -162,40 +161,5 @@ describe('ItemProjector', () => {
         { quantity: '' },
       );
     });
-  });
-
-  describe('participation guard', () => {
-    let listsService: jest.Mocked<ListsService>;
-
-    beforeEach(() => {
-      listsService = {
-        withTransaction: jest.fn(() => listsService),
-        isParticipant: jest.fn().mockResolvedValue(false),
-      } as unknown as jest.Mocked<ListsService>;
-
-      projector = new (ItemProjector as unknown as new (
-        operationsHandler: OperationsHandler,
-        listsService: ListsService,
-      ) => ItemProjector)(operationsHandler, listsService);
-    });
-
-    it.each([
-      OperationType.ADD_ITEM,
-      OperationType.DELETE_ITEM,
-      OperationType.CHECK_ITEM,
-      OperationType.UNCHECK_ITEM,
-      OperationType.SET_ITEM_QUANTITY,
-    ])(
-      'should not apply %s when the actor is not a participant',
-      async (type) => {
-        await handle(type, { id: itemId, itemId, listId, name: 'Milk' });
-
-        expect(listsService.isParticipant).toHaveBeenCalledWith(
-          listId,
-          actorId,
-        );
-        expectNoWrites();
-      },
-    );
   });
 });
