@@ -4,6 +4,17 @@ A cross-platform grocery list app that makes shopping smarter. Build lists, let 
 
 Runs on **iOS** 📱 and **Android** 🤖 from a single codebase.
 
+<p align="center">
+  <img src="docs/screenshots/lists.png" alt="Lists overview" width="200">
+  <img src="docs/screenshots/edit-list.png" alt="Editing a list with drag-to-reorder handles" width="200">
+  <img src="docs/screenshots/play-mode.png" alt="Play mode showing one shopper's share of a split session" width="200">
+  <img src="docs/screenshots/invite-qr.png" alt="Inviting a collaborator by QR code" width="200">
+</p>
+
+<p align="center">
+  <em>Your lists · a list in edit mode · play mode, showing one shopper's share of a session split between two people, with the progress bar tracking the whole list · inviting someone by QR code</em>
+</p>
+
 ---
 
 ## ✨ Features

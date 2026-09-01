@@ -79,7 +79,8 @@ release.
 - [ ] Barcode scanner → look up product name, pre-fill item
 - [ ] App Store / Play Store submission checklist
 - [ ] App icon finalization + splash screen
-- [ ] README screenshots / demo GIF
+- [x] README screenshots (4, dark theme, iPhone 17 Pro)
+- [ ] Demo GIF of a play session
 
 ---
 
